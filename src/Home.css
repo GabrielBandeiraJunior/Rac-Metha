@@ -1,0 +1,11 @@
+body{
+    background-color: rgb(2, 104, 151);
+}
+#descritivo{
+    display: flex;
+    justify-content: center;
+}
+#listagem{
+    display: flex;
+    justify-content: center;
+}
