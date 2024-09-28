@@ -44,17 +44,17 @@ async function createTableIfNotExists(connection) {
       catracamicropoint BOOLEAN,
       catracabiopoint BOOLEAN,
       suporteTi BOOLEAN,
-      outros VARCHAR(255),
-      nSerie VARCHAR(255),
-      localInstalacao VARCHAR(255),
-      observacaoProblemas VARCHAR(255),
-      componente VARCHAR(255),
-      codigoComponente VARCHAR(255),
-      valorVisita VARCHAR(255),
-      valorrs VARCHAR(255),
-      valorPecas VARCHAR(255),
-      valorTotal VARCHAR(255),
-      observacoes VARCHAR(255),
+      nserie VARCHAR(255) NOT NULL,
+      localinstalacao VARCHAR(255) NOT NULL,
+      observacaoproblemas VARCHAR(255) NOT NULL,
+      componente VARCHAR(255) NOT NULL,
+      codigocomponente VARCHAR(255) NOT NULL,
+      valorvisita VARCHAR(255) NOT NULL,
+      valorrs VARCHAR(255) NOT NULL,
+      valorpecas VARCHAR(255) NOT NULL,
+      valortotal VARCHAR(255) NOT NULL,
+      observacoes VARCHAR(255) NOT NULL,
+      
       date DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `;
@@ -96,5 +96,5 @@ app.post("/racvirtual/register", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
+  console.log(`Servidor a rodando em http://localhost:${port}`);
 });

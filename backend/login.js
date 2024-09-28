@@ -98,5 +98,5 @@ app.post("/login", async (req, res) => {
 
 // Iniciar o servidor
 app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
+  console.log(`Login Servidor rodando na porta ${port}`);
 });
