@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState , navigate} from "react";
 import axios from "axios";
 
 function Register() {
@@ -14,6 +14,7 @@ function Register() {
         senha,
       });
       alert("Registro realizado com sucesso!");
+      
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
       alert("Usuário já está em uso!");

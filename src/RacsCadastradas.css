@@ -1,0 +1,25 @@
+.container {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 8px 0;
+    background-color: #f9f9f9;
+}
+
+.container h2 {
+    margin: 0 0 8px 0;
+}
+
+.container p {
+    margin: 4px 0;
+}
+
+.listaitens {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas de igual largura */
+    gap: 10px; /* Espaçamento entre as colunas */
+    
+}
+.column {
+    padding: 10px; /* Espaçamento interno */
+}

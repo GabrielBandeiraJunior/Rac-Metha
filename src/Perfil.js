@@ -14,10 +14,14 @@ const Perfil = () => {
   return (
     <div>
       <h1 id="titulo">Bem-vindo ao seu perfil!</h1>
-      <button onClick={handleLogout}>Logout</button>
+      
       <br/>
-      <Link to="/RAC">RAC</Link><br/>
-      <Link to="/">home</Link>
+      <Link to="/RAC">Cadastrar nova RAC</Link><br/>
+      <Link to="/">Voltar para Login/Regitro</Link><br/>
+      <Link to="/RacsCadastradas">Racs Cadastradas</Link><br/>
+      <br/>
+      <br/>
+        <button onClick={handleLogout}>Logout</button>
 
     </div>
   );

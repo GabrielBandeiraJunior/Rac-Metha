@@ -27,6 +27,7 @@ async function createTableIfNotExists(connection) {
       cidade VARCHAR(255) NOT NULL,
       horaInicio VARCHAR(50) NOT NULL,
       horaTermino VARCHAR(50) NOT NULL,
+      
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
       customizacao BOOLEAN,
@@ -44,6 +45,7 @@ async function createTableIfNotExists(connection) {
       catracamicropoint BOOLEAN,
       catracabiopoint BOOLEAN,
       suporteTi BOOLEAN,
+
       nserie VARCHAR(255) NOT NULL,
       localinstalacao VARCHAR(255) NOT NULL,
       observacaoproblemas VARCHAR(255) NOT NULL,
@@ -94,6 +96,7 @@ app.post("/racvirtual/register", async (req, res) => {
     console.error("Erro ao salvar dados:", e);
   }
 });
+
 
 app.listen(port, () => {
   console.log(`Servidor a rodando em http://localhost:${port}`);

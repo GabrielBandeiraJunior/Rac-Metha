@@ -8,10 +8,11 @@ import Register from './Register.js';
 import Registrar from './PaginaRegistrar.js';
 import Perfil from './Perfil.js'
 import RACForm from './RACForm.js'
+import RacsCadastradas from './RacsCadastradas.js';
 
 const ProtectedRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? element : <Navigate to="/" />;
+  return isAuthenticated ? element : <Navigate to="/Login" />;
 };
 
 const RoutesComponent = () => (
@@ -24,6 +25,7 @@ const RoutesComponent = () => (
         <Route path="/perfil" element={<ProtectedRoute element={<Perfil />} />} />
         <Route path="/rac" element={<ProtectedRoute element={<RACForm />} />} />
         <Route path="/registrar" element={<Registrar />} />
+        <Route path="/RacsCadastradas" element={<ProtectedRoute element={<RacsCadastradas />} />}/>
       
         {/* Outras rotas podem ser adicionadas aqui */}
       </Routes>

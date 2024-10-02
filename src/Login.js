@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from './auth'; // Importe o hook de autenticação
 
-//testeee
+
 function Login() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");

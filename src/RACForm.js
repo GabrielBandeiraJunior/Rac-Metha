@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, } from 'react';
+import{Link} from 'react-router-dom'
 import axios from 'axios';
+import Login from './Login.js'
+
 
 function RacForm() {
   const [formData, setFormData] = useState({
@@ -30,7 +33,7 @@ function RacForm() {
     catracamicropoint: false,
     catracabiopoint: false,
     suporteTi: false,
-    outros: '',
+    // outros: '',
     // nSerie: '',
     // localInstalacao: '',
     // // observacaoProblemas: '',
@@ -63,6 +66,7 @@ function RacForm() {
   };
 
   return (
+<>
     <form onSubmit={handleSubmit}>
       <input type="text" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Técnico" required />
       <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social" />
@@ -110,8 +114,7 @@ function RacForm() {
       <label>catracabiopoint</label>
       <input type="checkbox" name="suporteTi" value={formData.suporteTi} onChange={handleChange} placeholder="suporteti" />
       <label>suporteti</label><br/>
-      <input type="checkbox" name="outros" value={formData.outros} onChange={handleChange} placeholder="outros" />
-      <label>outros</label>
+      
 
       <input type="text" name="nserie" value={formData.nserie} onChange={handleChange} placeholder="nserie" required />
       <input type="text" name="localinstalacao" value={formData.localinstalacao} onChange={handleChange} placeholder="localinstalacao" required />
@@ -124,8 +127,16 @@ function RacForm() {
       <input type="text" name="valortotal" value={formData.valortotal} onChange={handleChange} placeholder="valortotal" required />
       <input type="text" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="observacoes" required />
 
-      <button type="submit">Enviar</button>
+      <button type="submit">Enviar</button><br/>
+      <br/>
+      <br/>
+      <Link to="/Login">LOGIN</Link> <br/>
+      <Link to="/Register">REGISTER</Link> <br/>
+      <Link to="/racscadastradas">Racs Cadastradas</Link> <br/>
+      <Link to="/perfil">Meu Perfil</Link>
+
     </form>
+    </>
   );
 }
 
