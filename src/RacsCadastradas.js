@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import './RacsCadastradas.css'; // Opcional, para estilização
-import {Link} from 'react-router-dom'
+import './RacsCadastradas.css';
+import { Link } from 'react-router-dom';
+import { jsPDF } from 'jspdf';
 
 export default function RacsCadastradas() {
     const [dados, setDados] = useState([]);
@@ -9,11 +10,12 @@ export default function RacsCadastradas() {
     useEffect(() => {
         const fetchDados = async () => {
             try {
-                const response = await fetch('http://localhost:3003/api/dados'); // Verifique a porta
+                const response = await fetch('http://localhost:3003/api/dados');
                 if (!response.ok) {
                     throw new Error('Erro ao buscar os dados');
                 }
                 const data = await response.json();
+                console.log(data); // Verifique a estrutura dos dados aqui
                 setDados(data);
             } catch (err) {
                 setError(err.message);
@@ -37,68 +39,169 @@ export default function RacsCadastradas() {
         });
     };
 
+    const [filter, setFilter] = useState({ date: '', tecnico: '', empresa: '' });
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+        setFilter(prev => ({ ...prev, [name]: value }));
+    };
+
+    const filteredDados = dados.filter(item => {
+        return (
+            (filter.date === '' || item.date.includes(filter.date)) &&
+            (filter.tecnico === '' || item.tecnico.toLowerCase().includes(filter.tecnico.toLowerCase())) &&
+            (filter.empresa === '' || item.razaoSocial.toLowerCase().includes(filter.empresa.toLowerCase()))
+        );
+    });
+
+    const gerarPDF = (item) => {
+        const doc = new jsPDF();
+        const yOffset = 10; // Espaçamento vertical inicial
+    
+        doc.text(`Data de Registro: ${formatDate(item.date)}`, 10, yOffset);
+        doc.text(`Técnico: ${item.tecnico}`, 10, yOffset + 10);
+        doc.text(`Razão Social: ${item.razaoSocial}`, 10, yOffset + 20);
+        doc.text(`CNPJ: ${item.cnpj}`, 10, yOffset + 30);
+        doc.text(`Endereço: ${item.endereco}, ${item.numero}`, 10, yOffset + 40);
+        doc.text(`Número: ${item.numero}`, 10, yOffset + 50);
+        doc.text(`Cidade: ${item.cidade}`, 10, yOffset + 60);
+        doc.text(`Responsável: ${item.cidade}`, 10, yOffset + 70);
+        doc.text(`Setor: ${item.setor}`, 10, yOffset + 80);
+        
+        const servicos = [
+            { label: 'Instalação de Equipamentos', value: item.instalacaoDeEquipamentos },
+            { label: 'Manutenção de Equipamentos', value: item.manutencaoDeEquipamentos },
+            { label: 'Customização', value: item.customizacao },
+            { label: 'Diagnóstico de Projetos', value: item.diagnosticoDeProjetos },
+            { label: 'Homologação de Infra', value: item.homologacaoDeInfra },
+            { label: 'Deslocamento', value: item.deslocamento },
+            { label: 'Treinamento Operacional', value: item.treinamentoOperacional },
+            { label: 'Implantação de Sistemas', value: item.implantacaoDeSistemas },
+            { label: 'Manutenção Preventiva Contratual', value: item.manutencaoPreventivaContratual },
+            { label: 'Rep Print Point', value: item.repprintpoint },
+            { label: 'Rep Mini Print', value: item.repminiprint },
+            { label: 'Rep Smart', value: item.repsmart },
+            { label: 'Relógio Micro Point', value: item.relogiomicropoint },
+            { label: 'Relógio Bio Point', value: item.relogiobiopoint },
+            { label: 'Catraca Micro Point', value: item.catracamicropoint },
+            { label: 'Catraca Bio Point', value: item.catracabiopoint },
+            { label: 'Suporte TI', value: item.suporteTi }
+        ];
+    
+        let currentY = yOffset + 90; // Ajuste para onde os serviços começam
+    
+        servicos.forEach(servico => {
+            if (servico.value) {
+                doc.text(`${servico.label}: Sim`, 10, currentY);
+                currentY += 10; // Espaçamento entre serviços
+            }
+        });
+    
+        doc.text(`Nº Série: ${item.nserie}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Local de Instalação: ${item.localinstalacao}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Observações de Problemas: ${item.observacaoproblemas}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Componente: ${item.componente}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Código do Componente: ${item.codigocomponente}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Valor da Visita: ${item.valorvisita}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Valor RS: ${item.valorrs}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Valor das Peças: ${item.valorpecas}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Valor Total: ${item.valortotal}`, 10, currentY);
+        currentY += 10;
+        doc.text(`Observações: ${item.observacoes}`, 10, currentY);
+    
+        doc.save(`RAC_${item.tecnico}.pdf`);
+    };
+    
+
     return (
         <>
             <h1>Dados do MySQL</h1>
-            
+            <div>
+                <input
+                    type="date"
+                    name="date"
+                    placeholder="Data"
+                    value={filter.date}
+                    onChange={handleFilterChange}
+                />
+                <input
+                    type="text"
+                    name="tecnico"
+                    placeholder="Técnico"
+                    value={filter.tecnico}
+                    onChange={handleFilterChange}
+                />
+                <input
+                    type="text"
+                    name="empresa"
+                    placeholder="Empresa"
+                    value={filter.empresa}
+                    onChange={handleFilterChange}
+                />
+            </div>
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
+            
             <div id="result">
-                {dados.length > 0 ? (
-                    dados.map((item) => (
+                {filteredDados.length > 0 ? (
+                    filteredDados.map((item) => (
                         <div className="container" key={item.id}>
-                            <div ClassName="listaitens">
-                            <p><strong>Data de Registro:</strong> {formatDate(item.date)}</p>
-                            <h2>{item.tecnico}</h2>
-                            <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
-                            <p><strong>CNPJ:</strong> {item.cnpj}</p>
-                            <p><strong>Endereço:</strong> {item.endereco}, {item.numero}</p>
-                            <p><strong>Número:</strong> {item.numero}</p>
-                            <p><strong>Cidade:</strong> {item.cidade}</p>                                                        
-                            <p><strong>Responsável:</strong> {item.cidade}</p>
-                            <p><strong>Setor:</strong> {item.setor}</p>   
-
-                            {item.instalacaoDeEquipamentos && <p><strong>Instalação de Equipamentos: Sim</strong></p>}
-                            {item.manutencaoDeEquipamentos && <p><strong>Manutenção de Equipamentos: Sim</strong></p>}
-                            {item.customizacao && <p><strong>Customização: Sim</strong></p>}
-                            {item.diagnosticoDeProjetos && <p><strong>Diagnóstico de Projetos: Sim</strong></p>}
-                            {item.homologacaoDeInfra && <p><strong>Homologação de Infra: Sim</strong></p>}
-                            {item.deslocamento && <p><strong>Deslocamento: Sim</strong></p>}
-                            {item.treinamentoOperacional && <p><strong>Treinamento Operacional: Sim</strong></p>}
-                            {item.implantacaoDeSistemas && <p><strong>Implantação de Sistemas: Sim</strong></p>}
-                            {item.manutencaoPreventivaContratual && <p><strong>Manutenção Preventiva Contratual: Sim</strong></p>}
-                            {item.repprintpoint && <p><strong>Rep Print Point: Sim</strong></p>}
-                            {item.repminiprint && <p><strong>Rep Mini Print: Sim</strong></p>}
-                            {item.repsmart && <p><strong>Rep Smart: Sim</strong></p>}
-                            {item.relogiomicropoint && <p><strong>Relógio Micro Point: Sim</strong></p>}
-                            {item.relogiobiopoint && <p><strong>Relógio Bio Point: Sim</strong></p>}
-                            {item.catracamicropoint && <p><strong>Catraca Micro Point: Sim</strong></p>}
-                            {item.catracabiopoint && <p><strong>Catraca Bio Point: Sim</strong></p>}
-                            {item.suporteTi && <p><strong>Suporte TI: Sim</strong></p>} 
+                            <div className="listaitens">
+                                <p><strong>Data de Registro:</strong> {formatDate(item.date)}</p>
+                                <h2>{item.tecnico}</h2>
+                                <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
+                                <p><strong>CNPJ:</strong> {item.cnpj}</p>
+                                <p><strong>Endereço:</strong> {item.endereco}, {item.numero}</p>
+                                <p><strong>Número:</strong> {item.numero}</p>
+                                <p><strong>Cidade:</strong> {item.cidade}</p>
+                                <p><strong>Responsável:</strong> {item.cidade}</p>
+                                <p><strong>Setor:</strong> {item.setor}</p>   
+                                {/* Condições omitidas para brevidade */}
+                                {item.instalacaoDeEquipamentos && <p>Instalação de Equipamentos: Sim</p>}
+                                {item.manutencaoDeEquipamentos && <p>Manutenção de Equipamentos: Sim</p>}
+                                {item.customizacao && <p>Customização: Sim</p>}
+                                {item.diagnosticoDeProjetos && <p>Diagnóstico de Projetos: Sim</p>}
+                                {item.homologacaoDeInfra && <p>Homologação de Infra: Sim</p>}
+                                {item.deslocamento && <p>Deslocamento: Sim</p>}
+                                {item.treinamentoOperacional && <p>Treinamento Operacional: Sim</p>}
+                                {item.implantacaoDeSistemas && <p>Implantação de Sistemas: Sim</p>}
+                                {item.manutencaoPreventivaContratual && <p>Manutenção Preventiva Contratual: Sim</p>}
+                                {item.repprintpoint && <p>Rep Print Point: Sim</p>}
+                                {item.repminiprint && <p>Rep Mini Print: Sim</p>}
+                                {item.repsmart && <p>Rep Smart: Sim</p>}
+                                {item.relogiomicropoint && <p>Relógio Micro Point: Sim</p>}
+                                {item.relogiobiopoint && <p>Relógio Bio Point: Sim</p>}
+                                {item.catracamicropoint && <p>Catraca Micro Point: Sim</p>}
+                                {item.catracabiopoint && <p>Catraca Bio Point: Sim</p>}
+                                {item.suporteTi && <p>Suporte TI: Sim</p>}
                             </div>
-                        <div className='listaitens'>
-                            <p><strong>Nº Série:</strong> {item.nserie}</p>
-                            <p><strong>localinstalacao:</strong> {item.localinstalacao}</p>
-                            <p><strong>observacaoproblemas:</strong> {item.observacaoproblemas}</p>
-                            <p><strong>componente:</strong> {item.componente}</p>
-                            <p><strong>codigocomponente:</strong> {item.codigocomponente}</p>
-                            <p><strong>valorvisita:</strong> {item.valorvisita}</p>
-                            <p><strong>valorrs:</strong> {item.valorrs}</p>
-                            <p><strong>valorpecas:</strong> {item.valorpecas}</p>
-                            <p><strong>valortotal:</strong> {item.valortotal}</p>
-                            <p><strong>observacoes:</strong> {item.observacoes}</p>
-                        </div>    
-                            
-
+                            <div className='listaitens'>
+                                <p><strong>Nº Série:</strong> {item.nserie}</p>
+                                <p><strong>localinstalacao:</strong> {item.localinstalacao}</p>
+                                <p><strong>observacaoproblemas:</strong> {item.observacaoproblemas}</p>
+                                <p><strong>componente:</strong> {item.componente}</p>
+                                <p><strong>codigocomponente:</strong> {item.codigocomponente}</p>
+                                <p><strong>valorvisita:</strong> {item.valorvisita}</p>
+                                <p><strong>valorrs:</strong> {item.valorrs}</p>
+                                <p><strong>valorpecas:</strong> {item.valorpecas}</p>
+                                <p><strong>valortotal:</strong> {item.valortotal}</p>
+                                <p><strong>observacoes:</strong> {item.observacoes}</p>
+                                
+                                <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
+                            </div>    
                         </div>
-                        
                     ))
                 ) : (
                     <p>Nenhum dado encontrado.</p>
-                    
                 )}
-
-                
             </div>
             <Link to="/perfil">AAAAAAAAA</Link>
         </>
