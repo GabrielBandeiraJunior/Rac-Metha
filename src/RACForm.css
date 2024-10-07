@@ -31,11 +31,11 @@ body {
     margin-bottom: 15px;
   }
   
-  label {
+  /* label {
     display: inline-block;
     margin-bottom: 5px;
-    vertical-align: middle; /* Alinha o label verticalmente */
-  }
+    vertical-align: middle; /* Alinha o label verticalmente }*/
+  
   
   input[type="text"],
   input[type="number"],

@@ -119,7 +119,12 @@ export default function RacsCadastradas() {
     
         doc.save(`RAC_${item.tecnico}.pdf`);
     };
-    
+    const links = [
+        { label: 'Meu Perfil', url: '/perfil' },
+        { label: 'Nova rac', url: '/rac' }
+        
+        
+      ]
 
     return (
         <>

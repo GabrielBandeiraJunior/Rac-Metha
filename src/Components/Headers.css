@@ -1,0 +1,23 @@
+header {
+    background-color: #01239d; /* Cor de fundo */
+    color: rgb(255, 255, 255); /* Cor do texto */
+    padding: 15px 0; /* Espaçamento vertical, mas zero horizontal */
+    text-align: center; /* Alinhamento do texto */
+    margin: 0; /* Remove qualquer margem */
+    width: 100%; /* Garante que ocupa toda a largura */
+    box-sizing: border-box; /* Para incluir o padding na largura total */
+    
+}
+
+nav {
+    margin-top: 10px; /* Espaçamento superior */
+}
+
+nav a {
+    color: rgb(255, 255, 255); /* Cor do link */
+    margin: 0 15px; /* Espaçamento lateral */
+    text-decoration: none; /* Sem sublinhado */
+}
+body{
+    margin: 0;
+}

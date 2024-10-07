@@ -1,28 +1,28 @@
 import React from 'react';
-import { useNavigate,Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from './auth';
+import Headers from './Components/Headers.js';
 
 const Perfil = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth(); // Obtendo o usuário do contexto
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate("/login"); // Redireciona para a página de login
+    navigate("/autenticacao"); 
   };
+
+  const links = [
+    { label: 'Autenticacao', url: '/Autenticacao' },
+    { label: 'Nova Rac', url: '/rac' },
+    { label: 'Consultar Racs', url: '/racscadastradas' },
+    { label: 'Home', url: '/' },  
+  ];
 
   return (
     <div>
-      <h1 id="titulo">Bem-vindo ao seu perfil!</h1>
-      
-      <br/>
-      <Link to="/RAC">Cadastrar nova RAC</Link><br/>
-      <Link to="/">Voltar para Login/Regitro</Link><br/>
-      <Link to="/RacsCadastradas">Racs Cadastradas</Link><br/>
-      <br/>
-      <br/>
-        <button onClick={handleLogout}>Logout</button>
-
+      <Headers links={links} handleLogout={handleLogout} />
+      <h1 id="titulo">Bem-vindo, {user ? user.name : 'Visitante'}!</h1>
     </div>
   );
 };

@@ -1,5 +1,6 @@
 body{
-    background-color: rgb(2, 104, 151);
+    background-color: rgb(4, 126, 182);
+    
 }
 #descritivo{
     display: flex;
@@ -7,5 +8,9 @@ body{
 }
 #listagem{
     display: flex;
+    justify-content: center;
+}
+#tudo{
+    /* display: flex; */
     justify-content: center;
 }

@@ -4,7 +4,7 @@ import Register from './Register.js'
 
 function PaginaRegistrar () {
   return (
-    <div className="MainContainer"> {/* Contêiner principal */}
+    <div className="MainContainer">
       <div className="Container">
         <Login />
       </div>

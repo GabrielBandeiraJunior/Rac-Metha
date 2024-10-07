@@ -2,6 +2,8 @@ import React, { useState, } from 'react';
 import{Link} from 'react-router-dom'
 import axios from 'axios';
 import Login from './Login.js'
+import Autenticacao from './Autenticacao.js';
+import Headers from './Components/Headers.js'
 
 
 function RacForm() {
@@ -64,9 +66,16 @@ function RacForm() {
       alert('Erro ao enviar os dados!');
     }
   };
+  const links = [
+    { label: 'Autenticacao', url: '/Autenticacao' },
+    { label: 'Perfil', url: '/perfil' },
+    { label: 'Consultar Racs', url: '/racscadastradas' },
+
+  ]
 
   return (
 <>
+<Headers links={links} />
     <form onSubmit={handleSubmit}>
       <input type="text" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Técnico" required />
       <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social" />
@@ -130,8 +139,8 @@ function RacForm() {
       <button type="submit">Enviar</button><br/>
       <br/>
       <br/>
-      <Link to="/Login">LOGIN</Link> <br/>
-      <Link to="/Register">REGISTER</Link> <br/>
+      <Link to="/Autenticacao">Autenticação</Link> <br/>
+      
       <Link to="/racscadastradas">Racs Cadastradas</Link> <br/>
       <Link to="/perfil">Meu Perfil</Link>
 

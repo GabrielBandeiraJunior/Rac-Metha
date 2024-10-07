@@ -1,5 +1,6 @@
 import React, { useState , navigate} from "react";
 import axios from "axios";
+import './my-button.css'
 
 function Register() {
   const [usuario, setUsuario] = useState(""); // Estado para 'usuario'
@@ -13,7 +14,8 @@ function Register() {
         usuario,
         senha,
       });
-      alert("Registro realizado com sucesso!");
+      // alert("Registro realizado com sucesso!");
+      navigate("/perfil");
       
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
@@ -28,14 +30,14 @@ function Register() {
         placeholder="Usuário"
         value={usuario}
         onChange={(e) => setUsuario(e.target.value)} 
-      />
+      /><br/>
       <input
         type="password"
         placeholder="Senha"
         value={senha}
         onChange={(e) => setSenha(e.target.value)}
-      />
-      <button type="submit">Registrar</button>
+      /><br/>
+      <button type="submit" className="styled-button">Registrar</button>
     </form>
   );
 }

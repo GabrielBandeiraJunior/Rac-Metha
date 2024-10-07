@@ -2,14 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from './auth'; // Importe o hook de autenticação
-
+import './my-button.css'
+import Headers from './Components/Headers.js'
 
 function Login() {
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth(); // Desestrutura a função de login do contexto
-
+  
+  const links = [
+    { label: 'Autenticacao', url: '/Autenticacao' }
+  ]
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -31,23 +35,28 @@ function Login() {
     }
   };
 
-  return (
+  return (<>
+    
+
     <form onSubmit={handleSubmit}>
       <input
         type="usuario"
         placeholder="usuario"
         value={usuario}
         onChange={(e) => setUsuario(e.target.value)}
-      />
+        
+      /><br/>
+
       <input
         type="senha"
         placeholder="Senha"
         value={senha}
         onChange={(e) => setSenha(e.target.value)}
-      />
-      <button type="submit">Login</button>
+      /><br/>
+
+      <button type="submit" className="styled-button">Login</button>
     </form>
-  );
+    </>  );
 }
 
 export default Login;
