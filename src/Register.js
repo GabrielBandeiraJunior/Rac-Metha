@@ -1,10 +1,12 @@
-import React, { useState , navigate} from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
-import './my-button.css'
+import './my-button.css';
 
 function Register() {
   const [usuario, setUsuario] = useState(""); // Estado para 'usuario'
   const [senha, setSenha] = useState(""); // Estado para 'password'
+  const navigate = useNavigate(); // Get navigate function
 
   const handleSubmit = async (e) => {
     e.preventDefault();
