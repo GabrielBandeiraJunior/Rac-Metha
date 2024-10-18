@@ -11,7 +11,7 @@ export default function Autenticacao() {
       ]
     return (
         <>
-        <Headers links={links} />
+         <Headers links={links} />
 
             <div className="ContainersWrapper"> {/* Corrigido para className */}
                 <div className="Container">

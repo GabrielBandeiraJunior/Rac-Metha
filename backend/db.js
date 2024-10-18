@@ -8,9 +8,9 @@ const port = 3002;
 // Configuração do MySQL
 const dbConfig = {
   host: 'localhost',
-  user: 'root',
-  password: '000000',
-  database: 'racvirtual',
+    user: 'root',
+    password: '000000',
+    database: 'racvirtual'
 };
 
 async function createTableIfNotExists(connection) {
@@ -30,10 +30,7 @@ async function createTableIfNotExists(connection) {
       
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
-      customizacao BOOLEAN,
-      diagnosticoDeProjetos BOOLEAN,
       homologacaoDeInfra BOOLEAN,
-      deslocamento BOOLEAN,
       treinamentoOperacional BOOLEAN,
       implantacaoDeSistemas BOOLEAN,
       manutencaoPreventivaContratual BOOLEAN,
@@ -44,22 +41,26 @@ async function createTableIfNotExists(connection) {
       relogiobiopoint BOOLEAN,
       catracamicropoint BOOLEAN,
       catracabiopoint BOOLEAN,
-      suporteTi BOOLEAN,
+      catracaceros BOOLEAN,
+      catracaidblock BOOLEAN,
+      catracaidnext BOOLEAN,
+      idface BOOLEAN,
+      idflex BOOLEAN,
 
       nserie VARCHAR(255) NOT NULL,
       localinstalacao VARCHAR(255) NOT NULL,
       observacaoproblemas VARCHAR(255) NOT NULL,
       componente VARCHAR(255) NOT NULL,
       codigocomponente VARCHAR(255) NOT NULL,
-      valorvisita VARCHAR(255) NOT NULL,
-      valorrs VARCHAR(255) NOT NULL,
-      valorpecas VARCHAR(255) NOT NULL,
-      valortotal VARCHAR(255) NOT NULL,
       observacoes VARCHAR(255) NOT NULL,
-      
       date DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `;
+/* 
+ valorvisita VARCHAR(255) NOT NULL,
+      valorrs VARCHAR(255) NOT NULL,
+      valorpecas VARCHAR(255) NOT NULL,
+      valortotal VARCHAR(255) NOT NULL,  */
 
   await connection.query(createTableQuery);
   console.log('Tabela "RacForm" verificada/criada com sucesso.');

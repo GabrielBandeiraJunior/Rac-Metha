@@ -7,15 +7,13 @@ const cors = require ('cors')
 const app = express();
 const port = 3001;
 
-// Configurar middleware
 app.use(bodyParser.json());
 app.use(cors());
-// Configuração do banco de dados
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',
-  password: '000000', // Substitua pela sua senha do MySQL
-  database: 'racvirtual' // Substitua pelo seu banco de dados
+    user: 'root',
+    password: '000000',
+    database: 'racvirtual'
 });
 
 db.connect((err) => {
@@ -26,7 +24,7 @@ db.connect((err) => {
   console.log('Conectado ao banco de dados');
 });
 
-// Função para registrar um novo usuário
+// registrar um novo usuário
 const registerUser = (db, usuario, senha) => {
   return new Promise((resolve, reject) => {
     const sql = "INSERT INTO usuarios (usuario, senha) VALUES (?, ?)";
@@ -37,13 +35,13 @@ const registerUser = (db, usuario, senha) => {
   });
 };
 
-// Função para verificar se o usuário já está cadastrado
+// verificar se o usuário já está cadastrado
 const verifyUser = (db, usuario) => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM usuarios WHERE usuario = ?";
     db.query(sql, [usuario], (err, result) => {
       if (err) return reject(err);
-      resolve(result.length > 0); // Retorna verdadeiro se o resultado tiver algum registro
+      resolve(result.length > 0); // Retorna verdadeiro se  resultado tiver registro
     });
   });
 };

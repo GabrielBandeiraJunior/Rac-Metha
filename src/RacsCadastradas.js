@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import './RacsCadastradas.css';
 import { Link } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
+import Headers from './Components/Headers'
+
 
 export default function RacsCadastradas() {
     const [dados, setDados] = useState([]);
@@ -71,10 +73,7 @@ export default function RacsCadastradas() {
         const servicos = [
             { label: 'Instalação de Equipamentos', value: item.instalacaoDeEquipamentos },
             { label: 'Manutenção de Equipamentos', value: item.manutencaoDeEquipamentos },
-            { label: 'Customização', value: item.customizacao },
-            { label: 'Diagnóstico de Projetos', value: item.diagnosticoDeProjetos },
             { label: 'Homologação de Infra', value: item.homologacaoDeInfra },
-            { label: 'Deslocamento', value: item.deslocamento },
             { label: 'Treinamento Operacional', value: item.treinamentoOperacional },
             { label: 'Implantação de Sistemas', value: item.implantacaoDeSistemas },
             { label: 'Manutenção Preventiva Contratual', value: item.manutencaoPreventivaContratual },
@@ -83,9 +82,14 @@ export default function RacsCadastradas() {
             { label: 'Rep Smart', value: item.repsmart },
             { label: 'Relógio Micro Point', value: item.relogiomicropoint },
             { label: 'Relógio Bio Point', value: item.relogiobiopoint },
+            { label: 'ID Face', value: item.catracabiopoint },
+            { label: 'ID Flex', value: item.catracabiopoint },
             { label: 'Catraca Micro Point', value: item.catracamicropoint },
             { label: 'Catraca Bio Point', value: item.catracabiopoint },
-            { label: 'Suporte TI', value: item.suporteTi }
+            { label: 'Catraca Ceros', value: item.catracabiopoint },
+            { label: 'Catraca ID Block', value: item.catracabiopoint },
+            { label: 'Catraca ID Next', value: item.catracabiopoint },
+            
         ];
     
         let currentY = yOffset + 90; // Ajuste para onde os serviços começam
@@ -107,27 +111,20 @@ export default function RacsCadastradas() {
         currentY += 10;
         doc.text(`Código do Componente: ${item.codigocomponente}`, 10, currentY);
         currentY += 10;
-        doc.text(`Valor da Visita: ${item.valorvisita}`, 10, currentY);
-        currentY += 10;
-        doc.text(`Valor RS: ${item.valorrs}`, 10, currentY);
-        currentY += 10;
-        doc.text(`Valor das Peças: ${item.valorpecas}`, 10, currentY);
-        currentY += 10;
-        doc.text(`Valor Total: ${item.valortotal}`, 10, currentY);
-        currentY += 10;
         doc.text(`Observações: ${item.observacoes}`, 10, currentY);
     
         doc.save(`RAC_${item.tecnico}.pdf`);
     };
     const links = [
         { label: 'Meu Perfil', url: '/perfil' },
-        { label: 'Nova rac', url: '/rac' }
-        
-        
+        { label: 'Nova rac', url: '/rac' },
+        { label: 'Home', url: '/'} 
+
       ]
 
     return (
         <>
+        <Headers links={links}/>
             <h1>Dados do MySQL</h1>
             <div>
                 <input
@@ -170,23 +167,23 @@ export default function RacsCadastradas() {
                                 <p><strong>Responsável:</strong> {item.cidade}</p>
                                 <p><strong>Setor:</strong> {item.setor}</p>   
                                 {/* Condições omitidas para brevidade */}
-                                {item.instalacaoDeEquipamentos && <p>Instalação de Equipamentos: Sim</p>}
-                                {item.manutencaoDeEquipamentos && <p>Manutenção de Equipamentos: Sim</p>}
-                                {item.customizacao && <p>Customização: Sim</p>}
-                                {item.diagnosticoDeProjetos && <p>Diagnóstico de Projetos: Sim</p>}
-                                {item.homologacaoDeInfra && <p>Homologação de Infra: Sim</p>}
-                                {item.deslocamento && <p>Deslocamento: Sim</p>}
-                                {item.treinamentoOperacional && <p>Treinamento Operacional: Sim</p>}
-                                {item.implantacaoDeSistemas && <p>Implantação de Sistemas: Sim</p>}
-                                {item.manutencaoPreventivaContratual && <p>Manutenção Preventiva Contratual: Sim</p>}
-                                {item.repprintpoint && <p>Rep Print Point: Sim</p>}
-                                {item.repminiprint && <p>Rep Mini Print: Sim</p>}
-                                {item.repsmart && <p>Rep Smart: Sim</p>}
-                                {item.relogiomicropoint && <p>Relógio Micro Point: Sim</p>}
-                                {item.relogiobiopoint && <p>Relógio Bio Point: Sim</p>}
-                                {item.catracamicropoint && <p>Catraca Micro Point: Sim</p>}
-                                {item.catracabiopoint && <p>Catraca Bio Point: Sim</p>}
-                                {item.suporteTi && <p>Suporte TI: Sim</p>}
+                                {item.instalacaoDeEquipamentos && <p><strong>Instalação de Equipamentos</strong></p>}
+                                {item.manutencaoDeEquipamentos && <p><strong>Manutenção de Equipamentos </strong></p>}
+                                {item.customizacao && <p><strong>Customização</strong></p>}
+                                {item.diagnosticoDeProjetos && <p><strong>Diagnóstico de Projetos</strong></p>}
+                                {item.homologacaoDeInfra && <p><strong>Homologação de Infra</strong></p>}
+                                {item.deslocamento && <p><strong>Deslocamento</strong></p>}
+                                {item.treinamentoOperacional && <p><strong>Treinamento Operacional</strong></p>}
+                                {item.implantacaoDeSistemas && <p><strong>Implantação de Sistemas</strong></p>}
+                                {item.manutencaoPreventivaContratual && <p><strong>Manutenção Preventiva Contratual</strong></p>}
+                                {item.repprintpoint && <p><strong>Rep Print Point</strong></p>}
+                                {item.repminiprint && <p><strong>Rep Mini Print</strong></p>}
+                                {item.repsmart && <p><strong>Rep Smart</strong></p>}
+                                {item.relogiomicropoint && <p><strong>Relógio Micro Point</strong></p>}
+                                {item.relogiobiopoint && <p><strong>Relógio Bio Point</strong></p>}
+                                {item.catracamicropoint && <p><strong>Catraca Micro Point</strong></p>}
+                                {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
+                                {item.suporteTi && <p><strong>Suporte TI</strong></p>}
                             </div>
                             <div className='listaitens'>
                                 <p><strong>Nº Série:</strong> {item.nserie}</p>
@@ -194,10 +191,7 @@ export default function RacsCadastradas() {
                                 <p><strong>observacaoproblemas:</strong> {item.observacaoproblemas}</p>
                                 <p><strong>componente:</strong> {item.componente}</p>
                                 <p><strong>codigocomponente:</strong> {item.codigocomponente}</p>
-                                <p><strong>valorvisita:</strong> {item.valorvisita}</p>
-                                <p><strong>valorrs:</strong> {item.valorrs}</p>
-                                <p><strong>valorpecas:</strong> {item.valorpecas}</p>
-                                <p><strong>valortotal:</strong> {item.valortotal}</p>
+                               
                                 <p><strong>observacoes:</strong> {item.observacoes}</p>
                                 
                                 <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
@@ -208,7 +202,7 @@ export default function RacsCadastradas() {
                     <p>Nenhum dado encontrado.</p>
                 )}
             </div>
-            <Link to="/perfil">AAAAAAAAA</Link>
+            
         </>
     );
 }
