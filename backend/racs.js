@@ -7,7 +7,7 @@ const port = 3004;
 
 // Configurar CORS
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Habilita JSON para requisições
 
 // Configuração do MySQL
 const dbConfig = {
@@ -17,7 +17,7 @@ const dbConfig = {
   database: 'racvirtual'
 };
 
-// Função para criar a tabela se ela não existir
+// Função para criar a tabela, se não existir
 async function createTableIfNotExists(connection) {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS RacForm (
@@ -32,6 +32,7 @@ async function createTableIfNotExists(connection) {
       cidade VARCHAR(255) NOT NULL,
       horaInicio VARCHAR(50) NOT NULL,
       horaTermino VARCHAR(50) NOT NULL,
+      
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
       homologacaoDeInfra BOOLEAN,
@@ -50,6 +51,7 @@ async function createTableIfNotExists(connection) {
       catracaidnext BOOLEAN,
       idface BOOLEAN,
       idflex BOOLEAN,
+
       nserie VARCHAR(255) NOT NULL,
       localinstalacao VARCHAR(255) NOT NULL,
       observacaoproblemas VARCHAR(255) NOT NULL,
@@ -63,27 +65,33 @@ async function createTableIfNotExists(connection) {
   console.log('Tabela "RacForm" verificada/criada com sucesso.');
 }
 
-// Função para inicializar o banco de dados e criar tabela se necessário
+// Conectar ao MySQL e criar tabela se necessário
 async function initializeDatabase() {
   const connection = await mysql.createConnection(dbConfig);
   await createTableIfNotExists(connection);
-  app.locals.db = connection;
+  app.locals.dbConfig = connection;
 }
+
+// Inicialização do banco de dados
+initializeDatabase().catch(error => {
+  console.error('Erro ao conectar ao banco de dados MySQL:', error);
+});
 
 // Rota para obter dados
 app.get('/api/dados', async (req, res) => {
   try {
-    const [results] = await app.locals.db.query('SELECT * FROM RacForm');
+    const [results] = await app.locals.dbConfig.query('SELECT * FROM RacForm');
     res.json(results);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Rota para registrar dados
-app.post('/racvirtual/register', async (req, res) => {
+// Rota para inserir dados
+app.post("/racvirtual", async (req, res) => {
   try {
-    const [result] = await app.locals.db.query('INSERT INTO RacForm SET ?', req.body);
+    console.log(req.body); // Verificar os dados recebidos
+    const [result] = await app.locals.dbConfig.query('INSERT INTO RacForm SET ?', req.body);
     if (result.affectedRows) {
       res.status(200).json({ message: "Dados salvos com sucesso", data: req.body });
     } else {
@@ -95,13 +103,7 @@ app.post('/racvirtual/register', async (req, res) => {
   }
 });
 
-// Inicializar o banco de dados e iniciar o servidor
-initializeDatabase()
-  .then(() => {
-    app.listen(port, () => {
-      console.log(`Servidor rodando em http://localhost:${port}`);
-    });
-  })
-  .catch(error => {
-    console.error('Erro ao conectar ao banco de dados MySQL:', error);
-  });
+// Iniciar o servidor
+app.listen(port, () => {
+  console.log(`Servidor rodando em http://localhost:${port}`);
+});

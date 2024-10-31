@@ -12,7 +12,7 @@ export default function RacsCadastradas() {
     useEffect(() => {
         const fetchDados = async () => {
             try {
-                const response = await fetch('http://localhost:3003/api/dados');
+                const response = await fetch('http://localhost:3004/api/dados');
                 if (!response.ok) {
                     throw new Error('Erro ao buscar os dados');
                 }

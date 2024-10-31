@@ -8,43 +8,39 @@ import Headers from './Components/Headers.js'
 
 function RacForm() {
   const [formData, setFormData] = useState({
-    // tecnico: '',
-    // razaoSocial: '',
-    // cnpj: '',
-    // endereco: '',
-    // numero: '',
-    // responsavel: '',
-    // setor: '',
-    // cidade: '',
-    // horaInicio: '',
-    // horaTermino: '',
-    // instalacaoDeEquipamentos: false,
-    // manutencaoDeEquipamentos: false,
-    // // diagnosticoDeProjetos: false,
-    // // homologacaoDeInfra: false,
-    // // deslocamento: false,
-    // // treinamentoOperacional: false,
-    // implantacaoDeSistemas: false,
-    // manutencaoPreventivaContratual: false,
-    // repprintpoint: false,
-    // repminiprint: false,
-    // repsmart: false,
-    // relogiomicropoint: false,
-    // relogiobiopoint: false,
-    // catracamicropoint: false,
-    // catracabiopoint: false,
-    // // suporteTi: false,
-    // // outros: '',
-    // // nSerie: '',
-    // // localInstalacao: '',
-    // // // observacaoProblemas: '',
-    // // componente: '',
-    // // codigoComponente: '',
-    // // valorVisita: '',
-    // // valorrs: '',
-    // // valorPecas: '',
-    // // valorTotal: '',
-    // observacoes: '',
+    tecnico: '',
+    razaoSocial: '',
+    cnpj: '',
+    endereco: '',
+    numero: '',
+    responsavel: '',
+    setor: '',
+    cidade: '',
+    horaInicio: '',
+    horaTermino: '',
+    instalacaoDeEquipamentos: false,
+    manutencaoDeEquipamentos: false,
+    // diagnosticoDeProjetos: false,
+    // homologacaoDeInfra: false,
+    // deslocamento: false,
+    // treinamentoOperacional: false,
+    implantacaoDeSistemas: false,
+    manutencaoPreventivaContratual: false,
+    repprintpoint: false,
+    repminiprint: false,
+    repsmart: false,
+    relogiomicropoint: false,
+    relogiobiopoint: false,
+    catracamicropoint: false,
+    catracabiopoint: false,
+    // suporteTi: false,
+    // outros: '',
+    nSerie: '',
+    localInstalacao: '',
+    observacaoProblemas: '',
+    componente: '',
+    codigoComponente: '',
+    observacoes: '',
   });
 
   const handleChange = (e) => {
@@ -58,7 +54,7 @@ function RacForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3002/racvirtual/register', formData);
+      const response = await axios.post('http://localhost:3004/racvirtual/register', formData);
       alert(response.data.message);
     } catch (error) {
       console.error('Erro ao enviar dados:', error);
@@ -84,12 +80,12 @@ function RacForm() {
       <input type="text" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Responsável" required />
       <input type="text" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor" required />
       <input type="text" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade" required />
-      <label>Data da Visita</label>
-      <input type="date" name="Data" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
+
       <label>Hora Início</label>
-      <input type="time" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
+
+      <input type="datetime-local" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
       <label>Hora Termino</label>
-      <input type="time" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término" required />
+      <input type="datetime-local" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término" required />
       <br/>
 
       <input type="checkbox" name="instalacaoDeEquipamentos" value={formData.instalacaoDeEquipamentos} onChange={handleChange} placeholder="Instalação de Equipamentos" />
