@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './RacsCadastradas.css';
-import { Link } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import Headers from './Components/Headers'
+import axios from 'axios';
 
 
 export default function RacsCadastradas() {
@@ -122,6 +122,31 @@ export default function RacsCadastradas() {
 
       ]
 
+
+      ///////////////////////////
+     
+  useEffect(() => {
+    async function fetchData() {
+      const response = await axios.get('http://localhost:3004/api/dados');
+      setDados(response.data);
+    }
+    fetchData();
+  }, []);
+
+  // Função para deletar um registro pelo ID
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3004/racvirtual/delete/${id}`);
+      setDados(dados.filter(item => item.id !== id)); // Atualiza lista após exclusão
+      console.log("Registro deletado com sucesso");
+    } catch (error) {
+      console.error("Erro ao deletar registro:", error);
+    }
+  };
+
+
+        
+
     return (
         <>
         <Headers links={links}/>
@@ -185,6 +210,7 @@ export default function RacsCadastradas() {
                                 {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
                                 {item.suporteTi && <p><strong>Suporte TI</strong></p>}
                             </div>
+                            
                             <div className='listaitens'>
                                 <p><strong>Nº Série:</strong> {item.nserie}</p>
                                 <p><strong>localinstalacao:</strong> {item.localinstalacao}</p>
@@ -195,6 +221,9 @@ export default function RacsCadastradas() {
                                 <p><strong>observacoes:</strong> {item.observacoes}</p>
                                 
                                 <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
+
+                                <button onClick={() => handleDelete(item.id)}>Excluir</button>
+                  
                             </div>    
                         </div>
                     ))

@@ -1,8 +1,5 @@
 import React, { useState, } from 'react';
-import{Link} from 'react-router-dom'
 import axios from 'axios';
-import Login from './Login.js'
-import Autenticacao from './Autenticacao.js';
 import Headers from './Components/Headers.js'
 
 
@@ -20,10 +17,6 @@ function RacForm() {
     horaTermino: '',
     instalacaoDeEquipamentos: false,
     manutencaoDeEquipamentos: false,
-    // diagnosticoDeProjetos: false,
-    // homologacaoDeInfra: false,
-    // deslocamento: false,
-    // treinamentoOperacional: false,
     implantacaoDeSistemas: false,
     manutencaoPreventivaContratual: false,
     repprintpoint: false,
@@ -33,13 +26,16 @@ function RacForm() {
     relogiobiopoint: false,
     catracamicropoint: false,
     catracabiopoint: false,
-    // suporteTi: false,
-    // outros: '',
+    catracaceros: false,
+    catracaidblock: false,
+    catracaidnext: false,
+    idface: false,
+    idflex: false,
     nSerie: '',
-    localInstalacao: '',
-    observacaoProblemas: '',
+    localinstalacao: '',
+    observacaoproblemas: '',
     componente: '',
-    codigoComponente: '',
+    codigocomponente: '',
     observacoes: '',
   });
 
@@ -65,25 +61,33 @@ function RacForm() {
     { label: 'Autenticacao', url: '/Autenticacao' },
     { label: 'Perfil', url: '/perfil' },
     { label: 'Consultar Racs', url: '/racscadastradas' },
-
+    { label: 'Home', url: '/' },
   ]
-
+ 
   return (
 <>
     <Headers links={links} />
     <form onSubmit={handleSubmit}>
+      <label>Tecnico</label>
       <input type="text" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Técnico" required />
+      <label>Razão Social</label>
       <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social" />
+      <label>CNPJ</label>
       <input type="text" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ" required />
+      <label>Endereço</label>
       <input type="text" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" required />
+      <label>Número</label>
       <input type="number" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número" required />
+      <label>Responsável</label>
       <input type="text" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Responsável" required />
+      <label>Setor</label>
       <input type="text" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor" required />
+      <label>Cidade</label>
       <input type="text" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade" required />
 
       <label>Hora Início</label>
-
-      <input type="datetime-local" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
+      <input type="datetime-local" min="2024-01-01T00:00" max="2999-12-31T23:59" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
+  
       <label>Hora Termino</label>
       <input type="datetime-local" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término" required />
       <br/>
@@ -93,14 +97,14 @@ function RacForm() {
       <input type="checkbox" name="manutencaoDeEquipamentos" value={formData.manutencaoDeEquipamentos} onChange={handleChange} placeholder="Manutencao de " />
       <label>manutencaodeequipamentos</label>
       <label>diagnosticodeprojetos</label>
-      <input type="checkbox" name="homologacaodeinfra"      value={formData.homologacaodeinfra} onChange={handleChange} placeholder="homologacaodeinfra" />
+      <input type="checkbox" name="homologacaodeinfra" value={formData.homologacaodeinfra} onChange={handleChange} placeholder="homologacaodeinfra" />
       <label>homologacaodeinfra</label><br/>
 
       <input type="checkbox" name="treinamentooperacional" value={formData.treinamentooperacional} onChange={handleChange} placeholder="treinamentooperacional" />
       <label>treinamentooperacional</label><br/>
       <input type="checkbox" name="implantacaoDeSistemas"   value={formData.implantacaoDeSistemas} onChange={handleChange} placeholder="implantacaodesistemas" />
       <label>implantacaodesistemas</label>
-      <input type="checkbox" name="manutencaopreventivacontratual" value={formData.manutencaopreventivacontratual} onChange={handleChange} placeholder="manutencaopreventivacontratual" />
+      <input type="checkbox" name="manutencaoPreventivaContratual" value={formData.manutencaoPreventivaContratual} onChange={handleChange} placeholder="manutencaoPreventivaContratual" />
       <label>manutencaopreventivacontratual</label><br/>
       <input type="checkbox" name="repprintpoint"           value={formData.repprintpoint} onChange={handleChange} placeholder="repprintpoint" />
       <label>repprintpoint</label>
@@ -127,18 +131,14 @@ function RacForm() {
       <input type="checkbox" name="idflex" value={formData.catracabiopoint} onChange={handleChange} placeholder="catracabiopoint" />
       <label>ID Flex</label>
 
-      <input type="number" name="nserie" value={formData.nserie} onChange={handleChange} placeholder="nserie" required />
+      <input type="number" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="nSerie" required />
       <input type="text" name="localinstalacao" value={formData.localinstalacao} onChange={handleChange} placeholder="localinstalacao" required />
       <input type="text" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleChange} placeholder="observacaoproblemas" required />
       <input type="text" name="componente" value={formData.componente} onChange={handleChange} placeholder="componente" required />
       <input type="number" name="codigocomponente" value={formData.codigocomponente} onChange={handleChange} placeholder="codigocomponente" required />
       <input type="text" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="observacoes" required />
       <button type="submit">Enviar</button><br/>
-      {/* <input type="number" name="valorvisita" value={formData.valorvisita} onChange={handleChange} placeholder="valorvisita" required />
-      <input type="number" name="valorrs" value={formData.valorrs} onChange={handleChange} placeholder="valorrs" required />
-      <input type="number" name="valorpecas" value={formData.valorpecas} onChange={handleChange} placeholder="valorpecas" required />
-      <input type="number" name="valortotal" value={formData.valortotal} onChange={handleChange} placeholder="valortotal" required /> */}
-      
+            
 
     </form>
     </>

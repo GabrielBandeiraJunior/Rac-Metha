@@ -50,7 +50,7 @@ async function createTableIfNotExists(connection) {
       catracaidnext BOOLEAN,
       idface BOOLEAN,
       idflex BOOLEAN,
-      nserie VARCHAR(255) NOT NULL,
+      nSerie VARCHAR(255) NOT NULL,
       localinstalacao VARCHAR(255) NOT NULL,
       observacaoproblemas VARCHAR(255) NOT NULL,
       componente VARCHAR(255) NOT NULL,
@@ -94,6 +94,23 @@ app.post('/racvirtual/register', async (req, res) => {
     console.error("Erro ao salvar dados:", e);
   }
 });
+
+  // Rota para deletar um registro
+  app.delete('/racvirtual/delete/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+      const [result] = await app.locals.db.query('DELETE FROM RacForm WHERE id = ?', [id]);
+      if (result.affectedRows) {
+        res.status(200).json({ message: "Registro deletado com sucesso" });
+      } else {
+        res.status(404).json({ message: "Registro não encontrado" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao deletar o registro" });
+      console.error("Erro ao deletar registro:", error);
+    }
+  });
+
 
 // Inicializar o banco de dados e iniciar o servidor
 initializeDatabase()
