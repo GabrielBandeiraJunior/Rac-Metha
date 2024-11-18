@@ -4,45 +4,32 @@ import { jsPDF } from 'jspdf';
 import Headers from './Components/Headers'
 import axios from 'axios';
 
-
 export default function RacsCadastradas() {
     const [dados, setDados] = useState([]);
     const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const fetchDados = async () => {
-            try {
-                const response = await fetch('http://localhost:3004/api/dados');
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar os dados');
-                }
-                const data = await response.json();
-                console.log(data); // Verifique a estrutura dos dados aqui
-                setDados(data);
-            } catch (err) {
-                setError(err.message);
-            }
-        };
-
-        fetchDados();
-    }, []);
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleString('pt-BR', {
-            timeZone: 'America/Sao_Paulo',
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            hour12: false 
-        });
-    };
-
     const [filter, setFilter] = useState({ date: '', tecnico: '', empresa: '' });
 
+    // Links para o componente Headers
+    const links = [
+        { label: 'Meu Perfil', url: '/perfil' },
+        { label: 'Nova RAC', url: '/rac' },
+        { label: 'Home', url: '/' }
+    ];
+
+    // Buscar dados do servidor
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await axios.get('http://localhost:3004/api/dados');
+                setDados(response.data);
+            } catch (error) {
+                setError('Erro ao buscar dados.');
+            }
+        }
+        fetchData();
+    }, []);
+
+    // Função para filtrar dados
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilter(prev => ({ ...prev, [name]: value }));
@@ -56,10 +43,26 @@ export default function RacsCadastradas() {
         );
     });
 
+    // Função para formatar data
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleString('pt-BR', {
+            timeZone: 'America/Sao_Paulo',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+    };
+
+    // Função para gerar PDF
     const gerarPDF = (item) => {
         const doc = new jsPDF();
-        const yOffset = 10; // Espaçamento vertical inicial
-    
+        const yOffset = 10;
+
         doc.text(`Data de Registro: ${formatDate(item.date)}`, 10, yOffset);
         doc.text(`Técnico: ${item.tecnico}`, 10, yOffset + 10);
         doc.text(`Razão Social: ${item.razaoSocial}`, 10, yOffset + 20);
@@ -67,9 +70,9 @@ export default function RacsCadastradas() {
         doc.text(`Endereço: ${item.endereco}, ${item.numero}`, 10, yOffset + 40);
         doc.text(`Número: ${item.numero}`, 10, yOffset + 50);
         doc.text(`Cidade: ${item.cidade}`, 10, yOffset + 60);
-        doc.text(`Responsável: ${item.cidade}`, 10, yOffset + 70);
+        doc.text(`Responsável: ${item.responsavel}`, 10, yOffset + 70);
         doc.text(`Setor: ${item.setor}`, 10, yOffset + 80);
-        
+
         const servicos = [
             { label: 'Instalação de Equipamentos', value: item.instalacaoDeEquipamentos },
             { label: 'Manutenção de Equipamentos', value: item.manutencaoDeEquipamentos },
@@ -82,25 +85,21 @@ export default function RacsCadastradas() {
             { label: 'Rep Smart', value: item.repsmart },
             { label: 'Relógio Micro Point', value: item.relogiomicropoint },
             { label: 'Relógio Bio Point', value: item.relogiobiopoint },
-            { label: 'ID Face', value: item.catracabiopoint },
-            { label: 'ID Flex', value: item.catracabiopoint },
+            { label: 'ID Face', value: item.idface },
+            { label: 'ID Flex', value: item.idflex },
             { label: 'Catraca Micro Point', value: item.catracamicropoint },
-            { label: 'Catraca Bio Point', value: item.catracabiopoint },
-            { label: 'Catraca Ceros', value: item.catracabiopoint },
-            { label: 'Catraca ID Block', value: item.catracabiopoint },
-            { label: 'Catraca ID Next', value: item.catracabiopoint },
-            
+            { label: 'Catraca Bio Point', value: item.catracabiopoint }
         ];
-    
-        let currentY = yOffset + 90; // Ajuste para onde os serviços começam
-    
+
+        let currentY = yOffset + 90;
+
         servicos.forEach(servico => {
             if (servico.value) {
                 doc.text(`${servico.label}: Sim`, 10, currentY);
-                currentY += 10; // Espaçamento entre serviços
+                currentY += 10;
             }
         });
-    
+
         doc.text(`Nº Série: ${item.nserie}`, 10, currentY);
         currentY += 10;
         doc.text(`Local de Instalação: ${item.localinstalacao}`, 10, currentY);
@@ -112,44 +111,36 @@ export default function RacsCadastradas() {
         doc.text(`Código do Componente: ${item.codigocomponente}`, 10, currentY);
         currentY += 10;
         doc.text(`Observações: ${item.observacoes}`, 10, currentY);
-    
+
         doc.save(`RAC_${item.tecnico}.pdf`);
     };
-    const links = [
-        { label: 'Meu Perfil', url: '/perfil' },
-        { label: 'Nova rac', url: '/rac' },
-        { label: 'Home', url: '/'} 
 
-      ]
+    // Função para deletar um registro
+    const handleDelete = async (id) => {
+        try {
+            await axios.delete(`http://localhost:3004/racvirtual/delete/${id}`);
+            setDados(dados.filter(item => item.id !== id));
+            console.log("Registro deletado com sucesso");
+        } catch (error) {
+            console.error("Erro ao deletar registro:", error);
+        }
+    };
 
-
-      ///////////////////////////
-     
-  useEffect(() => {
-    async function fetchData() {
-      const response = await axios.get('http://localhost:3004/api/dados');
-      setDados(response.data);
-    }
-    fetchData();
-  }, []);
-
-  // Função para deletar um registro pelo ID
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3004/racvirtual/delete/${id}`);
-      setDados(dados.filter(item => item.id !== id)); // Atualiza lista após exclusão
-      console.log("Registro deletado com sucesso");
-    } catch (error) {
-      console.error("Erro ao deletar registro:", error);
-    }
-  };
-
-
-        
+    // Função para editar um registro (Exemplo básico)
+    const editarRac = async (id, updatedData) => {
+        try {
+            const response = await axios.put(`http://localhost:3005/racvirtual/edit/${id}`, updatedData);
+            const updatedRac = response.data;
+            setDados(dados.map(item => item.id === id ? updatedRac : item));
+            console.log("Registro atualizado com sucesso");
+        } catch (error) {
+            console.error("Erro ao editar registro:", error);
+        }
+    };
 
     return (
         <>
-        <Headers links={links}/>
+            <Headers links={links} />
             <h1>Dados do MySQL</h1>
             <div>
                 <input
@@ -176,7 +167,7 @@ export default function RacsCadastradas() {
             </div>
 
             {error && <p style={{ color: 'red' }}>{error}</p>}
-            
+
             <div id="result">
                 {filteredDados.length > 0 ? (
                     filteredDados.map((item) => (
@@ -189,11 +180,12 @@ export default function RacsCadastradas() {
                                 <p><strong>Endereço:</strong> {item.endereco}, {item.numero}</p>
                                 <p><strong>Número:</strong> {item.numero}</p>
                                 <p><strong>Cidade:</strong> {item.cidade}</p>
-                                <p><strong>Responsável:</strong> {item.cidade}</p>
-                                <p><strong>Setor:</strong> {item.setor}</p>   
-                                {/* Condições omitidas para brevidade */}
+                                <p><strong>Responsável:</strong> {item.responsavel}</p>
+                                <p><strong>Setor:</strong> {item.setor}</p>
+
+                                {/* Serviços */}
                                 {item.instalacaoDeEquipamentos && <p><strong>Instalação de Equipamentos</strong></p>}
-                                {item.manutencaoDeEquipamentos && <p><strong>Manutenção de Equipamentos </strong></p>}
+                                {item.manutencaoDeEquipamentos && <p><strong>Manutenção de Equipamentos</strong></p>}
                                 {item.customizacao && <p><strong>Customização</strong></p>}
                                 {item.diagnosticoDeProjetos && <p><strong>Diagnóstico de Projetos</strong></p>}
                                 {item.homologacaoDeInfra && <p><strong>Homologação de Infra</strong></p>}
@@ -206,32 +198,22 @@ export default function RacsCadastradas() {
                                 {item.repsmart && <p><strong>Rep Smart</strong></p>}
                                 {item.relogiomicropoint && <p><strong>Relógio Micro Point</strong></p>}
                                 {item.relogiobiopoint && <p><strong>Relógio Bio Point</strong></p>}
+                                {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
                                 {item.catracamicropoint && <p><strong>Catraca Micro Point</strong></p>}
                                 {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
-                                {item.suporteTi && <p><strong>Suporte TI</strong></p>}
-                            </div>
-                            
-                            <div className='listaitens'>
-                                <p><strong>Nº Série:</strong> {item.nserie}</p>
-                                <p><strong>localinstalacao:</strong> {item.localinstalacao}</p>
-                                <p><strong>observacaoproblemas:</strong> {item.observacaoproblemas}</p>
-                                <p><strong>componente:</strong> {item.componente}</p>
-                                <p><strong>codigocomponente:</strong> {item.codigocomponente}</p>
-                               
-                                <p><strong>observacoes:</strong> {item.observacoes}</p>
-                                
-                                <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
 
-                                <button onClick={() => handleDelete(item.id)}>Excluir</button>
-                  
-                            </div>    
+                                <div className="actions">
+                                    <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
+                                    <button onClick={() => handleDelete(item.id)}>Deletar</button>
+                                    <button onClick={() => editarRac(item.id, { ...item, tecnico: "Novo Técnico" })}>Editar</button>
+                                </div>
+                            </div>
                         </div>
                     ))
                 ) : (
                     <p>Nenhum dado encontrado.</p>
                 )}
             </div>
-            
         </>
     );
 }

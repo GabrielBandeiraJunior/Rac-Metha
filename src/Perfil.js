@@ -22,7 +22,7 @@ const Perfil = () => {
   return (
     <div>
       <Headers links={links} handleLogout={handleLogout} />
-      <h1 id="titulo">Bem-vindo, {user ? user.name : 'Visitante'}!</h1>
+      <h1 id="titulo">Bem-vindo!</h1>
     </div>
   );
 };

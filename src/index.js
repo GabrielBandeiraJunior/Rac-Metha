@@ -3,9 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './auth'; 
 import Home from './Home';
-import Login from './Login.js';
 import Register from './Register.js';
-import Registrar from './PaginaRegistrar.js';
 import Perfil from './Perfil.js'
 import RACForm from './RACForm.js'
 import RacsCadastradas from './RacsCadastradas.js';

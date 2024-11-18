@@ -7,6 +7,10 @@
     font-size: 16px; /* Tamanho da fonte */
     cursor: pointer; /* Muda o cursor ao passar sobre o botão */
     transition: background-color 0.3s, color 0.3s; /* Transições suaves */
+    text-decoration: none;
+    
+
+    
 }
 
 .styled-button:hover {

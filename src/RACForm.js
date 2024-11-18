@@ -77,7 +77,7 @@ function RacForm() {
       <label>Endereço</label>
       <input type="text" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" required />
       <label>Número</label>
-      <input type="number" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número" required />
+      <input type="text" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número" required />
       <label>Responsável</label>
       <input type="text" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Responsável" required />
       <label>Setor</label>
@@ -86,10 +86,10 @@ function RacForm() {
       <input type="text" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade" required />
 
       <label>Hora Início</label>
-      <input type="datetime-local" min="2024-01-01T00:00" max="2999-12-31T23:59" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
+      <input type="datetime-local" min="2024-01-01T00:00" max="2999-12-31T23:59" name="Hora de Início" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
   
       <label>Hora Termino</label>
-      <input type="datetime-local" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término" required />
+      <input type="datetime-local" name="Hora de Término" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término" required />
       <br/>
 
       <input type="checkbox" name="instalacaoDeEquipamentos" value={formData.instalacaoDeEquipamentos} onChange={handleChange} placeholder="Instalação de Equipamentos" />
@@ -97,46 +97,46 @@ function RacForm() {
       <input type="checkbox" name="manutencaoDeEquipamentos" value={formData.manutencaoDeEquipamentos} onChange={handleChange} placeholder="Manutencao de " />
       <label>manutencaodeequipamentos</label>
       <label>diagnosticodeprojetos</label>
-      <input type="checkbox" name="homologacaodeinfra" value={formData.homologacaodeinfra} onChange={handleChange} placeholder="homologacaodeinfra" />
+      <input type="checkbox" name="homologacaodeinfra" value={formData.homologacaodeinfra} onChange={handleChange} placeholder="Homologação de Infra" />
       <label>homologacaodeinfra</label><br/>
 
-      <input type="checkbox" name="treinamentooperacional" value={formData.treinamentooperacional} onChange={handleChange} placeholder="treinamentooperacional" />
+      <input type="checkbox" name="treinamentooperacional" value={formData.treinamentooperacional} onChange={handleChange} placeholder="Treinamento Operacional" />
       <label>treinamentooperacional</label><br/>
-      <input type="checkbox" name="implantacaoDeSistemas"   value={formData.implantacaoDeSistemas} onChange={handleChange} placeholder="implantacaodesistemas" />
+      <input type="checkbox" name="implantacaoDeSistemas"   value={formData.implantacaoDeSistemas} onChange={handleChange} placeholder="Implantação de Sistemas" />
       <label>implantacaodesistemas</label>
-      <input type="checkbox" name="manutencaoPreventivaContratual" value={formData.manutencaoPreventivaContratual} onChange={handleChange} placeholder="manutencaoPreventivaContratual" />
+      <input type="checkbox" name="manutencaoPreventivaContratual" value={formData.manutencaoPreventivaContratual} onChange={handleChange} placeholder="Manutenção Preventiva Contratual" />
       <label>manutencaopreventivacontratual</label><br/>
-      <input type="checkbox" name="repprintpoint"           value={formData.repprintpoint} onChange={handleChange} placeholder="repprintpoint" />
+      <input type="checkbox" name="repprintpoint"           value={formData.repprintpoint} onChange={handleChange} placeholder="REP Print Point" />
       <label>repprintpoint</label>
-      <input type="checkbox" name="repminiprint" value={formData.repminiprint} onChange={handleChange} placeholder="repminiprint" />
+      <input type="checkbox" name="repminiprint" value={formData.repminiprint} onChange={handleChange} placeholder="REP Mini Print" />
       <label>repminiprint</label><br/>
-      <input type="checkbox" name="repsmart" value={formData.repsmart} onChange={handleChange} placeholder="repsmart" />
+      <input type="checkbox" name="repsmart" value={formData.repsmart} onChange={handleChange} placeholder="REP Smart" />
       <label>repsmart</label>
-      <input type="checkbox" name="relogiomicropoint" value={formData.relogiomicropoint} onChange={handleChange} placeholder="relogiomicropoint" />
+      <input type="checkbox" name="relogiomicropoint" value={formData.relogiomicropoint} onChange={handleChange} placeholder="REP Micropoint" />
       <label>relogiomicropoint</label><br/>
-      <input type="checkbox" name="relogiobiopoint" value={formData.relogiobiopoint} onChange={handleChange} placeholder="relogiobiopoint" />
+      <input type="checkbox" name="relogiobiopoint" value={formData.relogiobiopoint} onChange={handleChange} placeholder="REP Biopoint" />
       <label>relogiobiopoint</label>
-      <input type="checkbox" name="catracamicropoint" value={formData.catracamicropoint} onChange={handleChange} placeholder="catracamicropoint" />
+      <input type="checkbox" name="catracamicropoint" value={formData.catracamicropoint} onChange={handleChange} placeholder="Catraca Micropoint" />
       <label>catracamicropoint</label><br/>
-      <input type="checkbox" name="catracabiopoint" value={formData.catracabiopoint} onChange={handleChange} placeholder="catracabiopoint" />
+      <input type="checkbox" name="catracabiopoint" value={formData.catracabiopoint} onChange={handleChange} placeholder="Catraca Biopoint" />
       <label>catracabiopoint</label>
-      <input type="checkbox" name="catracaceros" value={formData.catracaceros} onChange={handleChange} placeholder="catracaceros" />
+      <input type="checkbox" name="catracaceros" value={formData.catracaceros} onChange={handleChange} placeholder="Catraca Ceros" />
       <label>Catraca Ceros</label>
       <input type="checkbox" name="catracaidblock" value={formData.catracaidblock} onChange={handleChange} placeholder="catracaidblock" />
       <label>Catraca ID Block</label>
       <input type="checkbox" name="catracaidnext" value={formData.catracaidnext} onChange={handleChange} placeholder="catracaidnext" />
       <label>Catraca ID Next</label>
-      <input type="checkbox" name="idface" value={formData.catracabiopoint} onChange={handleChange} placeholder="catracabiopoint" />
+      <input type="checkbox" name="idface" value={formData.idface} onChange={handleChange} placeholder="Id Face" />
       <label>ID Face</label>
-      <input type="checkbox" name="idflex" value={formData.catracabiopoint} onChange={handleChange} placeholder="catracabiopoint" />
+      <input type="checkbox" name="idflex" value={formData.idflex} onChange={handleChange} placeholder="Id Flex " />
       <label>ID Flex</label>
 
-      <input type="number" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="nSerie" required />
-      <input type="text" name="localinstalacao" value={formData.localinstalacao} onChange={handleChange} placeholder="localinstalacao" required />
-      <input type="text" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleChange} placeholder="observacaoproblemas" required />
-      <input type="text" name="componente" value={formData.componente} onChange={handleChange} placeholder="componente" required />
-      <input type="number" name="codigocomponente" value={formData.codigocomponente} onChange={handleChange} placeholder="codigocomponente" required />
-      <input type="text" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="observacoes" required />
+      <input type="text" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" required />
+      <input type="text" name="localinstalacao" value={formData.localinstalacao} onChange={handleChange} placeholder="Local de Instalação" required />
+      <input type="text" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleChange} placeholder="Observação dos Problemas" required />
+      <input type="text" name="componente" value={formData.componente} onChange={handleChange} placeholder="Componente" required />
+      <input type="text" name="codigocomponente" value={formData.codigocomponente} onChange={handleChange} placeholder="Código do Componente" required />
+      <input type="text" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações" required />
       <button type="submit">Enviar</button><br/>
             
 
