@@ -1,22 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import './RacsCadastradas.css';
 import { jsPDF } from 'jspdf';
-import Headers from './Components/Headers'
+import Headers from './Components/Headers';
 import axios from 'axios';
+import './EditarRac.js';
 
 export default function RacsCadastradas() {
     const [dados, setDados] = useState([]);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState({ date: '', tecnico: '', empresa: '' });
+    const [editingItem, setEditingItem] = useState(null);  // Para armazenar o item sendo editado
+    const [formData, setFormData] = useState({
+        date: '',
+        tecnico: '',
+        razaoSocial: '',
+        cnpj: '',
+        endereco: '',
+        numero: '',
+        cidade: '',
+        responsavel: '',
+        setor: '',
+        
+    });
 
-    // Links para o componente Headers
     const links = [
         { label: 'Meu Perfil', url: '/perfil' },
         { label: 'Nova RAC', url: '/rac' },
         { label: 'Home', url: '/' }
     ];
 
-    // Buscar dados do servidor
     useEffect(() => {
         async function fetchData() {
             try {
@@ -29,7 +41,6 @@ export default function RacsCadastradas() {
         fetchData();
     }, []);
 
-    // Função para filtrar dados
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilter(prev => ({ ...prev, [name]: value }));
@@ -43,7 +54,6 @@ export default function RacsCadastradas() {
         );
     });
 
-    // Função para formatar data
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleString('pt-BR', {
@@ -58,7 +68,6 @@ export default function RacsCadastradas() {
         });
     };
 
-    // Função para gerar PDF
     const gerarPDF = (item) => {
         const doc = new jsPDF();
         const yOffset = 10;
@@ -115,7 +124,6 @@ export default function RacsCadastradas() {
         doc.save(`RAC_${item.tecnico}.pdf`);
     };
 
-    // Função para deletar um registro
     const handleDelete = async (id) => {
         try {
             await axios.delete(`http://localhost:3004/racvirtual/delete/${id}`);
@@ -126,16 +134,35 @@ export default function RacsCadastradas() {
         }
     };
 
-    // Função para editar um registro (Exemplo básico)
-    const editarRac = async (id, updatedData) => {
+    const handleEditClick = (item) => {
+        setEditingItem(item); // Definindo o item sendo editado
+        setFormData({
+            date: item.date,
+            tecnico: item.tecnico,
+            razaoSocial: item.razaoSocial,
+            cnpj: item.cnpj,
+            endereco: item.endereco,
+            numero: item.numero,
+            cidade: item.cidade,
+            responsavel: item.responsavel,
+            setor: item.setor
+        });
+    };
+
+    const handleSaveEdit = async () => {
         try {
-            const response = await axios.put(`http://localhost:3005/racvirtual/edit/${id}`, updatedData);
-            const updatedRac = response.data;
-            setDados(dados.map(item => item.id === id ? updatedRac : item));
-            console.log("Registro atualizado com sucesso");
+            const response = await axios.put(`http://localhost:3004/racvirtual/edit/${editingItem.id}`, formData);
+            console.log("Dados atualizados com sucesso:", response.data);
+            setDados(dados.map(item => item.id === editingItem.id ? { ...item, ...formData } : item)); // Atualizando os dados na UI
+            setEditingItem(null); // Fechar o modo de edição
         } catch (error) {
-            console.error("Erro ao editar registro:", error);
+            console.error("Erro ao editar RAC:", error);
         }
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     return (
@@ -170,43 +197,76 @@ export default function RacsCadastradas() {
 
             <div id="result">
                 {filteredDados.length > 0 ? (
-                    filteredDados.map((item) => (
-                        <div className="container" key={item.id}>
-                            <div className="listaitens">
-                                <p><strong>Data de Registro:</strong> {formatDate(item.date)}</p>
-                                <h2>{item.tecnico}</h2>
-                                <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
-                                <p><strong>CNPJ:</strong> {item.cnpj}</p>
-                                <p><strong>Endereço:</strong> {item.endereco}, {item.numero}</p>
-                                <p><strong>Número:</strong> {item.numero}</p>
-                                <p><strong>Cidade:</strong> {item.cidade}</p>
-                                <p><strong>Responsável:</strong> {item.responsavel}</p>
-                                <p><strong>Setor:</strong> {item.setor}</p>
-
-                                {/* Serviços */}
-                                {item.instalacaoDeEquipamentos && <p><strong>Instalação de Equipamentos</strong></p>}
-                                {item.manutencaoDeEquipamentos && <p><strong>Manutenção de Equipamentos</strong></p>}
-                                {item.customizacao && <p><strong>Customização</strong></p>}
-                                {item.diagnosticoDeProjetos && <p><strong>Diagnóstico de Projetos</strong></p>}
-                                {item.homologacaoDeInfra && <p><strong>Homologação de Infra</strong></p>}
-                                {item.deslocamento && <p><strong>Deslocamento</strong></p>}
-                                {item.treinamentoOperacional && <p><strong>Treinamento Operacional</strong></p>}
-                                {item.implantacaoDeSistemas && <p><strong>Implantação de Sistemas</strong></p>}
-                                {item.manutencaoPreventivaContratual && <p><strong>Manutenção Preventiva Contratual</strong></p>}
-                                {item.repprintpoint && <p><strong>Rep Print Point</strong></p>}
-                                {item.repminiprint && <p><strong>Rep Mini Print</strong></p>}
-                                {item.repsmart && <p><strong>Rep Smart</strong></p>}
-                                {item.relogiomicropoint && <p><strong>Relógio Micro Point</strong></p>}
-                                {item.relogiobiopoint && <p><strong>Relógio Bio Point</strong></p>}
-                                {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
-                                {item.catracamicropoint && <p><strong>Catraca Micro Point</strong></p>}
-                                {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
-
-                                <div className="actions">
-                                    <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
-                                    <button onClick={() => handleDelete(item.id)}>Deletar</button>
-                                    <button onClick={() => editarRac(item.id, { ...item, tecnico: "Novo Técnico" })}>Editar</button>
-                                </div>
+                    filteredDados.map(item => (
+                        <div key={item.id}>
+                            <div className="result-item">
+                                {editingItem && editingItem.id === item.id ? (
+                                    <div>
+                                        <input
+                                            type="text"
+                                            name="tecnico"
+                                            value={formData.tecnico}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="text"
+                                            name="razaoSocial"
+                                            value={formData.razaoSocial}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="text"
+                                            name="cnpj"
+                                            value={formData.cnpj}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="text"
+                                            name="endereco"
+                                            value={formData.endereco}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="text"
+                                            name="numero"
+                                            value={formData.numero}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="text"
+                                            name="cidade"
+                                            value={formData.cidade}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="text"
+                                            name="responsavel"
+                                            value={formData.responsavel}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="text"
+                                            name="setor"
+                                            value={formData.setor}
+                                            onChange={handleInputChange}
+                                        />
+                                        <button onClick={handleSaveEdit}>Salvar</button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <p><strong>Técnico:</strong> {item.tecnico}</p>
+                                        <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
+                                        <p><strong>CNPJ:</strong> {item.cnpj}</p>
+                                        <p><strong>Endereço:</strong> {item.endereco}</p>
+                                        <p><strong>Número:</strong> {item.numero}</p>
+                                        <p><strong>Cidade:</strong> {item.cidade}</p>
+                                        <p><strong>Responsável:</strong> {item.responsavel}</p>
+                                        <p><strong>Setor:</strong> {item.setor}</p>
+                                        <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
+                                        <button onClick={() => handleDelete(item.id)}>Deletar</button>
+                                        <button onClick={() => handleEditClick(item)}>Editar</button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))
