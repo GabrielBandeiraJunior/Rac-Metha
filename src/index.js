@@ -8,6 +8,7 @@ import Perfil from './Perfil.js'
 import RACForm from './RACForm.js'
 import RacsCadastradas from './RacsCadastradas.js';
 import Autenticacao from './Autenticacao.js';
+import DadosResumidos from './DadosResumidos.js'
 
 const ProtectedRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();
@@ -27,6 +28,8 @@ const RoutesComponent = () => (
         <Route path="/RacsCadastradas" element={<ProtectedRoute element={<RacsCadastradas />} />}/>
         {/* Outras rotas podem ser adicionadas aqui */}
         <Route path="/Autenticacao" element={<Autenticacao />} />
+        <Route path="/DadosResumidos" element={<DadosResumidos />}/>
+
 
       </Routes>
     </BrowserRouter>

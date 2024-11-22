@@ -8,9 +8,6 @@ const db = mysql.createPool({
     user: 'root',
     password: '000000',
     database: 'racvirtual',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
 });
 
 const app = express();

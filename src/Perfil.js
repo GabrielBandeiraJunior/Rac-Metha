@@ -4,7 +4,7 @@ import { useAuth } from './auth';
 import Headers from './Components/Headers.js';
 
 const Perfil = () => {
-  const { logout, user } = useAuth(); // Obtendo o usuário do contexto
+  const { logout } = useAuth(); // Obtendo o usuário do contexto
   const navigate = useNavigate();
 
   const handleLogout = () => {

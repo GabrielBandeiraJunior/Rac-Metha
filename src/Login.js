@@ -10,9 +10,6 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth(); // Desestrutura a função de login do contexto
   
-  const links = [
-    { label: 'Autenticacao', url: '/Autenticacao' }
-  ]
   const handleSubmit = async (e) => {
     e.preventDefault();
 
