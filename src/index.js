@@ -8,7 +8,7 @@ import Perfil from './Perfil.js'
 import RACForm from './RACForm.js'
 import RacsCadastradas from './RacsCadastradas.js';
 import Autenticacao from './Autenticacao.js';
-import DadosResumidos from './DadosResumidos.js'
+
 
 const ProtectedRoute = ({ element }) => {
   const { isAuthenticated } = useAuth();

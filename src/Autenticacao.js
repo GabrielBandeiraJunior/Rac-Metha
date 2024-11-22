@@ -7,7 +7,8 @@ import Headers from './Components/Headers.js'
 export default function Autenticacao() {
     const links = [
         { label: 'Perfil', url: '/perfil' },
-        { label: 'Home', url: '/' }
+        { label: 'Home', url: '/' },
+        { label: 'nova RAC', url: '/novarac'},
       ]
     return (
         <>
@@ -23,8 +24,6 @@ export default function Autenticacao() {
                     <Login />
                 </div>
                 
-
-
             </div>
         </>
     );

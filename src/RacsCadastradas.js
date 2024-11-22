@@ -32,12 +32,11 @@ export default function RacsCadastradas() {
         componente: '',
         codigocomponente: '',
         observacoes: '',
-
     });
     
     const links = [
         { label: 'Meu Perfil', url: '/perfil' },
-        { label: 'Nova RAC', url: '/rac' },
+        { label: 'Nova RAC', url: '/novarac' },
         { label: 'Home', url: '/' }
     ];
 
@@ -75,7 +74,7 @@ export default function RacsCadastradas() {
         } catch (error) {
             console.error("Erro ao editar:", error);
         }
-    };
+    }
 
     const handleDelete = async (id) => {
         try {
@@ -93,13 +92,17 @@ export default function RacsCadastradas() {
         doc.save(`RAC_${item.tecnico}.pdf`);
     };
 
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
     return (
-        
         <div className="racs-container">
-            
             <header>
-            
-                
                 <Headers links={links} />
             </header>
             <h1>RACs Cadastradas</h1>
@@ -154,7 +157,6 @@ export default function RacsCadastradas() {
                                 <p><strong>Código do Componente:</strong> {item.codigocomponente}</p>
                                 <p><strong>Observações:</strong> {item.observacoes}</p>
 
-                                
                                 <button onClick={() => handleEditClick(item)}>Editar</button>
                                 <button onClick={() => handleDelete(item.id)}>Excluir</button>
                                 <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
@@ -163,489 +165,49 @@ export default function RacsCadastradas() {
                     </div>
                 ))}
             </div>
+
             {editingItem && (
-    <div className="edit-form">
-        <h2>Editando RAC</h2>
-        <button onClick={handleSaveEdit}>Salvar</button>
-            <button onClick={() => setEditingItem(null)}>Cancelar</button>
-            <ul>
-            <li><strong>Técnico:</strong> {editingItem.tecnico}</li>
-            <li><strong>Razão Social:</strong> {editingItem.razaoSocial}</li>
-            <li><strong>CNPJ:</strong> {editingItem.cnpj}</li>
-            <li><strong>Endereço:</strong> {editingItem.endereco}</li>
-            <li><strong>Número:</strong> {editingItem.numero}</li>
-            <li><strong>Responsável:</strong> {editingItem.responsavel}</li>
-            <li><strong>Setor:</strong> {editingItem.setor}</li>
-            <li><strong>Cidade:</strong> {editingItem.cidade}</li>
-            <li><strong>Hora de Início:</strong> {editingItem.horaInicio}</li>
-            <li><strong>Hora de Término:</strong> {editingItem.horaTermino}</li>
-            <li><strong>Instalação de Equipamentos:</strong> {editingItem.instalacaoDeEquipamentos ? 'Sim' : 'Não'}</li>
-            <li><strong>Manutenção de Equipamentos:</strong> {editingItem.manutencaoDeEquipamentos ? 'Sim' : 'Não'}</li>
-            <li><strong>Implantação de Sistemas:</strong> {editingItem.implantacaoDeSistemas ? 'Sim' : 'Não'}</li>
-            <li><strong>Manutenção Preventiva Contratual:</strong> {editingItem.manutencaoPreventivaContratual ? 'Sim' : 'Não'}</li>
-            <li><strong>REP Print Point:</strong> {editingItem.repprintpoint ? 'Sim' : 'Não'}</li>
-            <li><strong>REP Mini Print:</strong> {editingItem.repminiprint ? 'Sim' : 'Não'}</li>
-            <li><strong>REP Smart:</strong> {editingItem.repsmart ? 'Sim' : 'Não'}</li>
-            <li><strong>Relógio Micro Point:</strong> {editingItem.relogiomicropoint ? 'Sim' : 'Não'}</li>
-            <li><strong>Relógio Bio Point:</strong> {editingItem.relogiobiopoint ? 'Sim' : 'Não'}</li>
-            <li><strong>Catraca Micro Point:</strong> {editingItem.catracamicropoint ? 'Sim' : 'Não'}</li>
-            <li><strong>Catraca Bio Point:</strong> {editingItem.catracabiopoint ? 'Sim' : 'Não'}</li>
-            <li><strong>Catraca Ceros:</strong> {editingItem.catracaceros ? 'Sim' : 'Não'}</li>
-            <li><strong>Catraca ID Block:</strong> {editingItem.catracaidblock ? 'Sim' : 'Não'}</li>
-            <li><strong>Catraca ID Next:</strong> {editingItem.catracaidnext ? 'Sim' : 'Não'}</li>
-            <li><strong>ID Face:</strong> {editingItem.idface ? 'Sim' : 'Não'}</li>
-            <li><strong>ID Flex:</strong> {editingItem.idflex ? 'Sim' : 'Não'}</li>
-            <li><strong>Número de Série:</strong> {editingItem.nSerie}</li>
-            <li><strong>Local de Instalação:</strong> {editingItem.localinstalacao}</li>
-            <li><strong>Problemas Observados:</strong> {editingItem.observacaoproblemas}</li>
-            <li><strong>Componente:</strong> {editingItem.componente}</li>
-            <li><strong>Código do Componente:</strong> {editingItem.codigocomponente}</li>
-            <li><strong>Observações:</strong> {editingItem.observacoes}</li>
-            
-            </ul>
-            </div>
+                <div className="edit-form">
+                    <h2>Editar RAC</h2>
+                    <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }}>
+                        <input type="text" name="date" value={formData.date} onChange={handleInputChange} />
+                        <input type="text" name="tecnico" value={formData.tecnico} onChange={handleInputChange} />
+                        <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleInputChange} />
+                        <input type="text" name="cnpj" value={formData.cnpj} onChange={handleInputChange} />
+                        <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
+                        <input type="text" name="numero" value={formData.numero} onChange={handleInputChange} />
+                        <input type="text" name="cidade" value={formData.cidade} onChange={handleInputChange} />
+                        <input type="text" name="responsavel" value={formData.responsavel} onChange={handleInputChange} />
+                        <input type="text" name="setor" value={formData.setor} onChange={handleInputChange} />
+                        <input type="text" name="horaInicio" value={formData.horaInicio} onChange={handleInputChange} />
+                        <input type="text" name="horaTermino" value={formData.horaTermino} onChange={handleInputChange} />
+                        <input type="checkbox" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleInputChange} />
+                        <input type="checkbox" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleInputChange} />
+                        <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
+                        <input type="checkbox" name="repprintpoint" checked={formData.repprintpoint} onChange={handleInputChange} />
+                        <input type="checkbox" name="repminiprint" checked={formData.repminiprint} onChange={handleInputChange} />
+                        <input type="checkbox" name="repprintpoint" checked={formData.repprintpoint} onChange={handleInputChange} />
+                        <input type="checkbox" name="repminiprint" checked={formData.repminiprint} onChange={handleInputChange} />
+                        <input type="checkbox" name="repsmart" checked={formData.repsmart} onChange={handleInputChange} />
+                        <input type="checkbox" name="relogiomicropoint" checked={formData.relogiomicropoint} onChange={handleInputChange} />
+                        <input type="checkbox" name="relogiobiopoint" checked={formData.relogiobiopoint} onChange={handleInputChange} />
+                        <input type="checkbox" name="catracamicropoint" checked={formData.catracamicropoint} onChange={handleInputChange} />
+                        <input type="checkbox" name="catracabiopoint" checked={formData.catracabiopoint} onChange={handleInputChange} />
+                        <input type="checkbox" name="catracaceros" checked={formData.catracaceros} onChange={handleInputChange} />
+                        <input type="checkbox" name="catracaidblock" checked={formData.catracaidblock} onChange={handleInputChange} />
+                        <input type="checkbox" name="catracaidnext" checked={formData.catracaidnext} onChange={handleInputChange} />
+                        <input type="checkbox" name="idface" checked={formData.idface} onChange={handleInputChange} />
+                        <input type="checkbox" name="idflex" checked={formData.idflex} onChange={handleInputChange} />
+                        <input type="text" name="nSerie" checked={formData.nSerie} onChange={handleInputChange} />
+                        <input type="text" name="localinstalacao" checked={formData.localinstalacao} onChange={handleInputChange} />
+                        <input type="text" name="observacaoproblemas" checked={formData.observacaoproblemas} onChange={handleInputChange} />
+                        <input type="text" name="componente" checked={formData.componente} onChange={handleInputChange} />
+                        <input type="text" name="codigocomponente" checked={formData.codigocomponente} onChange={handleInputChange} />
+                        <input type="text" name="observacoes" checked={formData.observacoes} onChange={handleInputChange} />
+                        <button type="submit">Salvar</button>
+                    </form>
+                </div>
             )}
         </div>
-    );
+    )
 }
-
-
-
-//     useEffect(() => {
-//         async function fetchData() {
-//             try {
-//                 const response = await axios.get('http://localhost:3004/api/dados');
-//                 setDados(response.data);
-//             } catch (error) {
-//                 setError('Erro ao buscar dados.');
-//             }
-//         }
-//         fetchData();
-//     }, []);
-    
-//     const handleFilterChange = (e) => {
-//         const { name, value } = e.target;
-//         setFilter(prev => ({ ...prev, [name]: value }));
-//     };
-
-//     const filteredDados = dados.filter(item => {
-//         return (
-//             (filter.date === '' || item.date.includes(filter.date)) &&
-//             (filter.tecnico === '' || item.tecnico.toLowerCase().includes(filter.tecnico.toLowerCase())) &&
-//             (filter.empresa === '' || item.razaoSocial.toLowerCase().includes(filter.empresa.toLowerCase()))
-//         );
-//     });
-
-//     const formatDate = (dateString) => {
-//         const date = new Date(dateString);
-//         return date.toLocaleString('pt-BR', {
-//             timeZone: 'America/Sao_Paulo',
-//             day: '2-digit',
-//             month: '2-digit',
-//             year: 'numeric',
-//             hour: '2-digit',
-//             minute: '2-digit',
-//             second: '2-digit',
-//             hour12: false
-//         });
-//     };
-
-//     const gerarPDF = (item) => {
-//         const doc = new jsPDF();
-//         const yOffset = 10;
-
-//         doc.text(`Data de Registro: ${formatDate(item.date)}`, 10, yOffset);
-//         doc.text(`Técnico: ${item.tecnico}`, 10, yOffset + 10);
-//         doc.text(`Razão Social: ${item.razaoSocial}`, 10, yOffset + 20);
-//         doc.text(`CNPJ: ${item.cnpj}`, 10, yOffset + 30);
-//         doc.text(`Endereço: ${item.endereco}, ${item.numero}`, 10, yOffset + 40);
-//         doc.text(`Número: ${item.numero}`, 10, yOffset + 50);
-//         doc.text(`Cidade: ${item.cidade}`, 10, yOffset + 60);
-//         doc.text(`Responsável: ${item.responsavel}`, 10, yOffset + 70);
-//         doc.text(`Setor: ${item.setor}`, 10, yOffset + 80);
-
-//         const servicos = [
-//             { label: 'Instalação de Equipamentos', value: item.instalacaoDeEquipamentos },
-//             { label: 'Manutenção de Equipamentos', value: item.manutencaoDeEquipamentos },
-//             { label: 'Homologação de Infra', value: item.homologacaoDeInfra },
-//             { label: 'Treinamento Operacional', value: item.treinamentoOperacional },
-//             { label: 'Implantação de Sistemas', value: item.implantacaoDeSistemas },
-//             { label: 'Manutenção Preventiva Contratual', value: item.manutencaoPreventivaContratual },
-//             { label: 'Rep Print Point', value: item.repprintpoint },
-//             { label: 'Rep Mini Print', value: item.repminiprint },
-//             { label: 'Rep Smart', value: item.repsmart },
-//             { label: 'Relógio Micro Point', value: item.relogiomicropoint },
-//             { label: 'Relógio Bio Point', value: item.relogiobiopoint },
-//             { label: 'ID Face', value: item.idface },
-//             { label: 'ID Flex', value: item.idflex },
-//             { label: 'Catraca Micro Point', value: item.catracamicropoint },
-//             { label: 'Catraca Bio Point', value: item.catracabiopoint }
-//         ];
-
-//         let currentY = yOffset + 90;
-
-//         servicos.forEach(servico => {
-//             if (servico.value) {
-//                 doc.text(`${servico.label}: Sim`, 10, currentY);
-//                 currentY += 10;
-//             }
-//         });
-
-//         doc.text(`Nº Série: ${item.nserie}`, 10, currentY);
-//         currentY += 10;
-//         doc.text(`Local de Instalação: ${item.localinstalacao}`, 10, currentY);
-//         currentY += 10;
-//         doc.text(`Observações de Problemas: ${item.observacaoproblemas}`, 10, currentY);
-//         currentY += 10;
-//         doc.text(`Componente: ${item.componente}`, 10, currentY);
-//         currentY += 10;
-//         doc.text(`Código do Componente: ${item.codigocomponente}`, 10, currentY);
-//         currentY += 10;
-//         doc.text(`Observações: ${item.observacoes}`, 10, currentY);
-
-//         doc.save(`RAC_${item.tecnico}.pdf`);
-//     };
-
-//     const handleDelete = async (id) => {
-//         try {
-//             await axios.delete(`http://localhost:3004/racvirtual/delete/${id}`);
-//             setDados(dados.filter(item => item.id !== id));
-//             console.log("Registro deletado com sucesso");
-//         } catch (error) {
-//             console.error("Erro ao deletar registro:", error);
-//         }
-//     };
-
-//     const handleEditClick = (item) => {
-//         setEditingItem(item); // Definindo o item sendo editado
-//         setFormData({
-//             date: item.date,
-//             tecnico: item.tecnico,
-//             razaoSocial: item.razaoSocial,
-//             cnpj: item.cnpj,
-//             endereco: item.endereco,
-//             numero: item.numero,
-//             cidade: item.cidade,
-//             responsavel: item.responsavel,
-//             setor: item.setor,
-//             horaInicio: item.horaInicio,
-//             horaTermino: item.horaTermino,
-//             instalacaoDeEquipamentos:item.instalacaoDeEquipamentos,
-//             manutencaoDeEquipamentos:item.manutencaoDeEquipamentos,
-//             implantacaoDeSistemas:item.implantacaoDeSistemas,
-//             manutencaoPreventivaContratual:item.manutencaoPreventivaContratual,
-//             repprintpoint:item.repprintpoint,
-//             repminiprint:item.repminiprint,
-//             repsmart:item.repsmart,
-//             relogiomicropoint:item.relogiomicropoint,   
-//             relogiobiopoint:item.Biopoint,
-//             catracamicropoint:item.catracamicropoint,
-//             catracabiopoint:item.catracabiopoint,
-//             catracaceros:item.catracaceros,
-//             catracaidblock:item.catracaidblock,
-//             catracaidnext:item.catracaidnext,
-//             idface:item.idface,
-//             idflex:item.idflex,
-//             nSerie: item.nSerie,
-//             localinstalacao: item.localinstalacao,
-//             observacaoproblemas: item.observacaoproblemas,
-//             componente: item.componente,
-//             codigocomponente: item.codigocomponente,
-//             observacoes: item.observacoes,
-            
-//         });
-//     };
-
-//     const handleSaveEdit = async () => {
-//         try {
-//             const response = await axios.put(`http://localhost:3006/racvirtual/edit/${editingItem.id}`, formData);
-//             console.log("Dados atualizados com sucesso:", response.data);
-//             setDados(dados.map(item => item.id === editingItem.id ? { ...item, ...formData } : item)); // Atualizando os dados na UI
-//             setEditingItem(null); // Fechar o modo de edição
-//         } catch (error) {
-//             console.error("Erro ao editar RAC:", error);
-//         }
-//     };
-
-//     const handleInputChange = (e) => {
-//         const { name, value } = e.target;
-//         setFormData(prev => ({ ...prev, [name]: value }));
-//     };
-
-//     const DadosResumidos = () => {
-//         const [data, setData] = useState([]);
-//         const [expandedId, setExpandedId] = useState(null);
-      
-//         // Buscar dados do backend
-//         useEffect(() => {
-//           axios.get('http://localhost:3005/api/rac')
-//             .then(response => setData(response.data))
-//             .catch(error => console.error('Erro ao buscar dados:', error));
-//         }, []);
-      
-//         // Alternar expansão dos detalhes
-//         const toggleExpand = (id) => {
-//           setExpandedId(expandedId === id ? null : id);
-//         };
-
-//     return (
-//         <>
-//             <Headers links={links} />
-//             <h1>Dados do MySQL</h1>
-//             <div>
-//                 <label>Data</label>
-                
-//                 <input
-//                     type="date"
-//                     name="date"
-//                     placeholder="Data"
-//                     value={filter.date}
-//                     onChange={handleFilterChange}
-//                 />
-                
-//                 <input
-//                     type="text"
-//                     name="tecnico"
-//                     placeholder="Técnico"
-//                     value={filter.tecnico}
-//                     onChange={handleFilterChange}
-//                 />
-//                 <input
-//                     type="text"
-//                     name="empresa"
-//                     placeholder="Empresa"
-//                     value={filter.empresa}
-//                     onChange={handleFilterChange}
-//                 />
-//             </div>
-
-//             {error && <p style={{ color: 'red' }}>{error}</p>}
-
-//             <div id="result">
-//                 {filteredDados.length > 0 ? (
-//                     filteredDados.map(item => (
-//                         <div key={item.id}>
-//                             <div className="result-item">
-//                                 {editingItem && editingItem.id === item.id ? (
-//                                     <div>
-//                                         <label>Tecnico</label>
-//                                         
-//                                         <label>Razão Social</label>
-//                                         
-//                                         <label>CNPJ</label>
-//                                         
-//                                         <label>Endereço</label>
-//                                         
-//                                         <label>Número</label>
-//                                         
-//                                         <label>Cidade</label>
-//                                         <input
-//                                             type="text"
-//                                             name="cidade"
-//                                             value={formData.cidade}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Responsavel</label>
-//                                         <input
-//                                             type="text"
-//                                             name="responsavel"
-//                                             value={formData.responsavel}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Setor</label>
-//                                         <input
-//                                             type="text"
-//                                             name="setor"
-//                                             value={formData.setor}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Hora de Início</label>
-//                                         <input
-//                                             type="text"
-//                                             name="horaInicio"
-//                                             value={formData.horaInicio}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Hora de Término</label>
-//                                         <input
-//                                             type="text"
-//                                             name="horaTermino"
-//                                             value={formData.horaTermino}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <input
-//                                             type="checkbox"
-//                                             name="instalacaoDeEquipamentos"
-//                                             value={formData.instalacaoDeEquipamentos}
-//                                             onChange={handleInputChange}
-//                                         /><label>Instalação de Equipamentos</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="manutencaoDeEquipamentos"
-//                                             value={formData.manutencaoDeEquipamentos}
-//                                             onChange={handleInputChange}
-//                                         /><label>Manutenção de Equipamentos</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="implantacaoDeSistemas"
-//                                             value={formData.implantacaoDeSistemas}
-//                                             onChange={handleInputChange}
-//                                         /><label>Implantação de Sistemas</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="manutencaoPreventivaContratual"
-//                                             value={formData.manutencaoPreventivaContratual}
-//                                             onChange={handleInputChange}
-//                                         /><label>Manutenção Preventiva Contratual</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="repprintpoint"
-//                                             value={formData.repprintpoint}
-//                                             onChange={handleInputChange}
-//                                         /><label>Rep PrintPoint</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="repminiprint"
-//                                             value={formData.repminiprint}
-//                                             onChange={handleInputChange}
-//                                         /><label>Rep MiniPrint</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="repsmart"
-//                                             value={formData.repsmart}
-//                                             onChange={handleInputChange}
-//                                         /><label>Rep Smart</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="relogiomicropoint"
-//                                             value={formData.relogiomicropoint}
-//                                             onChange={handleInputChange}
-//                                         /><label>Relogio Micropoint</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="relogiobiopoint"
-//                                             value={formData.relogiobiopoint}
-//                                             onChange={handleInputChange}
-//                                         /><label>Relogio Biopoint</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="catracamicropoint"
-//                                             value={formData.catracamicropoint}
-//                                             onChange={handleInputChange}
-//                                         /><label>Catraca Micropoint</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="catracabiopoint"
-//                                             value={formData.catracabiopoint}
-//                                             onChange={handleInputChange}
-//                                         /><label>Catraca Biopoint</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="catracaceros"
-//                                             value={formData.catracaceros}
-//                                             onChange={handleInputChange}
-//                                         /><label>Catraca Ceros</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="catracaidblock"
-//                                             value={formData.catracaidblock}
-//                                             onChange={handleInputChange}
-//                                         /><label>Catraca idBlock</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="catracaidnext"
-//                                             value={formData.catracaidnext}
-//                                             onChange={handleInputChange}
-//                                         /><label>Catraca IdNext</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="idface"
-//                                             value={formData.idface}
-//                                             onChange={handleInputChange}
-//                                         /><label>IdFace</label>
-                                        
-//                                         <input
-//                                             type="checkbox"
-//                                             name="idflex"
-//                                             value={formData.idflex}
-//                                             onChange={handleInputChange}
-//                                         /><label>IdFlex</label>
-
-//                                         <label>Número de Série</label>
-//                                         <input
-//                                             type="text"
-//                                             name="nSerie"
-//                                             value={formData.nSerie}
-//                                             onChange={handleInputChange}
-//                                         />
-                                        
-//                                         <label>Local da Instalação</label>
-//                                         <input
-//                                             type="text"
-//                                             name="localinstalacao"
-//                                             value={formData.localinstalacao}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Observação dos Problemas</label>
-//                                         <input
-//                                             type="text"
-//                                             name="observacaoproblemas"
-//                                             value={formData.observacaoproblemas}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Componente</label>
-//                                         <input
-//                                             type="text"
-//                                             name="componente"
-//                                             value={formData.componente}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Código do Componente</label>
-//                                         <input
-//                                             type="text"
-//                                             name="codigocomponente"
-//                                             value={formData.codigocomponente}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <label>Observações</label>
-//                                         <input
-//                                             type="text"
-//                                             name="observacoes"
-//                                             value={formData.observacoes}
-//                                             onChange={handleInputChange}
-//                                         />
-//                                         <button onClick={handleSaveEdit}>Salvar</button>
-//                                     </div>
-//                                 ) : (
-//                                     <div>
-//                                         <p><strong>Técnico:</strong> {item.tecnico}</p>
-//                                         
-//                                         <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
-//                                         <button onClick={() => handleDelete(item.id)}>Deletar</button>
-//                                         <button onClick={() => handleEditClick(item.id)}>Editar</button>
-//                                     </div>
-//                                 )}
-//                             </div>
-//                         </div>
-//                     ))
-//                 ) : (
-//                     <p>Nenhum dado encontrado.</p>
-//                 )}
-//             </div>
-//         </>
-//     );
-// }
