@@ -86,10 +86,11 @@ function RacForm() {
       <input type="text" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade" required />
 
       <label>Hora Início</label>
-      <input type="datetime-local" min="2024-01-01T00:00" max="2999-12-31T23:59" name="Hora de Início" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" required />
+      <input type="datetime-local" min="2024-01-01T00:00" max="2999-12-31T23:59" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início"  />
   
       <label>Hora Termino</label>
-      <input type="datetime-local" name="Hora de Término" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término" required />
+      <input type="datetime-local" min="2024-01-01T00:00" max="2999-12-31T23:59" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término"  />
+      
       <br/>
 
       <input type="checkbox" name="instalacaoDeEquipamentos" value={formData.instalacaoDeEquipamentos} onChange={handleChange} placeholder="Instalação de Equipamentos" />
@@ -102,11 +103,11 @@ function RacForm() {
 
       <input type="checkbox" name="treinamentooperacional" value={formData.treinamentooperacional} onChange={handleChange} placeholder="Treinamento Operacional" />
       <label>treinamentooperacional</label><br/>
-      <input type="checkbox" name="implantacaoDeSistemas"   value={formData.implantacaoDeSistemas} onChange={handleChange} placeholder="Implantação de Sistemas" />
+      <input type="checkbox" name="implantacaoDeSistemas" value={formData.implantacaoDeSistemas} onChange={handleChange} placeholder="Implantação de Sistemas" />
       <label>implantacaodesistemas</label>
       <input type="checkbox" name="manutencaoPreventivaContratual" value={formData.manutencaoPreventivaContratual} onChange={handleChange} placeholder="Manutenção Preventiva Contratual" />
       <label>manutencaopreventivacontratual</label><br/>
-      <input type="checkbox" name="repprintpoint"           value={formData.repprintpoint} onChange={handleChange} placeholder="REP Print Point" />
+      <input type="checkbox" name="repprintpoint"  value={formData.repprintpoint} onChange={handleChange} placeholder="REP Print Point" />
       <label>repprintpoint</label>
       <input type="checkbox" name="repminiprint" value={formData.repminiprint} onChange={handleChange} placeholder="REP Mini Print" />
       <label>repminiprint</label><br/>
@@ -131,14 +132,19 @@ function RacForm() {
       <input type="checkbox" name="idflex" value={formData.idflex} onChange={handleChange} placeholder="Id Flex " />
       <label>ID Flex</label>
 
+      <label>Número de Série</label>
       <input type="text" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" required />
+      <label>Local de Instalação</label>
       <input type="text" name="localinstalacao" value={formData.localinstalacao} onChange={handleChange} placeholder="Local de Instalação" required />
+      <label>Observação do Problema</label>
       <input type="text" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleChange} placeholder="Observação dos Problemas" required />
+      <label>Componente</label>
       <input type="text" name="componente" value={formData.componente} onChange={handleChange} placeholder="Componente" required />
+      <label>Código de Componente</label>
       <input type="text" name="codigocomponente" value={formData.codigocomponente} onChange={handleChange} placeholder="Código do Componente" required />
+      <label>Observações</label>
       <input type="text" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações" required />
       <button type="submit">Enviar</button><br/>
-            
 
     </form>
     </>

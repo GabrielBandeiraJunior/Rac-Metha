@@ -67,7 +67,9 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     }
 
     // Formata a data para o formato correto (YYYY-MM-DD HH:mm:ss)
-    const formattedDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
+    const formattedDate = new Date(date).toISOString().slice(0, 19).replace('T', ' '); // Formato 'YYYY-MM-DD HH:MM:SS'
+    const formattedHoraInicio = new Date('2024-01-01T20:20').toISOString().slice(0, 19).replace('T', ' ');
+    const formattedHoraTermino = new Date('2024-02-01T20:24').toISOString().slice(0, 19).replace('T', ' ');
 
     const updateQuery = `
     UPDATE racform
@@ -81,25 +83,28 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     WHERE id = ?
 `;
 
-    const values = [
-        tecnico, razaoSocial, cnpj, endereco, numero, responsavel, setor, cidade, horaInicio, horaTermino,
-        instalacaoDeEquipamentos, manutencaoDeEquipamentos, homologacaoDeInfra, treinamentoOperacional, 
-        implantacaoDeSistemas, manutencaoPreventivaContratual, repprintpoint, repminiprint, repsmart, 
-        relogiomicropoint, relogiobiopoint, catracamicropoint, catracabiopoint, catracaceros, catracaidblock, 
-        catracaidnext, idface, idflex, nSerie, localinstalacao, observacaoproblemas, componente, codigocomponente, 
-        observacoes, formattedDate, id
-    ];
+const values = [
+    tecnico || null, razaoSocial || null, cnpj || null, endereco || null, numero || null, responsavel || null, 
+    setor || null, cidade || null, formattedHoraInicio || null, formattedHoraTermino || null,
+    instalacaoDeEquipamentos || null, manutencaoDeEquipamentos || null, implantacaoDeSistemas || null, 
+    manutencaoPreventivaContratual || null, repprintpoint || null, repminiprint || null, repsmart || null, 
+    relogiomicropoint || null, catracamicropoint || null, catracabiopoint || null, catracaceros || null, 
+    catracaidblock || null, catracaidnext || null, idface || null, idflex || null, nSerie || null, 
+    localinstalacao || null, observacaoproblemas || null, componente || null, codigocomponente || null, 
+    observacoes || null, formattedDate || null, id
+];
 
     try {
-        // Executa a query de atualização
-        const [result] = await db.execute(updateQuery, values);
-
-        // Verifica se a atualização foi bem-sucedida
+        
+        const [result] = await connection.execute(
+            'UPDATE racvirtual SET date = ?, tecnico = ?, razaoSocial = ?, cnpj = ?, endereco = ?, numero = ?, cidade = ?, responsavel = ?, setor = ?, horaInicio = ?, horaTermino = ?, instalacaoDeEquipamentos = ?, manutencaoDeEquipamentos = ?, implantacaoDeSistemas = ?, manutencaoPreventivaContratual = ?, repprintpoint = ?, repminiprint = ?, repsmart = ?, relogiomicropoint = ?, catracamicropoint = ?, catracabiopoint = ?, catracaceros = ?, catracaidblock = ?, catracaidnext = ?, idface = ?, idflex = ?, nSerie = ?, localinstalacao = ?, observacaoproblemas = ?, componente = ?, codigocomponente = ?, observacoes = ? WHERE id = ?',
+            [data.date, data.tecnico, data.razaoSocial, data.cnpj, data.endereco, data.numero, data.cidade, data.responsavel, data.setor, data.horaInicio, data.horaTermino, data.instalacaoDeEquipamentos, data.manutencaoDeEquipamentos, data.implantacaoDeSistemas, data.manutencaoPreventivaContratual, data.repprintpoint, data.repminiprint, data.repsmart, data.relogiomicropoint, data.catracamicropoint, data.catracabiopoint, data.catracaceros, data.catracaidblock, data.catracaidnext, data.idface, data.idflex, data.nSerie, data.localinstalacao, data.observacaoproblemas, data.componente, data.codigocomponente, data.observacoes, data.id]
+          );
+        
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'RAC não encontrada' });
         }
 
-        // Retorna sucesso
         res.status(200).json({ message: 'RAC editada com sucesso' });
     } catch (error) {
         console.error('Erro ao editar RAC:', error.message, error.stack);
@@ -107,7 +112,6 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     }
 });
 
-// Inicia o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });

@@ -122,3 +122,5 @@ initializeDatabase()
   .catch(error => {
     console.error('Erro ao conectar ao banco de dados MySQL:', error);
   });
+
+

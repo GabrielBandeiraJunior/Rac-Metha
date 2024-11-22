@@ -20,6 +20,30 @@ export default function RacsCadastradas() {
         cidade: '',
         responsavel: '',
         setor: '',
+        horaInicio: '',
+        horaTermino: '',
+        instalacaoDeEquipamentos: false,
+        manutencaoDeEquipamentos: false,
+        implantacaoDeSistemas: false,
+        manutencaoPreventivaContratual: false,
+        repprintpoint: false,
+        repminiprint: false,
+        repsmart: false,
+        relogiomicropoint: false,
+        relogiobiopoint: false,
+        catracamicropoint: false,
+        catracabiopoint: false,
+        catracaceros: false,
+        catracaidblock: false,
+        catracaidnext: false,
+        idface: false,
+        idflex: false,
+        nSerie: '',
+        localinstalacao: '',
+        observacaoproblemas: '',
+        componente: '',
+        codigocomponente: '',
+        observacoes: '',
         
     });
 
@@ -40,7 +64,7 @@ export default function RacsCadastradas() {
         }
         fetchData();
     }, []);
-
+    
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilter(prev => ({ ...prev, [name]: value }));
@@ -145,13 +169,38 @@ export default function RacsCadastradas() {
             numero: item.numero,
             cidade: item.cidade,
             responsavel: item.responsavel,
-            setor: item.setor
+            setor: item.setor,
+            horaInicio: item.horaInicio,
+            horaTermino: item.horaTermino,
+            instalacaoDeEquipamentos:item.instalacaoDeEquipamentos,
+            manutencaoDeEquipamentos:item.manutencaoDeEquipamentos,
+            implantacaoDeSistemas:item.implantacaoDeSistemas,
+            manutencaoPreventivaContratual:item.manutencaoPreventivaContratual,
+            repprintpoint:item.repprintpoint,
+            repminiprint:item.repminiprint,
+            repsmart:item.repsmart,
+            relogiomicropoint:item.relogiomicropoint,   
+            relogiobiopoint:item.Biopoint,
+            catracamicropoint:item.catracamicropoint,
+            catracabiopoint:item.catracabiopoint,
+            catracaceros:item.catracaceros,
+            catracaidblock:item.catracaidblock,
+            catracaidnext:item.catracaidnext,
+            idface:item.idface,
+            idflex:item.idflex,
+            nSerie: item.nSerie,
+            localinstalacao: item.localinstalacao,
+            observacaoproblemas: item.observacaoproblemas,
+            componente: item.componente,
+            codigocomponente: item.codigocomponente,
+            observacoes: item.observacoes,
+            
         });
     };
 
     const handleSaveEdit = async () => {
         try {
-            const response = await axios.put(`http://localhost:3004/racvirtual/edit/${editingItem.id}`, formData);
+            const response = await axios.put(`http://localhost:3006/racvirtual/edit/${editingItem.id}`, formData);
             console.log("Dados atualizados com sucesso:", response.data);
             setDados(dados.map(item => item.id === editingItem.id ? { ...item, ...formData } : item)); // Atualizando os dados na UI
             setEditingItem(null); // Fechar o modo de edição
@@ -170,6 +219,8 @@ export default function RacsCadastradas() {
             <Headers links={links} />
             <h1>Dados do MySQL</h1>
             <div>
+                <label>Data</label>
+                
                 <input
                     type="date"
                     name="date"
@@ -177,6 +228,7 @@ export default function RacsCadastradas() {
                     value={filter.date}
                     onChange={handleFilterChange}
                 />
+                
                 <input
                     type="text"
                     name="tecnico"
@@ -202,52 +254,229 @@ export default function RacsCadastradas() {
                             <div className="result-item">
                                 {editingItem && editingItem.id === item.id ? (
                                     <div>
+                                        <label>Tecnico</label>
                                         <input
                                             type="text"
                                             name="tecnico"
                                             value={formData.tecnico}
                                             onChange={handleInputChange}
                                         />
+                                        <label>Razão Social</label>
                                         <input
                                             type="text"
                                             name="razaoSocial"
                                             value={formData.razaoSocial}
                                             onChange={handleInputChange}
                                         />
+                                        <label>CNPJ</label>
                                         <input
                                             type="text"
                                             name="cnpj"
                                             value={formData.cnpj}
                                             onChange={handleInputChange}
                                         />
+                                        <label>Endereço</label>
                                         <input
                                             type="text"
                                             name="endereco"
                                             value={formData.endereco}
                                             onChange={handleInputChange}
                                         />
+                                        <label>Número</label>
                                         <input
                                             type="text"
                                             name="numero"
                                             value={formData.numero}
                                             onChange={handleInputChange}
                                         />
+                                        <label>Cidade</label>
                                         <input
                                             type="text"
                                             name="cidade"
                                             value={formData.cidade}
                                             onChange={handleInputChange}
                                         />
+                                        <label>Responsavel</label>
                                         <input
                                             type="text"
                                             name="responsavel"
                                             value={formData.responsavel}
                                             onChange={handleInputChange}
                                         />
+                                        <label>Setor</label>
                                         <input
                                             type="text"
                                             name="setor"
                                             value={formData.setor}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label>Hora de Início</label>
+                                        <input
+                                            type="text"
+                                            name="horaInicio"
+                                            value={formData.horaInicio}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label>Hora de Término</label>
+                                        <input
+                                            type="text"
+                                            name="horaTermino"
+                                            value={formData.horaTermino}
+                                            onChange={handleInputChange}
+                                        />
+                                        <input
+                                            type="checkbox"
+                                            name="instalacaoDeEquipamentos"
+                                            value={formData.instalacaoDeEquipamentos}
+                                            onChange={handleInputChange}
+                                        /><label>Instalação de Equipamentos</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="manutencaoDeEquipamentos"
+                                            value={formData.manutencaoDeEquipamentos}
+                                            onChange={handleInputChange}
+                                        /><label>Manutenção de Equipamentos</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="implantacaoDeSistemas"
+                                            value={formData.implantacaoDeSistemas}
+                                            onChange={handleInputChange}
+                                        /><label>Implantação de Sistemas</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="manutencaoPreventivaContratual"
+                                            value={formData.manutencaoPreventivaContratual}
+                                            onChange={handleInputChange}
+                                        /><label>Manutenção Preventiva Contratual</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="repprintpoint"
+                                            value={formData.repprintpoint}
+                                            onChange={handleInputChange}
+                                        /><label>Rep PrintPoint</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="repminiprint"
+                                            value={formData.repminiprint}
+                                            onChange={handleInputChange}
+                                        /><label>Rep MiniPrint</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="repsmart"
+                                            value={formData.repsmart}
+                                            onChange={handleInputChange}
+                                        /><label>Rep Smart</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="relogiomicropoint"
+                                            value={formData.relogiomicropoint}
+                                            onChange={handleInputChange}
+                                        /><label>Relogio Micropoint</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="relogiobiopoint"
+                                            value={formData.relogiobiopoint}
+                                            onChange={handleInputChange}
+                                        /><label>Relogio Biopoint</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="catracamicropoint"
+                                            value={formData.catracamicropoint}
+                                            onChange={handleInputChange}
+                                        /><label>Catraca Micropoint</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="catracabiopoint"
+                                            value={formData.catracabiopoint}
+                                            onChange={handleInputChange}
+                                        /><label>Catraca Biopoint</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="catracaceros"
+                                            value={formData.catracaceros}
+                                            onChange={handleInputChange}
+                                        /><label>Catraca Ceros</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="catracaidblock"
+                                            value={formData.catracaidblock}
+                                            onChange={handleInputChange}
+                                        /><label>Catraca idBlock</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="catracaidnext"
+                                            value={formData.catracaidnext}
+                                            onChange={handleInputChange}
+                                        /><label>Catraca IdNext</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="idface"
+                                            value={formData.idface}
+                                            onChange={handleInputChange}
+                                        /><label>IdFace</label>
+                                        
+                                        <input
+                                            type="checkbox"
+                                            name="idflex"
+                                            value={formData.idflex}
+                                            onChange={handleInputChange}
+                                        /><label>IdFlex</label>
+
+                                        <label>Número de Série</label>
+                                        <input
+                                            type="text"
+                                            name="nSerie"
+                                            value={formData.nSerie}
+                                            onChange={handleInputChange}
+                                        />
+                                        
+                                        <label>Local da Instalação</label>
+                                        <input
+                                            type="text"
+                                            name="localinstalacao"
+                                            value={formData.localinstalacao}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label>Observação dos Problemas</label>
+                                        <input
+                                            type="text"
+                                            name="observacaoproblemas"
+                                            value={formData.observacaoproblemas}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label>Componente</label>
+                                        <input
+                                            type="text"
+                                            name="componente"
+                                            value={formData.componente}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label>Código do Componente</label>
+                                        <input
+                                            type="text"
+                                            name="codigocomponente"
+                                            value={formData.codigocomponente}
+                                            onChange={handleInputChange}
+                                        />
+                                        <label>Observações</label>
+                                        <input
+                                            type="text"
+                                            name="observacoes"
+                                            value={formData.observacoes}
                                             onChange={handleInputChange}
                                         />
                                         <button onClick={handleSaveEdit}>Salvar</button>
@@ -262,9 +491,33 @@ export default function RacsCadastradas() {
                                         <p><strong>Cidade:</strong> {item.cidade}</p>
                                         <p><strong>Responsável:</strong> {item.responsavel}</p>
                                         <p><strong>Setor:</strong> {item.setor}</p>
+                                        <p><strong>Hora de Início:</strong> {item.horaInicio}</p>
+                                        <p><strong>Hora de Término:</strong> {item.horaTermino}</p>
+                                        <p><strong>instalacaoDeEquipamentos:</strong> {item.instalacaoDeEquipamentos}</p>
+                                        <p><strong>manutencaoDeEquipamentos:</strong> {item.manutencaoDeEquipamentos}</p>
+                                        <p><strong>implantacaoDeSistemas  :</strong> {item.implantacaoDeSistemas}</p>
+                                        <p><strong>manutencaoPreventivaContratual:</strong> {item.manutencaoPreventivaContratual}</p>
+                                        <p><strong>repprintpoint  :</strong> {item.repprintpoint}</p>
+                                        <p><strong>repminiprint :</strong> {item.repminiprint}</p>
+                                        <p><strong>repsmart :</strong> {item.repsmart}</p>
+                                        <p><strong>relogiomicropoint :</strong> {item.relogiomicropoint}</p>
+                                        <p><strong>relogiobiopoint :</strong> {item.relogiobiopoint}</p>
+                                        <p><strong>atracamicropoint  :</strong> {item.catracamicropoint}</p>
+                                        <p><strong>catracabiopoint :</strong> {item.catracabiopoint}</p>
+                                        <p><strong>catracaceros :</strong> {item.catracaceros}</p>
+                                        <p><strong>catracaidblock :</strong> {item.catracaidblock}</p>
+                                        <p><strong>catracaidnext:</strong> {item.catracaidnext}</p>
+                                        <p><strong>idface:</strong> {item.idface}</p>
+                                        <p><strong>idflex :</strong> {item.idflex}</p>
+                                        <p><strong>nSerie :</strong> {item.nSerie}</p>
+                                        <p><strong>localinstalacao  :</strong> {item.localinstalacao}</p>
+                                        <p><strong>observacaoproblemas:</strong> {item.observacaoproblemas}</p>
+                                        <p><strong>componente:</strong> {item.componente}</p>
+                                        <p><strong>codigocomponente :</strong> {item.codigocomponente}</p>
+                                        <p><strong>observacoes  :</strong> {item.observacoes}</p>
                                         <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
                                         <button onClick={() => handleDelete(item.id)}>Deletar</button>
-                                        <button onClick={() => handleEditClick(item)}>Editar</button>
+                                        <button onClick={() => handleEditClick(item.id)}>Editar</button>
                                     </div>
                                 )}
                             </div>
