@@ -14,7 +14,7 @@ const Perfil = () => {
 
   const links = [
     { label: 'Autenticacao', url: '/Autenticacao' },
-    { label: 'Nova Rac', url: '/rac' },
+    { label: 'Nova Rac', url: '/novarac' },
     { label: 'Consultar Racs', url: '/racscadastradas' },
     { label: 'Home', url: '/' },  
   ];

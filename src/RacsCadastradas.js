@@ -121,10 +121,40 @@ export default function RacsCadastradas() {
                         </button>
                         {expandedId === item.id && (
                             <div className="details">
+                               <p><strong>Técnico:</strong> {item.tecnico}</p>
+                                <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
+                                <p><strong>CNPJ:</strong> {item.cnpj}</p>
+                                <p><strong>Endereço:</strong> {item.endereco}</p>
+                                <p><strong>Número:</strong> {item.numero}</p>
+                                <p><strong>Responsável:</strong> {item.responsavel}</p>
+                                <p><strong>Setor:</strong> {item.setor}</p>
+                                <p><strong>Cidade:</strong> {item.cidade}</p>
+                                <p><strong>Hora de Início:</strong> {item.horaInicio}</p>
+                                <p><strong>Hora de Término:</strong> {item.horaTermino}</p>
+                                <p><strong>Instalação de Equipamentos:</strong> {item.instalacaoDeEquipamentos ? 'Sim' : 'Não'}</p>
+                                <p><strong>Manutenção de Equipamentos:</strong> {item.manutencaoDeEquipamentos ? 'Sim' : 'Não'}</p>
+                                <p><strong>Implantação de Sistemas:</strong> {item.implantacaoDeSistemas ? 'Sim' : 'Não'}</p>
+                                <p><strong>Manutenção Preventiva Contratual:</strong> {item.manutencaoPreventivaContratual ? 'Sim' : 'Não'}</p>
+                                <p><strong>REP Print Point:</strong> {item.repprintpoint ? 'Sim' : 'Não'}</p>
+                                <p><strong>REP Mini Print:</strong> {item.repminiprint ? 'Sim' : 'Não'}</p>
+                                <p><strong>REP Smart:</strong> {item.repsmart ? 'Sim' : 'Não'}</p>
+                                <p><strong>Relógio Micro Point:</strong> {item.relogiomicropoint ? 'Sim' : 'Não'}</p>
+                                <p><strong>Relógio Bio Point:</strong> {item.relogiobiopoint ? 'Sim' : 'Não'}</p>
+                                <p><strong>Catraca Micro Point:</strong> {item.catracamicropoint ? 'Sim' : 'Não'}</p>
+                                <p><strong>Catraca Bio Point:</strong> {item.catracabiopoint ? 'Sim' : 'Não'}</p>
+                                <p><strong>Catraca Ceros:</strong> {item.catracaceros ? 'Sim' : 'Não'}</p>
+                                <p><strong>Catraca ID Block:</strong> {item.catracaidblock ? 'Sim' : 'Não'}</p>
+                                <p><strong>Catraca ID Next:</strong> {item.catracaidnext ? 'Sim' : 'Não'}</p>
+                                <p><strong>ID Face:</strong> {item.idface ? 'Sim' : 'Não'}</p>
+                                <p><strong>ID Flex:</strong> {item.idflex ? 'Sim' : 'Não'}</p>
+                                <p><strong>Número de Série:</strong> {item.nSerie}</p>
+                                <p><strong>Local de Instalação:</strong> {item.localinstalacao}</p>
+                                <p><strong>Problemas Observados:</strong> {item.observacaoproblemas}</p>
+                                <p><strong>Componente:</strong> {item.componente}</p>
+                                <p><strong>Código do Componente:</strong> {item.codigocomponente}</p>
+                                <p><strong>Observações:</strong> {item.observacoes}</p>
+
                                 
-
-
-
                                 <button onClick={() => handleEditClick(item)}>Editar</button>
                                 <button onClick={() => handleDelete(item.id)}>Excluir</button>
                                 <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
@@ -133,46 +163,47 @@ export default function RacsCadastradas() {
                     </div>
                 ))}
             </div>
-
             {editingItem && (
-                <div className="edit-form">
-                    <h2>Editando RAC</h2>
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={e => setFormData({ ...formData, razaoSocial: e.target.value })} />
-                    <input type="text" name="cnpj" value={formData.cnpj} onChange={e => setFormData({ ...formData, cnpj: e.target.value })} />
-                    <input type="text" name="endereco" value={formData.endereco} onChange={e => setFormData({ ...formData, endereco: e.target.value })} />
-                    <input type="text" name="numero" value={formData.numero} onChange={e => setFormData({ ...formData, numero: e.target.value })} />
-                    <input type="text" name="responsavel" value={formData.responsavel} onChange={e => setFormData({ ...formData, responsavel: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    <input type="text" name="tecnico" value={formData.tecnico} onChange={e => setFormData({ ...formData, tecnico: e.target.value })} />
-                    
-                    <button onClick={handleSaveEdit}>Salvar</button>
-                    <button onClick={() => setEditingItem(null)}>Cancelar</button>
-                </div>
+    <div className="edit-form">
+        <h2>Editando RAC</h2>
+        <button onClick={handleSaveEdit}>Salvar</button>
+            <button onClick={() => setEditingItem(null)}>Cancelar</button>
+            <ul>
+            <li><strong>Técnico:</strong> {editingItem.tecnico}</li>
+            <li><strong>Razão Social:</strong> {editingItem.razaoSocial}</li>
+            <li><strong>CNPJ:</strong> {editingItem.cnpj}</li>
+            <li><strong>Endereço:</strong> {editingItem.endereco}</li>
+            <li><strong>Número:</strong> {editingItem.numero}</li>
+            <li><strong>Responsável:</strong> {editingItem.responsavel}</li>
+            <li><strong>Setor:</strong> {editingItem.setor}</li>
+            <li><strong>Cidade:</strong> {editingItem.cidade}</li>
+            <li><strong>Hora de Início:</strong> {editingItem.horaInicio}</li>
+            <li><strong>Hora de Término:</strong> {editingItem.horaTermino}</li>
+            <li><strong>Instalação de Equipamentos:</strong> {editingItem.instalacaoDeEquipamentos ? 'Sim' : 'Não'}</li>
+            <li><strong>Manutenção de Equipamentos:</strong> {editingItem.manutencaoDeEquipamentos ? 'Sim' : 'Não'}</li>
+            <li><strong>Implantação de Sistemas:</strong> {editingItem.implantacaoDeSistemas ? 'Sim' : 'Não'}</li>
+            <li><strong>Manutenção Preventiva Contratual:</strong> {editingItem.manutencaoPreventivaContratual ? 'Sim' : 'Não'}</li>
+            <li><strong>REP Print Point:</strong> {editingItem.repprintpoint ? 'Sim' : 'Não'}</li>
+            <li><strong>REP Mini Print:</strong> {editingItem.repminiprint ? 'Sim' : 'Não'}</li>
+            <li><strong>REP Smart:</strong> {editingItem.repsmart ? 'Sim' : 'Não'}</li>
+            <li><strong>Relógio Micro Point:</strong> {editingItem.relogiomicropoint ? 'Sim' : 'Não'}</li>
+            <li><strong>Relógio Bio Point:</strong> {editingItem.relogiobiopoint ? 'Sim' : 'Não'}</li>
+            <li><strong>Catraca Micro Point:</strong> {editingItem.catracamicropoint ? 'Sim' : 'Não'}</li>
+            <li><strong>Catraca Bio Point:</strong> {editingItem.catracabiopoint ? 'Sim' : 'Não'}</li>
+            <li><strong>Catraca Ceros:</strong> {editingItem.catracaceros ? 'Sim' : 'Não'}</li>
+            <li><strong>Catraca ID Block:</strong> {editingItem.catracaidblock ? 'Sim' : 'Não'}</li>
+            <li><strong>Catraca ID Next:</strong> {editingItem.catracaidnext ? 'Sim' : 'Não'}</li>
+            <li><strong>ID Face:</strong> {editingItem.idface ? 'Sim' : 'Não'}</li>
+            <li><strong>ID Flex:</strong> {editingItem.idflex ? 'Sim' : 'Não'}</li>
+            <li><strong>Número de Série:</strong> {editingItem.nSerie}</li>
+            <li><strong>Local de Instalação:</strong> {editingItem.localinstalacao}</li>
+            <li><strong>Problemas Observados:</strong> {editingItem.observacaoproblemas}</li>
+            <li><strong>Componente:</strong> {editingItem.componente}</li>
+            <li><strong>Código do Componente:</strong> {editingItem.codigocomponente}</li>
+            <li><strong>Observações:</strong> {editingItem.observacoes}</li>
+            
+            </ul>
+            </div>
             )}
         </div>
     );

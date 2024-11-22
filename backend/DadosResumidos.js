@@ -17,7 +17,7 @@ const dbConfig = {
   database: 'racvirtual',
 };
 
-// Rota para buscar dados da tabela 'racvirtual'
+// Rota para buscar dados da tabela 'racform'
 app.get('/api/rac', async (req, res) => {
   try {
     const connection = await mysql.createConnection(dbConfig);

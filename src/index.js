@@ -23,12 +23,12 @@ const RoutesComponent = () => (
         <Route path="/register" element={<Register />} />
         {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/perfil" element={<ProtectedRoute element={<Perfil />} />} />
-        <Route path="/rac" element={<ProtectedRoute element={<RACForm />} />} />
+        <Route path="/novarac" element={<ProtectedRoute element={<RACForm />} />} />
         {/* <Route path="/registrar" element={<Registrar />} /> */}
         <Route path="/RacsCadastradas" element={<ProtectedRoute element={<RacsCadastradas />} />}/>
         {/* Outras rotas podem ser adicionadas aqui */}
         <Route path="/Autenticacao" element={<Autenticacao />} />
-        <Route path="/DadosResumidos" element={<DadosResumidos />}/>
+        <Route path="/Racscadastradas" element={<RacsCadastradas />}/>
 
 
       </Routes>
