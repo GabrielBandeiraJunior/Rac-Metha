@@ -87,10 +87,55 @@ export default function RacsCadastradas() {
 
     const gerarPDF = (item) => {
         const doc = new jsPDF();
-        doc.text(`Técnico: ${item.tecnico}`, 10, 10);
-        // Adicione outros campos ao PDF
-        doc.save(`RAC_${item.tecnico}.pdf`);
+    
+        // Defina as chaves dos campos a serem adicionados ao PDF
+        const campos = [
+            { label: "Data de Registro", key: "date" },
+            { label: "Técnico", key: "tecnico" },
+            { label: "Razão Social", key: "razaoSocial" },
+            { label: "CNPJ", key: "cnpj" },
+            { label: "Endereço", key: "endereco" },
+            { label: "Número", key: "numero" },
+            { label: "Cidade", key: "cidade" },
+            { label: "Responsável", key: "responsavel" },
+            { label: "Setor", key: "setor" },
+            { label: "Hora de Início", key: "horaInicio" },
+            { label: "Hora de Término", key: "horaTermino" },
+            { label: "Instalação de Equipamentos", key: "instalacaoDeEquipamentos" },
+            { label: "Manutenção de Equipamentos", key: "manutencaoDeEquipamentos" },
+            { label: "Instalação Preventiva Contratual", key: "manutencaoPreventivaContratual" },
+            { label: "REP Print Point", key: "repprintpoint" },
+            { label: "REP Mini Print", key: "repminiprint" },
+            { label: "REP Smart", key: "repsmart" },
+            { label: "Relógio Micropoint", key: "relogiomicropoint" },
+            { label: "Relógio Biopoint", key: "relogiobiopoint" },
+            { label: "Catraca Ceros", key: "catracaceros" },
+            { label: "Catraca Id Block", key: "catracaidblock" },
+            { label: "Catraca Id Next", key: "catracaidnext" },
+            { label: "Id Face", key: "idface" },
+            { label: "Id Flex", key: "idflex" },
+            { label: "Número de Série", key: "nSerie" },
+            { label: "Local de Instalação", key: "localinstalacao" },
+            { label: "Observação dos Problemas", key: "observacaoproblemas" },
+            { label: "Componente", key: "componente" },
+            { label: "Código do Componente", key: "codigocomponente" },
+            { label: "Observações", key: "observacoes" }
+        ];
+            
+        let yPosition = 5 // Posição inicial para o texto no PDF
+        doc.text(`RAC Report - ${item.date}`, 1, yPosition);
+        yPosition += 5; // Espaço entre o título e o primeiro campo
+        
+        // Percorrer o array de campos e adicionar cada um ao PDF
+        campos.forEach(campo => {
+            const fieldValue = item[campo.key] !== undefined ? item[campo.key] : 'Não disponível';
+            doc.text(`${campo.label}: ${fieldValue}`, 7, yPosition);
+            yPosition += 7; // Adiciona um espaçamento entre os campos
+        });
+    
+        doc.save(`RAC_${item.date}_${item.tecnico}.pdf`);
     };
+    
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -107,7 +152,7 @@ export default function RacsCadastradas() {
             </header>
             <h1>RACs Cadastradas</h1>
             <div className="filtros">
-                <input type="text" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
+                <input type="datetime-local" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
                 <input type="text" name="tecnico" placeholder="Filtrar por técnico" onChange={handleFilterChange} />
                 <input type="text" name="empresa" placeholder="Filtrar por empresa" onChange={handleFilterChange} />
             </div>
@@ -126,7 +171,6 @@ export default function RacsCadastradas() {
                             <div className="rac-expandida">
                                {/* <p><strong>Técnico:</strong> {item.tecnico}</p>
                                 <p><strong>Razão Social:</strong> {item.razaoSocial}</p> */}
-
                                 <p><strong>CNPJ:</strong> {item.cnpj}</p>
                                 <p><strong>Endereço:</strong> {item.endereco}</p>
                                 <p><strong>Número:</strong> {item.numero}</p>
@@ -137,6 +181,7 @@ export default function RacsCadastradas() {
                                 <p><strong>Hora de Término:</strong> {item.horaTermino}</p>
                                 <p><strong>Instalação de Equipamentos:</strong> {item.instalacaoDeEquipamentos ? 'Sim' : 'Não'}</p>
                                 <p><strong>Manutenção de Equipamentos:</strong> {item.manutencaoDeEquipamentos ? 'Sim' : 'Não'}</p>
+                                <p><strong>Homologação De Infra:</strong> {item.homologacaodeinfra ? 'Sim' : 'Não'}</p>H
                                 <p><strong>Implantação de Sistemas:</strong> {item.implantacaoDeSistemas ? 'Sim' : 'Não'}</p>
                                 <p><strong>Manutenção Preventiva Contratual:</strong> {item.manutencaoPreventivaContratual ? 'Sim' : 'Não'}</p>
                                 <p><strong>REP Print Point:</strong> {item.repprintpoint ? 'Sim' : 'Não'}</p>
@@ -171,10 +216,9 @@ export default function RacsCadastradas() {
                 <div className="form-editar">
                     <h2>Editar RAC</h2>
                     <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }}>
-                        <label>Data de Registro:</label>
-                        <input type="text" name="date" value={formData.date} onChange={handleInputChange} />
+                        
                         <label>Técnico:</label>
-                        <input type="text" name="tecnico" value={formData.tecnico} onChange={handleInputChange} />
+                        <input type="text" name="tecnico" value={formData.tecnico} onChange={handleInputChange} />                        
                         <label>Razão Social:</label>
                         <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleInputChange} />
                         <label>CNPJ:</label>
@@ -190,13 +234,17 @@ export default function RacsCadastradas() {
                         <label>Setor:</label>
                         <input type="text" name="setor" value={formData.setor} onChange={handleInputChange} />
                         <label>Hora de Início:</label>
-                        <input type="text" name="horaInicio" value={formData.horaInicio} onChange={handleInputChange} />
+                        <input type="datetime-local" name="horaInicio" value={formData.horaInicio} onChange={handleInputChange} />
                         <label>Hora de Término:</label>
-                        <input type="text" name="horaTermino" value={formData.horaTermino} onChange={handleInputChange} />
+                        <input type="datetime-local" name="horaTermino" value={formData.horaTermino} onChange={handleInputChange} />
                         <label>Instalação de Equipamentos:</label>
                         <input type="checkbox" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleInputChange} />
                         <label>Manutenção de Equipamentos:</label>
                         <input type="checkbox" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleInputChange} />
+
+                        <input type="checkbox" id="homologacaodeinfra" name="homologacaodeinfra" value={formData.homologacaodeinfra} onChange={handleInputChange} />
+
+
                         <label>Instalação Preventiva Contratual:</label>
                         <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
                         <label>REP Print Point:</label>
@@ -213,10 +261,6 @@ export default function RacsCadastradas() {
                         <input type="checkbox" name="relogiomicropoint" checked={formData.relogiomicropoint} onChange={handleInputChange} />
                         <label>Relogio Biopoint:</label>
                         <input type="checkbox" name="relogiobiopoint" checked={formData.relogiobiopoint} onChange={handleInputChange} />
-                        <label>Catraca Micropoint:</label>
-                        <input type="checkbox" name="catracamicropoint" checked={formData.catracamicropoint} onChange={handleInputChange} />
-                        <label>Catraca Biopoint:</label>
-                        <input type="checkbox" name="catracabiopoint" checked={formData.catracabiopoint} onChange={handleInputChange} />
                         <label>Catraca Ceros:</label>
                         <input type="checkbox" name="catracaceros" checked={formData.catracaceros} onChange={handleInputChange} />
                         <label>Catraca Id Block:</label>
@@ -239,6 +283,7 @@ export default function RacsCadastradas() {
                         <input type="text" name="codigocomponente" checked={formData.codigocomponente} onChange={handleInputChange} />
                         <label>Observações:</label>
                         <input type="text" name="observacoes" checked={formData.observacoes} onChange={handleInputChange} />
+                        
                         <button type="submit">Salvar</button>
                     </form>
                 </div>

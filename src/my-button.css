@@ -1,19 +1,12 @@
-.styled-button {
-    padding: 10px 20px; /* Espaçamento interno */
-    border: 2px solid #007bff; /* Borda azul */
-    border-radius: 5px; /* Arredonda os cantos */
-    background-color: white; /* Fundo branco */
-    color: #007bff; /* Cor do texto */
-    font-size: 16px; /* Tamanho da fonte */
-    cursor: pointer; /* Muda o cursor ao passar sobre o botão */
-    transition: background-color 0.3s, color 0.3s; /* Transições suaves */
-    text-decoration: none;
-    
-
-    
-}
-
-.styled-button:hover {
-    background-color: #007bff; /* Cor de fundo ao passar o mouse */
-    color: white; /* Cor do texto ao passar o mouse */
-}
+button {
+    align-self: flex-start;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+button:hover {
+    background-color: #45a049;
+  }
