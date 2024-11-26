@@ -1,6 +1,7 @@
 import React, { useState, } from 'react';
 import axios from 'axios';
 import Headers from './Components/Headers.js'
+import './RACForm.css'
 
 
 function RacForm() {
@@ -144,6 +145,7 @@ function RacForm() {
       <input type="text" name="codigocomponente" value={formData.codigocomponente} onChange={handleChange} placeholder="Código do Componente" required />
       <label>Observações</label>
       <input type="text" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações" required />
+
       <button type="submit">Enviar</button><br/>
 
     </form>

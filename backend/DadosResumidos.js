@@ -1,3 +1,4 @@
+//CONSULTA OS DADOS
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
@@ -5,7 +6,7 @@ const cors = require('cors');
 const app = express();
 const PORT = 3005;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 

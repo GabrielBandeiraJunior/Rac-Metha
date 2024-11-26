@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import axios from "axios";
-import './my-button.css';
 
 function Register() {
   const [usuario, setUsuario] = useState(""); // Estado para 'usuario'

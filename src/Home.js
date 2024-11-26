@@ -1,8 +1,8 @@
 import React from 'react';
-import './Home.css';
 import { Link, useNavigate } from 'react-router-dom'; // Certifique-se de importar useNavigate
 import { useAuth } from './auth'; // Certifique-se de que useAuth está importado
 import Headers from './Components/Headers.js';
+import './Home.css'
 
 export default function Home() {
   const { logout, isAuthenticated } = useAuth(); // Obtenha logout e isAuthenticated do contexto

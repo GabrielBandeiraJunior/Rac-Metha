@@ -1,5 +1,5 @@
 import React from "react";
-import './Headers.css';
+import Header from "./Headers.css"
 
 export default function Headers({ links, handleLogout }) {
     return (

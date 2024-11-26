@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { jsPDF } from 'jspdf';
 import axios from 'axios';
-import './RacsCadastradas.css';
 import Headers from './Components/Headers'
+import './RacsCadastradas.css'
 
 export default function RacsCadastradas() {
     const [dados, setDados] = useState([]);
@@ -68,7 +68,7 @@ export default function RacsCadastradas() {
 
     const handleSaveEdit = async () => {
         try {
-            await axios.put(`http://localhost:3005/racvirtual/edit/${editingItem.id}`, formData);
+            await axios.put(`http://localhost:3006/racvirtual/edit/${editingItem.id}`, formData);
             setDados(dados.map(item => item.id === editingItem.id ? { ...item, ...formData } : item));
             setEditingItem(null);
         } catch (error) {
@@ -101,18 +101,18 @@ export default function RacsCadastradas() {
     };
 
     return (
-        <div className="racs-container">
+        <div pagina-inteira-racscadastradas >
             <header>
                 <Headers links={links} />
             </header>
             <h1>RACs Cadastradas</h1>
-            <div className="filters">
+            <div className="filtros">
                 <input type="text" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
                 <input type="text" name="tecnico" placeholder="Filtrar por técnico" onChange={handleFilterChange} />
                 <input type="text" name="empresa" placeholder="Filtrar por empresa" onChange={handleFilterChange} />
             </div>
 
-            <div className="dados-list">
+            <div className="rac-escondida">
                 {filteredDados.map(item => (
                     <div key={item.id} className="dados-item">
                         <p><strong>Técnico:</strong> {item.tecnico}</p>
@@ -123,9 +123,10 @@ export default function RacsCadastradas() {
                             {expandedId === item.id ? 'Esconder Detalhes' : 'Expandir Detalhes'}
                         </button>
                         {expandedId === item.id && (
-                            <div className="details">
-                               <p><strong>Técnico:</strong> {item.tecnico}</p>
-                                <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
+                            <div className="rac-expandida">
+                               {/* <p><strong>Técnico:</strong> {item.tecnico}</p>
+                                <p><strong>Razão Social:</strong> {item.razaoSocial}</p> */}
+
                                 <p><strong>CNPJ:</strong> {item.cnpj}</p>
                                 <p><strong>Endereço:</strong> {item.endereco}</p>
                                 <p><strong>Número:</strong> {item.numero}</p>
@@ -167,42 +168,76 @@ export default function RacsCadastradas() {
             </div>
 
             {editingItem && (
-                <div className="edit-form">
+                <div className="form-editar">
                     <h2>Editar RAC</h2>
                     <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }}>
+                        <label>Data de Registro:</label>
                         <input type="text" name="date" value={formData.date} onChange={handleInputChange} />
+                        <label>Técnico:</label>
                         <input type="text" name="tecnico" value={formData.tecnico} onChange={handleInputChange} />
+                        <label>Razão Social:</label>
                         <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleInputChange} />
+                        <label>CNPJ:</label>
                         <input type="text" name="cnpj" value={formData.cnpj} onChange={handleInputChange} />
+                        <label>Endereço:</label>
                         <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
+                        <label>Número:</label>
                         <input type="text" name="numero" value={formData.numero} onChange={handleInputChange} />
+                        <label>Cidade:</label>
                         <input type="text" name="cidade" value={formData.cidade} onChange={handleInputChange} />
+                        <label>Responsável:</label>
                         <input type="text" name="responsavel" value={formData.responsavel} onChange={handleInputChange} />
+                        <label>Setor:</label>
                         <input type="text" name="setor" value={formData.setor} onChange={handleInputChange} />
+                        <label>Hora de Início:</label>
                         <input type="text" name="horaInicio" value={formData.horaInicio} onChange={handleInputChange} />
+                        <label>Hora de Término:</label>
                         <input type="text" name="horaTermino" value={formData.horaTermino} onChange={handleInputChange} />
+                        <label>Instalação de Equipamentos:</label>
                         <input type="checkbox" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleInputChange} />
+                        <label>Manutenção de Equipamentos:</label>
                         <input type="checkbox" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleInputChange} />
+                        <label>Instalação Preventiva Contratual:</label>
                         <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
+                        <label>REP Print Point:</label>
                         <input type="checkbox" name="repprintpoint" checked={formData.repprintpoint} onChange={handleInputChange} />
+                        <label>REP Mini Print:</label>
                         <input type="checkbox" name="repminiprint" checked={formData.repminiprint} onChange={handleInputChange} />
+                        <label>REP Print Point:</label>
                         <input type="checkbox" name="repprintpoint" checked={formData.repprintpoint} onChange={handleInputChange} />
+                        <label>REP Mini Print:</label>
                         <input type="checkbox" name="repminiprint" checked={formData.repminiprint} onChange={handleInputChange} />
+                        <label>REP Smart:</label>
                         <input type="checkbox" name="repsmart" checked={formData.repsmart} onChange={handleInputChange} />
+                        <label>Relogio Micropoint:</label>
                         <input type="checkbox" name="relogiomicropoint" checked={formData.relogiomicropoint} onChange={handleInputChange} />
+                        <label>Relogio Biopoint:</label>
                         <input type="checkbox" name="relogiobiopoint" checked={formData.relogiobiopoint} onChange={handleInputChange} />
+                        <label>Catraca Micropoint:</label>
                         <input type="checkbox" name="catracamicropoint" checked={formData.catracamicropoint} onChange={handleInputChange} />
+                        <label>Catraca Biopoint:</label>
                         <input type="checkbox" name="catracabiopoint" checked={formData.catracabiopoint} onChange={handleInputChange} />
+                        <label>Catraca Ceros:</label>
                         <input type="checkbox" name="catracaceros" checked={formData.catracaceros} onChange={handleInputChange} />
+                        <label>Catraca Id Block:</label>
                         <input type="checkbox" name="catracaidblock" checked={formData.catracaidblock} onChange={handleInputChange} />
+                        <label>Catraca Id Next:</label>
                         <input type="checkbox" name="catracaidnext" checked={formData.catracaidnext} onChange={handleInputChange} />
+                        <label>Id Face:</label>
                         <input type="checkbox" name="idface" checked={formData.idface} onChange={handleInputChange} />
+                        <label>Id Flex:</label>
                         <input type="checkbox" name="idflex" checked={formData.idflex} onChange={handleInputChange} />
+                        <label>Número de Série:</label>
                         <input type="text" name="nSerie" checked={formData.nSerie} onChange={handleInputChange} />
+                        <label>local de Instalação:</label>
                         <input type="text" name="localinstalacao" checked={formData.localinstalacao} onChange={handleInputChange} />
+                        <label>Observação dos Problemas:</label>
                         <input type="text" name="observacaoproblemas" checked={formData.observacaoproblemas} onChange={handleInputChange} />
+                        <label>Componente:</label>
                         <input type="text" name="componente" checked={formData.componente} onChange={handleInputChange} />
+                        <label>Código do Componente:</label>
                         <input type="text" name="codigocomponente" checked={formData.codigocomponente} onChange={handleInputChange} />
+                        <label>Observações:</label>
                         <input type="text" name="observacoes" checked={formData.observacoes} onChange={handleInputChange} />
                         <button type="submit">Salvar</button>
                     </form>

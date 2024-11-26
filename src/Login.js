@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from './auth'; // Importe o hook de autenticação
-import './my-button.css'
 
 function Login() {
   const [usuario, setUsuario] = useState("");
