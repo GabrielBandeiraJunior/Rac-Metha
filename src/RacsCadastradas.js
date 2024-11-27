@@ -247,10 +247,7 @@ export default function RacsCadastradas() {
 
                         <label>Instalação Preventiva Contratual:</label>
                         <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
-                        <label>REP Print Point:</label>
-                        <input type="checkbox" name="repprintpoint" checked={formData.repprintpoint} onChange={handleInputChange} />
-                        <label>REP Mini Print:</label>
-                        <input type="checkbox" name="repminiprint" checked={formData.repminiprint} onChange={handleInputChange} />
+                        
                         <label>REP Print Point:</label>
                         <input type="checkbox" name="repprintpoint" checked={formData.repprintpoint} onChange={handleInputChange} />
                         <label>REP Mini Print:</label>
@@ -290,4 +287,5 @@ export default function RacsCadastradas() {
             )}
         </div>
     )
-}
+    }
+    
