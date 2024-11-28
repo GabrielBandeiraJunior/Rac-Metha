@@ -14,7 +14,7 @@ export default function EditarRac({ idRac, onSave, onCancel }) {
 
         const fetchRac = async () => {
             try {
-                const response = await axios.get(`http://localhost:3006/racvirtual/${idRac}`);
+                const response = await axios.get(`http://localhost:3000/racvirtual/${idRac}`);
                 setRac(response.data);
             } catch (err) {
                 console.error('Erro ao carregar a RAC:', err);
@@ -42,7 +42,7 @@ export default function EditarRac({ idRac, onSave, onCancel }) {
         }
 
         try {
-            const response = await axios.put(`http://localhost:3006/racvirtual/edit/${idRac}`, rac);
+            const response = await axios.put(`http://localhost:3000/racvirtual/edit/${idRac}`, rac);
             console.log(response.data); // Para depuração
             onSave(); // Callback para ações após salvar
         } catch (err) {

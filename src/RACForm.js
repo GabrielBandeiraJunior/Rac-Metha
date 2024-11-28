@@ -1,24 +1,26 @@
-import React, { useState, } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import Headers from './Components/Headers.js'
-import './RACForm.css'
-import './my-button.css'
-
+import Headers from './Components/Headers.js';
+import './RACForm.css';
+import './my-button.css';
 
 function RacForm() {
   const [formData, setFormData] = useState({
+    date: new Date().toISOString().split('T')[0],
     tecnico: '',
     razaoSocial: '',
     cnpj: '',
     endereco: '',
     numero: '',
+    cidade: '',
     responsavel: '',
     setor: '',
-    cidade: '',
     horaInicio: '',
     horaTermino: '',
     instalacaoDeEquipamentos: false,
     manutencaoDeEquipamentos: false,
+    homologacaoDeInfra: false,
+    treinamentoOperacional: false,
     implantacaoDeSistemas: false,
     manutencaoPreventivaContratual: false,
     repprintpoint: false,
@@ -34,11 +36,13 @@ function RacForm() {
     idface: false,
     idflex: false,
     nSerie: '',
-    localinstalacao: '',
-    observacaoproblemas: '',
+    localInstalacao: '',
+    observacaoProblemas: '',
     componente: '',
-    codigocomponente: '',
+    codigoComponente: '',
     observacoes: '',
+    prestadoraDeServico: '',
+    
   });
 
   const handleChange = (e) => {
@@ -49,127 +53,165 @@ function RacForm() {
     });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({
+      ...formData,
+      file: file,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formDataToSend = new FormData();
+
+    // Adiciona todos os dados do formulário
+    for (const [key, value] of Object.entries(formData)) {
+      if (key !== 'file') { // Não adiciona o arquivo diretamente aqui
+        formDataToSend.append(key, value);
+      }
+    }
+
+    // Adiciona o arquivo, se houver
+    if (formData.file) {
+      formDataToSend.append('file', formData.file);
+    }
+
     try {
-      const response = await axios.post('http://localhost:3004/racvirtual/register', formData);
+      const response = await axios.post('http://localhost:3000/racvirtual/register', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       alert(response.data.message);
     } catch (error) {
       console.error('Erro ao enviar dados:', error);
       alert('Erro ao enviar os dados!');
     }
   };
+
   const links = [
     { label: 'Autenticacao', url: '/Autenticacao' },
     { label: 'Perfil', url: '/perfil' },
     { label: 'Consultar Racs', url: '/racscadastradas' },
     { label: 'Home', url: '/' },
-  ]
- 
+  ];
+
   return (
-<>
-    <Headers links={links} />
-    <form class="form-group" onSubmit={handleSubmit}>
-  
-    <label htmlFor="tecnico">Técnico</label>
-    <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Técnico" required />
-
-    <label htmlFor="razaoSocial">Razão Social</label>
-    <input type="text" id="razaoSocial" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social" />
-
-    <label htmlFor="cnpj">CNPJ</label>
-    <input type="text" id="cnpj" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ" required />
-
-    <label htmlFor="endereco">Endereço</label>
-    <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço" required />
-
-    <label htmlFor="numero">Número</label>
-    <input type="text" id="numero" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número" required />
-
-    <label htmlFor="responsavel">Responsável</label>
-    <input type="text" id="responsavel" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Responsável" required />
-
-    <label htmlFor="setor">Setor</label>
-    <input type="text" id="setor" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor" required />
-
-    <label htmlFor="cidade">Cidade</label>
-    <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade" required />
-
-    <label htmlFor="horaInicio">Hora Início</label>
-    <input type="datetime-local" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora Início" />
-
-    <label htmlFor="horaTermino">Hora Término</label>
-    <input type="datetime-local" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora Término" />
-    
-    <label htmlFor="instalacaoDeEquipamentos">Instalação de Equipamentos</label>
-    <input type="checkbox" id="instalacaoDeEquipamentos" name="instalacaoDeEquipamentos" value={formData.instalacaoDeEquipamentos} onChange={handleChange} />
-    
-    <label htmlFor="manutencaoDeEquipamentos">Manutenção de Equipamentos</label>
-    <input type="checkbox" id="manutencaoDeEquipamentos" name="manutencaoDeEquipamentos" value={formData.manutencaoDeEquipamentos} onChange={handleChange} />
-    
-    <label htmlFor="homologacaodeinfra">Homologação de Infra</label>
-    <input type="checkbox" id="homologacaodeinfra" name="homologacaodeinfra" value={formData.homologacaodeinfra} onChange={handleChange} />
-    
-    <label htmlFor="treinamentooperacional">Treinamento Operacional</label>
-    <input type="checkbox" id="treinamentooperacional" name="treinamentooperacional" value={formData.treinamentooperacional} onChange={handleChange} />
-    
-    <label htmlFor="implantacaoDeSistemas">Implantação de Sistemas</label>
-    <input type="checkbox" id="implantacaoDeSistemas" name="implantacaoDeSistemas" value={formData.implantacaoDeSistemas} onChange={handleChange} />
-    
-    <label htmlFor="manutencaoPreventivaContratual">Manutenção Preventiva Contratual</label>
-    <input type="checkbox" id="manutencaoPreventivaContratual" name="manutencaoPreventivaContratual" value={formData.manutencaoPreventivaContratual} onChange={handleChange} />
-    
-    <label htmlFor="repprintpoint">REP Print Point</label>
-    <input type="checkbox" id="repprintpoint" name="repprintpoint" value={formData.repprintpoint} onChange={handleChange} />
-    
-  
-      <label>repminiprint</label><br/>
-      <input type="checkbox" name="repminiprint" value={formData.repminiprint} onChange={handleChange} placeholder="REP Mini Print" />
-      <label>repsmart</label>
-      <input type="checkbox" name="repsmart" value={formData.repsmart} onChange={handleChange} placeholder="REP Smart" />
-      <label>relogiomicropoint</label><br/>
-      <input type="checkbox" name="relogiomicropoint" value={formData.relogiomicropoint} onChange={handleChange} placeholder="REP Micropoint" />
-      <label>relogiobiopoint</label>
-      <input type="checkbox" name="relogiobiopoint" value={formData.relogiobiopoint} onChange={handleChange} placeholder="REP Biopoint" />
-      <label>catracamicropoint</label><br/>
-      <input type="checkbox" name="catracamicropoint" value={formData.catracamicropoint} onChange={handleChange} placeholder="Catraca Micropoint" />
-      <label>catracabiopoint</label>
-      <input type="checkbox" name="catracabiopoint" value={formData.catracabiopoint} onChange={handleChange} placeholder="Catraca Biopoint" />
-      <label>Catraca Ceros</label>
-      <input type="checkbox" name="catracaceros" value={formData.catracaceros} onChange={handleChange} placeholder="Catraca Ceros" />
-      <label>Catraca ID Block</label>
-      <input type="checkbox" name="catracaidblock" value={formData.catracaidblock} onChange={handleChange} placeholder="catracaidblock" />
-      <label>Catraca ID Next</label>
-      <input type="checkbox" name="catracaidnext" value={formData.catracaidnext} onChange={handleChange} placeholder="catracaidnext" />
-      <label>ID Face</label>
-      <input type="checkbox" name="idface" value={formData.idface} onChange={handleChange} placeholder="Id Face" />
-      <label>ID Flex</label>
-      <input type="checkbox" name="idflex" value={formData.idflex} onChange={handleChange} placeholder="Id Flex " />
-      
-
-    
+    <>
+      <Headers links={links} />
+      <form className="form-group" onSubmit={handleSubmit}>
+        {/* Campos do formulário */}
+        <label htmlFor="tecnico">Nome do Técnico</label>
+        <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Nome do Técnico" required />
+        
+        <label htmlFor="razaoSocial">Razão Social da Empresa</label>
+        <input type="text" id="razaoSocial" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social da Empresa" />
+        
+        <label htmlFor="cnpj">CNPJ da Empresa</label>
+        <input type="text" id="cnpj" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ da Empresa" required />
+        
+        <label htmlFor="endereco">Endereço Completo</label>
+        <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço Completo" required />
+        
+        <label htmlFor="numero">Número do Endereço</label>
+        <input type="text" id="numero" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número do Endereço" required />
+        
+        <label htmlFor="responsavel">Nome do Responsável</label>
+        <input type="text" id="responsavel" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Nome do Responsável" required />
+        
+        <label htmlFor="setor">Setor da Empresa</label>
+        <input type="text" id="setor" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor da Empresa" required />
+        
+        <label htmlFor="cidade">Cidade da Empresa</label>
+        <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa" required />
+        
+        <label htmlFor="horaInicio">Hora de Início da Atividade</label>
+        <input type="datetime-local" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora de Início da Atividade" />
+        
+        <label htmlFor="horaTermino">Hora de Término da Atividade</label>
+        <input type="datetime-local" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora de Término da Atividade" />
+        
+        {/* Campos de checkbox */}
+        <label htmlFor="instalacaoDeEquipamentos">Instalação de Equipamentos</label>
+        <input type="checkbox" id="instalacaoDeEquipamentos" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleChange} />
+        
+        <label htmlFor="manutencaoDeEquipamentos">Manutenção de Equipamentos</label>
+        <input type="checkbox" id="manutencaoDeEquipamentos" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleChange} />
+        
+        <label htmlFor="homologacaoDeInfra">Homologação de Infraestrutura</label>
+        <input type="checkbox" id="homologacaoDeInfra" name="homologacaoDeInfra" checked={formData.homologacaoDeInfra} onChange={handleChange} />
+        
+        <label htmlFor="treinamentoOperacional">Treinamento Operacional</label>
+        <input type="checkbox" id="treinamentoOperacional" name="treinamentoOperacional" checked={formData.treinamentoOperacional} onChange={handleChange} />
+        
+        <label htmlFor="implantacaoDeSistemas">Implantação de Sistemas</label>
+        <input type="checkbox" id="implantacaoDeSistemas" name="implantacaoDeSistemas" checked={formData.implantacaoDeSistemas} onChange={handleChange} />
+        
+        <label htmlFor="manutencaoPreventivaContratual">Manutenção Preventiva Contratual</label>
+        <input type="checkbox" id="manutencaoPreventivaContratual" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleChange} />
+        
+        <label htmlFor="repprintpoint">REP Print Point</label>
+        <input type="checkbox" id="repprintpoint" name="repprintpoint" checked={formData.repprintpoint} onChange={handleChange} />
+        
+        <label htmlFor="repminiprint">REP Mini Print</label>
+        <input type="checkbox" id="repminiprint" name="repminiprint" checked={formData.repminiprint} onChange={handleChange} />
+        
+        <label htmlFor="repsmart">REP Smart</label>
+        <input type="checkbox" id="repsmart" name="repsmart" checked={formData.repsmart} onChange={handleChange} />
+        
+        <label htmlFor="relogiomicropoint">Relógio Micropoint</label>
+        <input type="checkbox" id="relogiomicropoint" name="relogiomicropoint" checked={formData.relogiomicropoint} onChange={handleChange} />
+        
+        <label htmlFor="relogiobiopoint">Relógio Biopoint</label>
+        <input type="checkbox" id="relogiobiopoint" name="relogiobiopoint" checked={formData.relogiobiopoint} onChange={handleChange} />
+        
+        <label htmlFor="catracamicropoint">Catraca Micropoint</label>
+        <input type="checkbox" id="catracamicropoint" name="catracamicropoint" checked={formData.catracamicropoint} onChange={handleChange} />
+        
+        <label htmlFor="catracabiopoint">Catraca Biopoint</label>
+        <input type="checkbox" id="catracabiopoint" name="catracabiopoint" checked={formData.catracabiopoint} onChange={handleChange} />
+        
+        <label htmlFor="catracaceros">Catraca Acero</label>
+        <input type="checkbox" id="catracaceros" name="catracaceros" checked={formData.catracaceros} onChange={handleChange} />
+        
+        <label htmlFor="catracaidblock">Catraca ID Block</label>
+        <input type="checkbox" id="catracaidblock" name="catracaidblock" checked={formData.catracaidblock} onChange={handleChange} />
+        
+        <label htmlFor="catracaidnext">Catraca ID Next</label>
+        <input type="checkbox" id="catracaidnext" name="catracaidnext" checked={formData.catracaidnext} onChange={handleChange} />
+        
+        <label htmlFor="idface">ID Face</label>
+        <input type="checkbox" id="idface" name="idface" checked={formData.idface} onChange={handleChange} />
+        
+        <label htmlFor="idflex">ID Flex</label>
+        <input type="checkbox" id="idflex" name="idflex" checked={formData.idflex} onChange={handleChange} />
+        
         <label htmlFor="nSerie">Número de Série</label>
-    <input type="text" id="nSerie" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" required />
+        <input type="text" id="nSerie" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" />
+        
+        <label htmlFor="localInstalacao">Local de Instalação</label>
+        <input type="text" id="localInstalacao" name="localInstalacao" value={formData.localInstalacao} onChange={handleChange} placeholder="Local de Instalação" />
+        
+        <label htmlFor="observacaoProblemas">Observações sobre os Problemas</label>
+        <input type="text" id="observacaoProblemas" name="observacaoProblemas" value={formData.observacaoProblemas} onChange={handleChange} placeholder="Observações sobre os Problemas" />
+        
+        <label htmlFor="componente">Componente</label>
+        <input type="text" id="componente" name="componente" value={formData.componente} onChange={handleChange} placeholder="Componente" />
+        
+        <label htmlFor="codigoComponente">Código do Componente</label>
+        <input type="text" id="codigoComponente" name="codigoComponente" value={formData.codigoComponente} onChange={handleChange} placeholder="Código do Componente" />
+        
+        <label htmlFor="observacoes">Observações Gerais</label>
+        <input type="text" id="observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações Gerais" />
+        
+        <label htmlFor="prestadoraDeServico">Prestadora de Serviço</label>
+        <input type="text" id="prestadoraDeServico" name="prestadoraDeServico" value={formData.prestadoraDeServico} onChange={handleChange} placeholder="Prestadora de Serviço" />
 
-    <label htmlFor="localinstalacao">Local de Instalação</label>
-    <input type="text" id="localinstalacao" name="localinstalacao" value={formData.localinstalacao} onChange={handleChange} placeholder="Local de Instalação" required />
-
-    <label htmlFor="observacaoproblemas">Observação do Problema</label>
-    <input type="text" id="observacaoproblemas" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleChange} placeholder="Observação dos Problemas" required />
-
-    <label htmlFor="componente">Componente</label>
-    <input type="text" id="componente" name="componente" value={formData.componente} onChange={handleChange} placeholder="Componente" required />
-
-    <label htmlFor="codigocomponente">Código de Componente</label>
-    <input type="text" id="codigocomponente" name="codigocomponente" value={formData.codigocomponente} onChange={handleChange} placeholder="Código do Componente" required />
-
-    <label htmlFor="observacoes">Observações</label>
-    <input type="text" id="observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações" required />
-  
-
-  <button type="submit">Enviar</button>
-</form>
-  
+        {/* Enviar */}
+        <button type="submit">Enviar</button>
+      </form>
     </>
   );
 }

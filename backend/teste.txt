@@ -1,0 +1,38 @@
+
+tecnico
+razaoSocial
+cnpj
+endereco
+numero
+responsavel
+setor
+cidade
+horaInicio
+horaTermino
+instalacaoDeEquipamentos
+manutencaoDeEquipamentos
+homologacaoDeInfra
+treinamentoOperacional
+implantacaoDeSistemas
+manutencaoPreventivaContratual
+repprintpoint
+repminiprint
+repsmart
+relogiomicropoint
+relogiobiopoint
+catracamicropoint
+catracabiopoint
+Catraca Ceros
+Catraca ID Block
+Catraca ID Next
+ID Face
+ID Flex
+nSerie
+localinstalacao
+observacaoproblemas
+componente
+codigocomponente
+observacoes
+prestadoraDoServico
+Mega Digital Equipamentos
+Meta Comércio e Serviço
