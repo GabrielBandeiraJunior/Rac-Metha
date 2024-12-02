@@ -41,7 +41,7 @@ function RacForm() {
     componente: '',
     codigoComponente: '',
     observacoes: '',
-    prestadoraDeServico: '',
+    prestadoraDoServico: '',
     
   });
 
@@ -206,9 +206,21 @@ function RacForm() {
         <label htmlFor="observacoes">Observações Gerais</label>
         <input type="text" id="observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações Gerais" />
         
-        <label htmlFor="prestadoraDeServico">Prestadora de Serviço</label>
-        <input type="text" id="prestadoraDeServico" name="prestadoraDeServico" value={formData.prestadoraDeServico} onChange={handleChange} placeholder="Prestadora de Serviço" />
+        <label htmlFor="prestadoraDoServico">Prestadora de Serviço</label>
+        <input type="text" id="prestadoraDoServico" name="prestadoraDoServico" value={formData.prestadoraDoServico} onChange={handleChange} placeholder="Prestadora de Serviço" />
 
+        <label htmlFor="prestadoraDoServico">Prestadora de Serviço</label>
+        <select
+        id="prestadoraDoServico"
+        name="prestadoraDoServico"
+        checked={formData.prestadoraDoServico}
+        onChange={handleChange}
+        required
+      >
+        <option value="">Selecione a Prestadora</option>
+        <option value="Mega Digital">Mega Digital</option>
+        <option value="Metah">Metah</option>
+      </select>
         {/* Enviar */}
         <button type="submit">Enviar</button>
       </form>

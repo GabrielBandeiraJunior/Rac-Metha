@@ -1,5 +1,6 @@
 const express = require('express')
 const mysql = require('mysql2/promise')
+const multer = require('multer')
 const cors = require('cors')
 
 const app = express()
@@ -13,6 +14,10 @@ const dbConfig = {
   database: 'racvirtual',
 }
 
+// Configuração do Multer para upload de arquivos
+const storage = multer.memoryStorage();  // Armazenar o arquivo na memória
+const upload = multer({ storage: storage });
+
 // Middleware
 app.use(cors())
 app.use(express.json())
@@ -20,7 +25,7 @@ app.use(express.json())
 // Função para criar a tabela se ela não existir
 async function createTableIfNotExists(connection) {
   const createTableQuery = `
-      CREATE TABLE IF NOT EXISTS RacForm (
+    CREATE TABLE IF NOT EXISTS RacForm (
       id INT AUTO_INCREMENT PRIMARY KEY,
       tecnico VARCHAR(255) NOT NULL,
       razaoSocial VARCHAR(255),
@@ -77,18 +82,55 @@ app.get('/api/dados', async (req, res) => {
   }
 })
 
-app.post('/racvirtual/register', async (req, res) => {
-  console.log('Dados recebidos:', req.body); // Verifique os dados recebidos
+// Função para tratar e corrigir os valores booleanos antes de salvar no banco
+function processBooleanFields(formData) {
+  const fieldsToProcess = [
+    'instalacaoDeEquipamentos',
+    'manutencaoDeEquipamentos',
+    'homologacaoDeInfra',
+    'treinamentoOperacional',
+    'implantacaoDeSistemas',
+    'manutencaoPreventivaContratual',
+    'repprintpoint',
+    'repminiprint',
+    'repsmart',
+    'relogiomicropoint',
+    'relogiobiopoint',
+    'catracamicropoint',
+    'catracabiopoint',
+    'catracaceros',
+    'catracaidblock',
+    'catracaidnext',
+    'idface',
+    'idflex'
+  ]
+  
+  fieldsToProcess.forEach(field => {
+    if (formData[field] !== undefined) {
+      formData[field] = formData[field] ? 1 : 0;  // Converte para 1 (true) ou 0 (false)
+    }
+  })
+  return formData;
+}
+
+// Endpoint para registrar dados
+app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
+  const formData = req.body;
+
+  console.log('Dados recebidos:', formData); // Verifique os dados recebidos
 
   // Se o corpo da requisição estiver vazio, retorne um erro
-  if (!req.body || Object.keys(req.body).length === 0) {
+  if (!formData || Object.keys(formData).length === 0) {
       return res.status(400).json({ message: 'Dados ausentes no corpo da requisição' });
   }
 
+  // Processa os campos booleanos
+  const processedData = processBooleanFields(formData);
+
   try {
-      const [result] = await db.query('INSERT INTO RacForm SET ?', req.body);
+      const [result] = await db.query('INSERT INTO RacForm SET ?', processedData);
       if (result.affectedRows) {
-          res.status(200).json({ message: 'Dados salvos com sucesso', data: req.body });
+          res.status(200).json({ message: 'Dados salvos com sucesso', data: processedData });
       } else {
           res.status(400).json({ message: 'Falha ao salvar os dados' });
       }
@@ -98,7 +140,7 @@ app.post('/racvirtual/register', async (req, res) => {
   }
 });
 
-
+// Endpoint para buscar uma RAC específica
 app.get('/racvirtual/:id', async (req, res) => {
   const { id } = req.params
   try {
@@ -112,6 +154,7 @@ app.get('/racvirtual/:id', async (req, res) => {
   }
 })
 
+// Endpoint para editar uma RAC
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params
   const { date, horaInicio, horaTermino, ...otherFields } = req.body
