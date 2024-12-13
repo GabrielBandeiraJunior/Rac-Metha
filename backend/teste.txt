@@ -1,4 +1,4 @@
-
+id
 tecnico
 razaoSocial
 cnpj
@@ -15,24 +15,24 @@ homologacaoDeInfra
 treinamentoOperacional
 implantacaoDeSistemas
 manutencaoPreventivaContratual
-repprintpoint
+repprintpoint2
+repprintpoint3
 repminiprint
 repsmart
 relogiomicropoint
 relogiobiopoint
 catracamicropoint
 catracabiopoint
-Catraca Ceros
-Catraca ID Block
-Catraca ID Next
-ID Face
-ID Flex
+catracaceros
+catracaidblock
+catracaidnext
+idface
+idflex
 nSerie
 localinstalacao
 observacaoproblemas
 componente
 codigocomponente
 observacoes
+date
 prestadoraDoServico
-Mega Digital Equipamentos
-Meta Comércio e Serviço
