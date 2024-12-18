@@ -2,6 +2,7 @@ const express = require('express')
 const mysql = require('mysql2/promise')
 const multer = require('multer')
 const cors = require('cors')
+const XLSX = require('xlsx');
 
 const app = express()
 const PORT = 3000 // Porta unificada
@@ -15,9 +16,9 @@ const dbConfig = {
 }
 
 // Configuração do Multer para upload de arquivos
-const storage = multer.memoryStorage();  // Armazenar o arquivo na memória
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
+const db = mysql.createPool(dbConfig);
 // Middleware
 app.use(cors())
 app.use(express.json())
@@ -35,8 +36,16 @@ async function createTableIfNotExists(connection) {
       responsavel VARCHAR(255) NOT NULL,
       setor VARCHAR(255) NOT NULL,
       cidade VARCHAR(255) NOT NULL,
+
+      dataInicio DATE NOT NULL,
       horaInicio DATETIME NOT NULL,
+
+      horaInicioIntervalo DATETIME,
+      horaTerminoIntervalo DATETIME,
+
+      dataTermino DATE NOT NULL,
       horaTermino DATETIME NOT NULL,
+
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
       homologacaoDeInfra BOOLEAN,
@@ -71,7 +80,7 @@ async function createTableIfNotExists(connection) {
 }
 
 // Inicializar banco de dados
-const db = mysql.createPool(dbConfig)
+// const db = mysql.createPool(dbConfig)
 
 // Endpoints
 app.get('/api/dados', async (req, res) => {
@@ -180,6 +189,49 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message })
   }
 })
+
+const saveDataToDatabase = async (data) => {
+  const sql = `INSERT INTO RacForm (tecnico, razaoSocial, cnpj, endereco, numero, responsavel, setor, cidade, horaInicio, horaTermino) VALUES ?`;
+  const values = data.map(row => [
+    row.tecnico,
+    row.razaoSocial,
+    row.cnpj,
+    row.endereco,
+    row.numero,
+    row.responsavel,
+    row.setor,
+    row.cidade,
+    row.horaInicio,
+    row.horaTermino,
+  ]);
+  await db.query(sql, [values]);
+};
+
+// Endpoint para upload de planilha Excel
+app.post('/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send('Nenhum arquivo enviado');
+    }
+
+    // Lê o arquivo Excel enviado
+    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0]; // Primeiro sheet
+    const sheet = workbook.Sheets[sheetName];
+
+    // Converte a planilha para um array de objetos
+    const data = XLSX.utils.sheet_to_json(sheet);
+
+    // Salva os dados no banco
+    await saveDataToDatabase(data);
+
+    res.status(200).send('Dados salvos com sucesso!');
+  } catch (error) {
+    console.error("Erro ao processar o arquivo:", error);
+    res.status(500).send('Erro ao processar o arquivo');
+  }
+});
+
 
 // Inicializar o servidor
 app.listen(PORT, async () => {
