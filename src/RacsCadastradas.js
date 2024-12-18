@@ -19,7 +19,8 @@ export default function RacsCadastradas() {
         treinamentoOperacional :false,
         implantacaoDeSistemas :false,
         manutencaoPreventivaContratual :false,
-        repprintpoint: false,
+        repprintpoint2: false,
+        repprintpoint3: false,
         repminiprint: false,
         repsmart: false,
         relogiomicropoint: false,
@@ -110,7 +111,8 @@ export default function RacsCadastradas() {
             { label: "Instalação de Equipamentos", key: "instalacaoDeEquipamentos" },
             { label: "Manutenção de Equipamentos", key: "manutencaoDeEquipamentos" },
             { label: "Instalação Preventiva Contratual", key: "manutencaoPreventivaContratual" },
-            { label: "REP Print Point", key: "repprintpoint" },
+            { label: "REP Print Point 2", key: "repprintpoint2" },
+            { label: "REP Print Point 3", key: "repprintpoint3" },
             { label: "REP Mini Print", key: "repminiprint" },
             { label: "REP Smart", key: "repsmart" },
             { label: "Relógio Micropoint", key: "relogiomicropoint" },
@@ -187,10 +189,11 @@ return (
              <p><strong>Hora de Término:</strong> {item.horaTermino}</p>
              <p><strong>Instalação de Equipamentos:</strong> {item.instalacaoDeEquipamentos ? 'Sim' : 'Não'}</p>
              <p><strong>Manutenção de Equipamentos:</strong> {item.manutencaoDeEquipamentos ? 'Sim' : 'Não'}</p>
-             <p><strong>Homologação De Infra:</strong> {item.homologacaodeinfra ? 'Sim' : 'Não'}</p>H
+             <p><strong>Homologação De Infra:</strong> {item.homologacaodeinfra ? 'Sim' : 'Não'}</p>
              <p><strong>Implantação de Sistemas:</strong> {item.implantacaoDeSistemas ? 'Sim' : 'Não'}</p>
              <p><strong>Manutenção Preventiva Contratual:</strong> {item.manutencaoPreventivaContratual ? 'Sim' : 'Não'}</p>
-             <p><strong>REP Print Point:</strong> {item.repprintpoint ? 'Sim' : 'Não'}</p>
+             <p><strong>REP Print Point 2:</strong> {item.repprintpoint2 ? 'Sim' : 'Não'}</p>
+             <p><strong>REP Print Point 3:</strong> {item.repprintpoint3 ? 'Sim' : 'Não'}</p>
              <p><strong>REP Mini Print:</strong> {item.repminiprint ? 'Sim' : 'Não'}</p>
              <p><strong>REP Smart:</strong> {item.repsmart ? 'Sim' : 'Não'}</p>
              <p><strong>Relógio Micro Point:</strong> {item.relogiomicropoint ? 'Sim' : 'Não'}</p>
@@ -250,8 +253,10 @@ return (
             <input type="checkbox" id="homologacaodeinfra" name="homologacaodeinfra" value={formData.homologacaodeinfra} onChange={handleInputChange} />
             <label>Instalação Preventiva Contratual:</label>
             <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
-            <label>REP Print Point:</label>
-            <input type="checkbox" name="repprintpoint" checked={formData.repprintpoint} onChange={handleInputChange} />
+            <label>REP Print Point 2:</label>
+            <input type="checkbox" name="repprintpoint2" checked={formData.repprintpoint2} onChange={handleInputChange} />
+            <label>REP Print Point 3:</label>
+            <input type="checkbox" name="repprintpoint3" checked={formData.repprintpoint3} onChange={handleInputChange} />
             <label>REP Mini Print:</label>
             <input type="checkbox" name="repminiprint" checked={formData.repminiprint} onChange={handleInputChange} />
             <label>REP Smart:</label>

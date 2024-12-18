@@ -23,7 +23,8 @@ function RacForm() {
     treinamentoOperacional: false,
     implantacaoDeSistemas: false,
     manutencaoPreventivaContratual: false,
-    repprintpoint: false,
+    repprintpoint2: false,
+    repprintpoint3: false,
     repminiprint: false,
     repsmart: false,
     relogiomicropoint: false,
@@ -152,8 +153,11 @@ function RacForm() {
         <label htmlFor="manutencaoPreventivaContratual">Manutenção Preventiva Contratual</label>
         <input type="checkbox" id="manutencaoPreventivaContratual" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleChange} />
         
-        <label htmlFor="repprintpoint">REP Print Point</label>
-        <input type="checkbox" id="repprintpoint" name="repprintpoint" checked={formData.repprintpoint} onChange={handleChange} />
+        <label htmlFor="repprintpoint2">REP Print Point2</label>
+        <input type="checkbox" id="repprintpoint2" name="repprintpoint2" checked={formData.repprintpoint2} onChange={handleChange} />
+
+        <label htmlFor="repprintpoint3">REP Print Point3</label>
+        <input type="checkbox" id="repprintpoint3" name="repprintpoint3" checked={formData.repprintpoint3} onChange={handleChange} />
         
         <label htmlFor="repminiprint">REP Mini Print</label>
         <input type="checkbox" id="repminiprint" name="repminiprint" checked={formData.repminiprint} onChange={handleChange} />

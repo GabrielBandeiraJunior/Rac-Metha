@@ -10,7 +10,8 @@ export default function Home() {
 
   const links = [
     { label: 'Perfil', url: '/Perfil' },
-    { label: 'Autenticacao', url: '/Autenticacao' }
+    { label: 'Autenticacao', url: '/Autenticacao' },
+    { label: 'ImportarPlanilha', url: '/importarplanilha' }
   ];
 
   const handleLogout = () => {
