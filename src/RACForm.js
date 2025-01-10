@@ -15,7 +15,9 @@ function RacForm() {
     cidade: '',
     responsavel: '',
     setor: '',
+    dataInicio: '',
     horaInicio: '',
+    dataTermino: '',
     horaTermino: '',
     instalacaoDeEquipamentos: false,
     manutencaoDeEquipamentos: false,
@@ -43,52 +45,58 @@ function RacForm() {
     codigoComponente: '',
     observacoes: '',
     prestadoraDoServico: '',
-    
   });
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-  };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setFormData({
-      ...formData,
-      file: file,
-    });
+    console.log(`${name}: ${type === 'checkbox' ? checked : value}`);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const formDataToSend = new FormData();
-
-    // Adiciona todos os dados do formulário
-    for (const [key, value] of Object.entries(formData)) {
-      if (key !== 'file') { // Não adiciona o arquivo diretamente aqui
-        formDataToSend.append(key, value);
-      }
-    }
-
-    // Adiciona o arquivo, se houver
-    if (formData.file) {
-      formDataToSend.append('file', formData.file);
-    }
-
+  
+    // Ajustar checkboxes para garantir valores booleanos
+    const checkboxes = [
+      'instalacaoDeEquipamentos',
+      'manutencaoDeEquipamentos',
+      'homologacaoDeInfra',
+      'treinamentoOperacional',
+      'implantacaoDeSistemas',
+      'manutencaoPreventivaContratual',
+      'repprintpoint2',
+      'repprintpoint3',
+      'repminiprint',
+      'repsmart',
+      'relogiomicropoint',
+      'relogiobiopoint',
+      'catracamicropoint',
+      'catracabiopoint',
+      'catracaceros',
+      'catracaidblock',
+      'catracaidnext',
+      'idface',
+      'idflex',
+    ];
+  
+    // Certifique-se de que todas as checkboxes têm valores explícitos (true/false)
+    const updatedFormData = {
+      ...formData,
+      ...Object.fromEntries(checkboxes.map((checkbox) => [checkbox, !!formData[checkbox]])),
+    };
+  
     try {
-      const response = await axios.post('http://localhost:3000/racvirtual/register', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      alert(response.data.message);
+      const response = await axios.post('http://localhost:3000/racvirtual/register', updatedFormData);
+      console.log(response.data.message);
+      alert('Dados enviados com sucesso!');
     } catch (error) {
       console.error('Erro ao enviar dados:', error);
-      alert('Erro ao enviar os dados!');
+      alert('Erro ao enviar os dados.');
     }
   };
 
@@ -128,11 +136,17 @@ function RacForm() {
         <label htmlFor="cidade">Cidade da Empresa</label>
         <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa" required />
         
+        <label htmlFor="dataInicio">Data de Início da Atividade</label>
+        <input type="date" id="dataInicio" name="dataInicio" value={formData.dataInicio} onChange={handleChange} placeholder="Data de Início da Atividade" />
+
         <label htmlFor="horaInicio">Hora de Início da Atividade</label>
-        <input type="datetime-local" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora de Início da Atividade" />
+        <input type="time" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora de Início da Atividade" />
         
+        <label htmlFor="dataTermino">Data de Término da Atividade</label>
+        <input type="date" id="dataTermino" name="dataTermino" value={formData.dataTermino} onChange={handleChange} placeholder="Data de Término da Atividade" />
+
         <label htmlFor="horaTermino">Hora de Término da Atividade</label>
-        <input type="datetime-local" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora de Término da Atividade" />
+        <input type="time" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora de Término da Atividade" />
         
         {/* Campos de checkbox */}
         <label htmlFor="instalacaoDeEquipamentos">Instalação de Equipamentos</label>
@@ -142,8 +156,12 @@ function RacForm() {
         <input type="checkbox" id="manutencaoDeEquipamentos" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleChange} />
         
         <label htmlFor="homologacaoDeInfra">Homologação de Infraestrutura</label>
-        <input type="checkbox" id="homologacaoDeInfra" name="homologacaoDeInfra" checked={formData.homologacaoDeInfra} onChange={handleChange} />
         
+        <input type="checkbox" id="homologacaoDeInfra" name="homologacaoDeInfra" 
+          checked={formData.homologacaoDeInfra} 
+          onChange={handleChange} 
+        />
+                
         <label htmlFor="treinamentoOperacional">Treinamento Operacional</label>
         <input type="checkbox" id="treinamentoOperacional" name="treinamentoOperacional" checked={formData.treinamentoOperacional} onChange={handleChange} />
         
@@ -211,7 +229,6 @@ function RacForm() {
         <input type="text" id="observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações Gerais" />
         
         <label htmlFor="prestadoraDoServico">Prestadora de Serviço</label>
-        <input type="text" id="prestadoraDoServico" name="prestadoraDoServico" value={formData.prestadoraDoServico} onChange={handleChange} placeholder="Prestadora de Serviço" />
 
         <label htmlFor="prestadoraDoServico">Prestadora de Serviço</label>
         <select

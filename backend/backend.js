@@ -27,16 +27,18 @@ async function createTableIfNotExists(connection) {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS RacForm (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      tecnico VARCHAR(255) NOT NULL,
+      tecnico VARCHAR(255) ,
       razaoSocial VARCHAR(255),
-      cnpj VARCHAR(255) NOT NULL,
-      endereco VARCHAR(255) NOT NULL,
-      numero VARCHAR(50) NOT NULL,
-      responsavel VARCHAR(255) NOT NULL,
-      setor VARCHAR(255) NOT NULL,
-      cidade VARCHAR(255) NOT NULL,
-      horaInicio DATETIME NOT NULL,
-      horaTermino DATETIME NOT NULL,
+      cnpj VARCHAR(255) ,
+      endereco VARCHAR(255) ,
+      numero VARCHAR(50) ,
+      responsavel VARCHAR(255) ,
+      setor VARCHAR(255) ,
+      cidade VARCHAR(255) ,
+      dataInicio DATE,
+      horaInicio TIME,
+      dataTermino DATE,
+      horaTermino TIME,
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
       homologacaoDeInfra BOOLEAN,
@@ -56,13 +58,13 @@ async function createTableIfNotExists(connection) {
       catracaidnext BOOLEAN,
       idface BOOLEAN,
       idflex BOOLEAN,
-      nSerie VARCHAR(255) NOT NULL,
-      localinstalacao VARCHAR(255) NOT NULL,
-      observacaoproblemas VARCHAR(255) NOT NULL,
-      componente VARCHAR(255) NOT NULL,
-      codigocomponente VARCHAR(255) NOT NULL,
-      observacoes VARCHAR(255) NOT NULL,
-      prestadoraDoServico VARCHAR(255) NOT NULL,
+      nSerie VARCHAR(255) ,
+      localinstalacao VARCHAR(255) ,
+      observacaoproblemas VARCHAR(255) ,
+      componente VARCHAR(255) ,
+      codigocomponente VARCHAR(255) ,
+      observacoes VARCHAR(255) ,
+      prestadoraDoServico VARCHAR(255) ,
       date DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `
@@ -105,18 +107,33 @@ function processBooleanFields(formData) {
     'catracaidnext',
     'idface',
     'idflex'
-  ]
-  
+  ];
+
   fieldsToProcess.forEach(field => {
     if (formData[field] !== undefined) {
-      formData[field] = formData[field] ? 1 : 0;  // Converte para 1 (true) ou 0 (false)
+      // Verifique se o valor é string 'true' ou 'false' e converta para 1 ou 0
+      if (formData[field] === 'true') {
+        formData[field] = 1; // Marca como 1 (true)
+      } else if (formData[field] === 'false') {
+        formData[field] = 0; // Marca como 0 (false)
+      }
+      // Se o valor for um booleano verdadeiro, defina como 1
+      else if (formData[field] === true) {
+        formData[field] = 1;
+      }
+      // Se o valor for booleano falso, defina como 0
+      else if (formData[field] === false) {
+        formData[field] = 0;
+      }
     }
-  })
+  });
+
   return formData;
 }
 
 // Endpoint para registrar dados
 app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
+  
   const formData = req.body;
 
   console.log('Dados recebidos:', formData); // Verifique os dados recebidos
