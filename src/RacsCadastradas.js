@@ -77,13 +77,15 @@ export default function RacsCadastradas() {
 
     const handleSaveEdit = async () => {
         try {
-            await axios.put(`http://localhost:3000/racvirtual/edit/${editingItem.id}`, formData);
+            const url = `http://localhost:3000/racvirtual/edit/${editingItem.id}`;
+            await axios.put(url, formData);
             setDados(dados.map(item => item.id === editingItem.id ? { ...item, ...formData } : item));
             setEditingItem(null);
         } catch (error) {
             console.error("Erro ao editar:", error);
         }
-    }
+    };      
+      
 
     const handleDelete = async (id) => {
         try {
