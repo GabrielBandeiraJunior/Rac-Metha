@@ -46,6 +46,7 @@ export default function RacsCadastradas() {
     const links = [
         { label: 'Meu Perfil', url: '/perfil' },
         { label: 'Nova RAC', url: '/novarac' },
+        { label: 'Importar Planilha', url: '/importarplanilha' },
         { label: 'Home', url: '/' }
     ];
 

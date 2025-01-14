@@ -63,10 +63,6 @@ function RacForm() {
   };
 
 
-  //
-  
-
-  //////////
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -116,6 +112,7 @@ function RacForm() {
     { label: 'Autenticacao', url: '/Autenticacao' },
     { label: 'Perfil', url: '/perfil' },
     { label: 'Consultar Racs', url: '/racscadastradas' },
+    { label: 'Importar Planilha', url: '/importarplanilha' },
     { label: 'Home', url: '/' },
   ];
 

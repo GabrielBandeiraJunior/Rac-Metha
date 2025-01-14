@@ -2,6 +2,8 @@ const express = require('express')
 const mysql = require('mysql2/promise')
 const multer = require('multer')
 const cors = require('cors')
+const XLSX = require('xlsx');
+
 
 const app = express()
 const PORT = 3000 // Porta unificada
@@ -130,6 +132,35 @@ function processBooleanFields(formData) {
 
   return formData;
 }
+
+app.post('/racvirtual/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).send('Nenhum arquivo enviado');
+  }
+
+  // Log para verificar a estrutura do arquivo recebido
+  console.log('Arquivo recebido:', req.file);
+  console.log('Tamanho do arquivo:', req.file.size);
+
+  // Usar o buffer para ler o arquivo Excel diretamente
+  const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+  const sheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[sheetName];
+
+  // Converte os dados da planilha para JSON
+  const dados = XLSX.utils.sheet_to_json(worksheet);
+
+  // Log dos dados extraídos da planilha
+  console.log('Dados extraídos da planilha:', dados);
+
+  // Aqui você pode processar os dados e armazená-los no banco de dados
+  // Exemplo fictício de como salvar os dados no banco (ajuste conforme seu modelo)
+  // Model.create(dados).then(() => res.status(200).send('Planilha importada com sucesso'));
+
+  res.status(200).send('Planilha importada com sucesso');
+});
+
+
 
 // Endpoint para registrar dados
 app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
