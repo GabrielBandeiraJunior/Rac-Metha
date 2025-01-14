@@ -2,7 +2,6 @@ const express = require('express')
 const mysql = require('mysql2/promise')
 const multer = require('multer')
 const cors = require('cors')
-const XLSX = require('xlsx');
 
 const app = express()
 const PORT = 3000 // Porta unificada
@@ -16,9 +15,9 @@ const dbConfig = {
 }
 
 // Configuração do Multer para upload de arquivos
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage();  // Armazenar o arquivo na memória
 const upload = multer({ storage: storage });
-const db = mysql.createPool(dbConfig);
+
 // Middleware
 app.use(cors())
 app.use(express.json())
@@ -28,24 +27,18 @@ async function createTableIfNotExists(connection) {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS RacForm (
       id INT AUTO_INCREMENT PRIMARY KEY,
-      tecnico VARCHAR(255) NOT NULL,
+      tecnico VARCHAR(255) ,
       razaoSocial VARCHAR(255),
-      cnpj VARCHAR(255) NOT NULL,
-      endereco VARCHAR(255) NOT NULL,
-      numero VARCHAR(50) NOT NULL,
-      responsavel VARCHAR(255) NOT NULL,
-      setor VARCHAR(255) NOT NULL,
-      cidade VARCHAR(255) NOT NULL,
-
-      dataInicio DATE NOT NULL,
-      horaInicio DATETIME NOT NULL,
-
-      horaInicioIntervalo DATETIME,
-      horaTerminoIntervalo DATETIME,
-
-      dataTermino DATE NOT NULL,
-      horaTermino DATETIME NOT NULL,
-
+      cnpj VARCHAR(255) ,
+      endereco VARCHAR(255) ,
+      numero VARCHAR(50) ,
+      responsavel VARCHAR(255) ,
+      setor VARCHAR(255) ,
+      cidade VARCHAR(255) ,
+      dataInicio DATE,
+      horaInicio TIME,
+      dataTermino DATE,
+      horaTermino TIME,
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
       homologacaoDeInfra BOOLEAN,
@@ -65,13 +58,13 @@ async function createTableIfNotExists(connection) {
       catracaidnext BOOLEAN,
       idface BOOLEAN,
       idflex BOOLEAN,
-      nSerie VARCHAR(255) NOT NULL,
-      localinstalacao VARCHAR(255) NOT NULL,
-      observacaoproblemas VARCHAR(255) NOT NULL,
-      componente VARCHAR(255) NOT NULL,
-      codigocomponente VARCHAR(255) NOT NULL,
-      observacoes VARCHAR(255) NOT NULL,
-      prestadoraDoServico VARCHAR(255) NOT NULL,
+      nSerie VARCHAR(255) ,
+      localinstalacao VARCHAR(255) ,
+      observacaoproblemas VARCHAR(255) ,
+      componente VARCHAR(255) ,
+      codigocomponente VARCHAR(255) ,
+      observacoes VARCHAR(255) ,
+      prestadoraDoServico VARCHAR(255) ,
       date DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `
@@ -80,7 +73,7 @@ async function createTableIfNotExists(connection) {
 }
 
 // Inicializar banco de dados
-// const db = mysql.createPool(dbConfig)
+const db = mysql.createPool(dbConfig)
 
 // Endpoints
 app.get('/api/dados', async (req, res) => {
@@ -114,18 +107,33 @@ function processBooleanFields(formData) {
     'catracaidnext',
     'idface',
     'idflex'
-  ]
-  
+  ];
+
   fieldsToProcess.forEach(field => {
     if (formData[field] !== undefined) {
-      formData[field] = formData[field] ? 1 : 0;  // Converte para 1 (true) ou 0 (false)
+      // Verifique se o valor é string 'true' ou 'false' e converta para 1 ou 0
+      if (formData[field] === 'true') {
+        formData[field] = 1; // Marca como 1 (true)
+      } else if (formData[field] === 'false') {
+        formData[field] = 0; // Marca como 0 (false)
+      }
+      // Se o valor for um booleano verdadeiro, defina como 1
+      else if (formData[field] === true) {
+        formData[field] = 1;
+      }
+      // Se o valor for booleano falso, defina como 0
+      else if (formData[field] === false) {
+        formData[field] = 0;
+      }
     }
-  })
+  });
+
   return formData;
 }
 
 // Endpoint para registrar dados
 app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
+  
   const formData = req.body;
 
   console.log('Dados recebidos:', formData); // Verifique os dados recebidos
@@ -166,69 +174,35 @@ app.get('/racvirtual/:id', async (req, res) => {
 })
 
 // Endpoint para editar uma RAC
+// Endpoint para editar uma RAC
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params
   const { date, horaInicio, horaTermino, ...otherFields } = req.body
 
-  const formattedDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ')
-  const formattedHoraInicio = new Date(horaInicio).toISOString().slice(0, 19).replace('T', ' ')
-  const formattedHoraTermino = new Date(horaTermino).toISOString().slice(0, 19).replace('T', ' ')
+  // Certifique-se de que a data está sendo convertida corretamente
+  const formattedDate = new Date(date).toISOString().slice(0, 19).replace('T', ' ');
+
+  // Hora já está no formato correto. Apenas passe como está.
+  const formattedHoraInicio = horaInicio;  // Não é necessário usar new Date() para hora
+  const formattedHoraTermino = horaTermino;  // Também passe a hora diretamente
 
   const updateQuery = `
     UPDATE RacForm
     SET date = ?, horaInicio = ?, horaTermino = ?, ? 
     WHERE id = ?
-  `
+  `;
+  
   try {
     const [result] = await db.query(updateQuery, [formattedDate, formattedHoraInicio, formattedHoraTermino, otherFields, id])
+    
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'RAC não encontrada' })
+      return res.status(404).json({ message: 'RAC não encontrada' });
     }
-    res.status(200).json({ message: 'RAC atualizada com sucesso' })
+    
+    res.status(200).json({ message: 'RAC atualizada com sucesso' });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message })
-  }
-})
-
-const saveDataToDatabase = async (data) => {
-  const sql = `INSERT INTO RacForm (tecnico, razaoSocial, cnpj, endereco, numero, responsavel, setor, cidade, horaInicio, horaTermino) VALUES ?`;
-  const values = data.map(row => [
-    row.tecnico,
-    row.razaoSocial,
-    row.cnpj,
-    row.endereco,
-    row.numero,
-    row.responsavel,
-    row.setor,
-    row.cidade,
-    row.horaInicio,
-    row.horaTermino,
-  ]);
-  await db.query(sql, [values]);
-};
-
-// Endpoint para upload de planilha Excel
-app.post('/upload', upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).send('Nenhum arquivo enviado');
-    }
-
-    // Lê o arquivo Excel enviado
-    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
-    const sheetName = workbook.SheetNames[0]; // Primeiro sheet
-    const sheet = workbook.Sheets[sheetName];
-
-    // Converte a planilha para um array de objetos
-    const data = XLSX.utils.sheet_to_json(sheet);
-
-    // Salva os dados no banco
-    await saveDataToDatabase(data);
-
-    res.status(200).send('Dados salvos com sucesso!');
-  } catch (error) {
-    console.error("Erro ao processar o arquivo:", error);
-    res.status(500).send('Erro ao processar o arquivo');
+    console.error(error);  // Log de erro para depuração
+    res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message });
   }
 });
 

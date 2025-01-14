@@ -62,23 +62,43 @@ function RacForm() {
     });
   };
 
+
+  //
+  
+
+  //////////
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     const formDataToSend = new FormData();
-
-    // Adiciona todos os dados do formulário
+  
+    // Função para formatar a data no formato correto para o MySQL
+    const formatDateForMySQL = (dateString) => {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toISOString().slice(0, 19).replace('T', ' '); // Converte para 'YYYY-MM-DD HH:MM:SS'
+    };
+  
+    // Formatando as datas para o formato correto
+    const formattedHoraInicio = formatDateForMySQL(formData.horaInicio);
+    const formattedHoraTermino = formatDateForMySQL(formData.horaTermino);
+  
+    // Adiciona todos os dados do formulário com as datas corrigidas
     for (const [key, value] of Object.entries(formData)) {
-      if (key !== 'file') { // Não adiciona o arquivo diretamente aqui
+      if (key === 'horaInicio') {
+        formDataToSend.append(key, formattedHoraInicio);
+      } else if (key === 'horaTermino') {
+        formDataToSend.append(key, formattedHoraTermino);
+      } else if (key !== 'file') { // Não adiciona o arquivo diretamente aqui
         formDataToSend.append(key, value);
       }
     }
-
+  
     // Adiciona o arquivo, se houver
     if (formData.file) {
       formDataToSend.append('file', formData.file);
     }
-
+  
     try {
       const response = await axios.post('http://localhost:3000/racvirtual/register', formDataToSend, {
         headers: {

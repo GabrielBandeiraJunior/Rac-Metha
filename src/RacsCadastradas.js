@@ -12,7 +12,9 @@ export default function RacsCadastradas() {
     const [expandedId, setExpandedId] = useState(null);
     const [formData, setFormData] = useState({
         date: '', tecnico: '', razaoSocial: '', cnpj: '', endereco: '', numero: '',
-        cidade: '', responsavel: '', setor: '', horaInicio: '', horaTermino: '',
+        cidade: '', responsavel: '', setor: '',
+        dataInicio:'', horaInicio: '', 
+        dataTermino:'',horaTermino: '',
         instalacaoDeEquipamentos :false,
         manutencaoDeEquipamentos :false,
         homologacaoDeInfra :false,
@@ -106,7 +108,9 @@ export default function RacsCadastradas() {
             { label: "Cidade", key: "cidade" },
             { label: "Responsável", key: "responsavel" },
             { label: "Setor", key: "setor" },
+            { label: "Data de Início", key: "dataInicio" },
             { label: "Hora de Início", key: "horaInicio" },
+            { label: "Data de Término", key: "dataTermino" },
             { label: "Hora de Término", key: "horaTermino" },
             { label: "Instalação de Equipamentos", key: "instalacaoDeEquipamentos" },
             { label: "Manutenção de Equipamentos", key: "manutencaoDeEquipamentos" },
@@ -185,11 +189,14 @@ return (
              <p><strong>Responsável:</strong> {item.responsavel}</p>
              <p><strong>Setor:</strong> {item.setor}</p>
              <p><strong>Cidade:</strong> {item.cidade}</p>
+             <p><strong>Data de Início:</strong> {item.dataInicio}</p>
              <p><strong>Hora de Início:</strong> {item.horaInicio}</p>
+             <p><strong>Data de Término:</strong> {item.dataTermino}</p>
              <p><strong>Hora de Término:</strong> {item.horaTermino}</p>
              <p><strong>Instalação de Equipamentos:</strong> {item.instalacaoDeEquipamentos ? 'Sim' : 'Não'}</p>
              <p><strong>Manutenção de Equipamentos:</strong> {item.manutencaoDeEquipamentos ? 'Sim' : 'Não'}</p>
-             <p><strong>Homologação De Infra:</strong> {item.homologacaodeinfra ? 'Sim' : 'Não'}</p>
+             <p><strong>Homologação De Infra:</strong> {item.homologacaoDeInfra ? 'Sim' : 'Não'}</p>
+             <p><strong>Treinamento Operacional:</strong>{item.treinamentoOperacional? 'sim':'Não'}</p>
              <p><strong>Implantação de Sistemas:</strong> {item.implantacaoDeSistemas ? 'Sim' : 'Não'}</p>
              <p><strong>Manutenção Preventiva Contratual:</strong> {item.manutencaoPreventivaContratual ? 'Sim' : 'Não'}</p>
              <p><strong>REP Print Point 2:</strong> {item.repprintpoint2 ? 'Sim' : 'Não'}</p>
@@ -242,15 +249,22 @@ return (
             <input type="text" name="responsavel" value={formData.responsavel} onChange={handleInputChange} />
             <label>Setor:</label>
             <input type="text" name="setor" value={formData.setor} onChange={handleInputChange} />
+
+            <label>Data de Início:</label>
+            <input type="date" name="dataInicio" value={formData.dataInicio} onChange={handleInputChange} />
             <label>Hora de Início:</label>
-            <input type="datetime-local" name="horaInicio" value={formData.horaInicio} onChange={handleInputChange} />
+            <input type="time" name="horaInicio" value={formData.horaInicio} onChange={handleInputChange} />
+            <label>Data de Término:</label>
+            <input type="date" name="dataTermino" value={formData.dataTermino} onChange={handleInputChange} />
             <label>Hora de Término:</label>
-            <input type="datetime-local" name="horaTermino" value={formData.horaTermino} onChange={handleInputChange} />
+            <input type="time" name="horaTermino" value={formData.horaTermino} onChange={handleInputChange} />
+
             <label>Instalação de Equipamentos:</label>
             <input type="checkbox" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleInputChange} />
             <label>Manutenção de Equipamentos:</label>
             <input type="checkbox" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleInputChange} />
-            <input type="checkbox" id="homologacaodeinfra" name="homologacaodeinfra" value={formData.homologacaodeinfra} onChange={handleInputChange} />
+            <label>Homolocaçãp de Infra</label>
+            <input type="checkbox" id="homologacaoDeInfra" name="homologacaoDeInfra" value={formData.homologacaoDeInfra} onChange={handleInputChange} />
             <label>Instalação Preventiva Contratual:</label>
             <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
             <label>REP Print Point 2:</label>
