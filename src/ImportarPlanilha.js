@@ -8,19 +8,22 @@ export default function importarPlanilha(){
 // Função para enviar o arquivo da planilha para o backend
 const handleFileUpload = async (e) => {
   const file = e.target.files[0];
-
+  
   if (file && file.name.endsWith('.xlsx')) {
     const formData = new FormData();
-    formData.append('file', file);  // Adiciona o arquivo na requisição
-
+    formData.append('file', file);
+    
     try {
-      // Envia o arquivo para o backend
       const response = await axios.post('http://localhost:3000/racvirtual/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Tipo de conteúdo para upload de arquivos
+          'Content-Type': 'multipart/form-data',
         },
       });
-      alert('Planilha importada com sucesso');
+
+      console.log('Dados da planilha importados:', response.data.data);
+
+      // Aqui você pode processar os dados recebidos da planilha
+      alert('Planilha importada com sucesso!');
     } catch (error) {
       alert('Erro ao importar planilha');
       console.error(error);
@@ -29,6 +32,7 @@ const handleFileUpload = async (e) => {
     alert('Por favor, selecione um arquivo .xlsx');
   }
 };
+
 
 const links = [
   { label: 'Autenticacao', url: '/Autenticacao' },

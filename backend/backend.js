@@ -1,9 +1,9 @@
 const express = require('express')
+const { RacForm , sequelize} = require('./models');  // Corrija o caminho para onde o modelo está localizado
 const mysql = require('mysql2/promise')
 const multer = require('multer')
 const cors = require('cors')
 const XLSX = require('xlsx');
-
 
 const app = express()
 const PORT = 3000 // Porta unificada
@@ -133,32 +133,43 @@ function processBooleanFields(formData) {
   return formData;
 }
 
-app.post('/racvirtual/upload', upload.single('file'), (req, res) => {
+
+app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send('Nenhum arquivo enviado');
   }
 
-  // Log para verificar a estrutura do arquivo recebido
   console.log('Arquivo recebido:', req.file);
   console.log('Tamanho do arquivo:', req.file.size);
 
   // Usar o buffer para ler o arquivo Excel diretamente
   const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
-  const sheetName = workbook.SheetNames[0];
+  const sheetName = workbook.SheetNames[0];  // Pega o nome da primeira aba
   const worksheet = workbook.Sheets[sheetName];
 
   // Converte os dados da planilha para JSON
   const dados = XLSX.utils.sheet_to_json(worksheet);
 
-  // Log dos dados extraídos da planilha
   console.log('Dados extraídos da planilha:', dados);
 
-  // Aqui você pode processar os dados e armazená-los no banco de dados
-  // Exemplo fictício de como salvar os dados no banco (ajuste conforme seu modelo)
-  // Model.create(dados).then(() => res.status(200).send('Planilha importada com sucesso'));
+  try {
+    // Salva os dados extraídos da planilha no banco de dados
+    // Aqui estamos assumindo que o modelo é chamado RacForm e os dados possuem o mesmo formato
+    const savedData = await RacForm.bulkCreate(dados);
 
-  res.status(200).send('Planilha importada com sucesso');
+    res.status(200).json({
+      message: 'Planilha importada e dados salvos com sucesso!',
+      data: savedData,  // Retorna os dados que foram salvos
+    });
+  } catch (error) {
+    console.error('Erro ao salvar dados no banco:', error);
+    res.status(500).json({
+      message: 'Erro ao salvar dados no banco',
+      error: error.message,
+    });
+  }
 });
+
 
 
 
@@ -252,6 +263,22 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
   } catch (error) {
     console.error(error);  // Log de erro para depuração
     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message });
+  }
+});
+
+app.post('/create-form', async (req, res) => {
+  let formData = req.body; // Supondo que os dados venham no corpo da requisição
+
+  // Processar os campos booleanos
+  formData = processBooleanFields(formData);
+
+  try {
+    // Criar o formulário no banco de dados
+    const novoFormulario = await RacForm.create(formData);
+    res.status(201).json(novoFormulario);
+  } catch (error) {
+    console.error('Erro ao criar formulário:', error);
+    res.status(500).json({ error: 'Erro ao criar o formulário' });
   }
 });
 
