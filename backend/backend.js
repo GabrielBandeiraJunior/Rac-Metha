@@ -173,7 +173,25 @@ app.get('/racvirtual/:id', async (req, res) => {
   }
 })
 
-// Endpoint para editar uma RAC
+// Endpoint para deletar uma RAC
+app.delete('/racvirtual/delete/:id', async (req, res) => {
+  const { id } = req.params
+  try {
+    const [result] = await db.query('DELETE FROM RacForm WHERE id = ?', [id])
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'RAC não encontrada' })
+    }
+    
+    res.status(200).json({ message: 'RAC deletada com sucesso' })
+  } catch (error) {
+    console.error(error)  // Log de erro para depuração
+    res.status(500).json({ message: 'Erro ao deletar RAC', error: error.message })
+  }
+})
+
+
+
 // Endpoint para editar uma RAC
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params
