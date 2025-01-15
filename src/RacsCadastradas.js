@@ -166,7 +166,7 @@ return (
 </header>
 <h1>RACs Cadastradas</h1>
 <div className="filtros">
-    <input type="datetime-local" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
+    <input type="date" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
     <input type="text" name="tecnico" placeholder="Filtrar por técnico" onChange={handleFilterChange} />
     <input type="text" name="empresa" placeholder="Filtrar por empresa" onChange={handleFilterChange} />
 </div>
@@ -264,9 +264,13 @@ return (
             <input type="checkbox" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleInputChange} />
             <label>Manutenção de Equipamentos:</label>
             <input type="checkbox" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleInputChange} />
-            <label>Homolocaçãp de Infra</label>
+            <label>Homolocação de Infra</label>
             <input type="checkbox" id="homologacaoDeInfra" name="homologacaoDeInfra" value={formData.homologacaoDeInfra} onChange={handleInputChange} />
-            <label>Instalação Preventiva Contratual:</label>
+            <label>Treinamento operacional</label>
+            <input type="checkbox" id="treinamentoOperacional" name="treinamentoOperacional" value={formData.treinamentoOperacional} onChange={handleInputChange} />
+            <label>Implantação De Sistemas</label>
+            <input type="checkbox" id="implantacaoDeSistemas" name="implantacaoDeSistemas" value={formData.implantacaoDeSistemas} onChange={handleInputChange} />
+            <label>Manutenção Preventiva Contratual:</label>           
             <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
             <label>REP Print Point 2:</label>
             <input type="checkbox" name="repprintpoint2" checked={formData.repprintpoint2} onChange={handleInputChange} />
@@ -280,6 +284,10 @@ return (
             <input type="checkbox" name="relogiomicropoint" checked={formData.relogiomicropoint} onChange={handleInputChange} />
             <label>Relogio Biopoint:</label>
             <input type="checkbox" name="relogiobiopoint" checked={formData.relogiobiopoint} onChange={handleInputChange} />
+            <label>Catraca Micropoint</label>
+            <input type="checkbox" name="catracamicropoint" checked={formData.catracamicropoint} onChange={handleInputChange} />
+            <label>Catraca Biopoint</label>
+            <input type="checkbox" name="catracabiopoint" checked={formData.catracabiopoint} onChange={handleInputChange} />
             <label>Catraca Ceros:</label>
             <input type="checkbox" name="catracaceros" checked={formData.catracaceros} onChange={handleInputChange} />
             <label>Catraca Id Block:</label>

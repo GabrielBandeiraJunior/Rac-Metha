@@ -46,6 +46,9 @@ function RacForm() {
     
   });
 
+  const [step, setStep] = useState(1);
+
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -70,7 +73,7 @@ function RacForm() {
   
     // Função para formatar a data no formato correto para o MySQL
     const formatDateForMySQL = (dateString) => {
-      if (!dateString) return '';
+      if (!dateString || isNaN(new Date(dateString))) return ''; // Verifica se o valor da data/hora é inválido
       const date = new Date(dateString);
       return date.toISOString().slice(0, 19).replace('T', ' '); // Converte para 'YYYY-MM-DD HH:MM:SS'
     };
@@ -107,6 +110,7 @@ function RacForm() {
       alert('Erro ao enviar os dados!');
     }
   };
+  
 
   const links = [
     { label: 'Autenticacao', url: '/Autenticacao' },
@@ -116,11 +120,20 @@ function RacForm() {
     { label: 'Home', url: '/' },
   ];
 
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
+
+  const handlePrevStep = () => {
+    setStep(step - 1);
+  };
+
   return (
     <>
       <Headers links={links} />
       <form className="form-group" onSubmit={handleSubmit}>
-        {/* Campos do formulário */}
+      {step === 1 && (
+        <div className="form-page">
         <label htmlFor="tecnico">Nome do Técnico</label>
         <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Nome do Técnico" required />
         
@@ -145,13 +158,24 @@ function RacForm() {
         <label htmlFor="cidade">Cidade da Empresa</label>
         <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa" required />
         
+        <label htmlFor="dataInicio">Data de Início da Atividade</label>
+        <input type="date" id="dataInicio" name="dataInicio" value={formData.dataInicio} onChange={handleChange} placeholder="Data de Início da Atividade" />
+
         <label htmlFor="horaInicio">Hora de Início da Atividade</label>
-        <input type="datetime-local" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora de Início da Atividade" />
+        <input type="time" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora de Início da Atividade" />
         
+        <label htmlFor="dataTermino">Data de Término da Atividade</label>
+        <input type="date" id="dataTermino" name="dataTermino" value={formData.dataTermino} onChange={handleChange} placeholder="Data de Término da Atividade" />
+
         <label htmlFor="horaTermino">Hora de Término da Atividade</label>
-        <input type="datetime-local" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora de Término da Atividade" />
+        <input type="time" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora de Término da Atividade" />
+   
+   <button type="button" onClick={handleNextStep}>Próxima Etapa</button>
+        </div>
+      )}
+       {step === 2 && (
+      <div className="form-page">
         
-        {/* Campos de checkbox */}
         <label htmlFor="instalacaoDeEquipamentos">Instalação de Equipamentos</label>
         <input type="checkbox" id="instalacaoDeEquipamentos" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleChange} />
         
@@ -169,7 +193,12 @@ function RacForm() {
         
         <label htmlFor="manutencaoPreventivaContratual">Manutenção Preventiva Contratual</label>
         <input type="checkbox" id="manutencaoPreventivaContratual" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleChange} />
-        
+        <button type="button" onClick={handlePrevStep}>Etapa Anterior</button>
+        <button type="button" onClick={handleNextStep}>Próxima Etapa</button>
+        </div>
+        )}
+         {step === 3 && (
+        <div className="form-page">
         <label htmlFor="repprintpoint2">REP Print Point2</label>
         <input type="checkbox" id="repprintpoint2" name="repprintpoint2" checked={formData.repprintpoint2} onChange={handleChange} />
 
@@ -236,14 +265,17 @@ function RacForm() {
         name="prestadoraDoServico"
         checked={formData.prestadoraDoServico}
         onChange={handleChange}
-        required
+        
       >
         <option value="">Selecione a Prestadora</option>
         <option value="Mega Digital">Mega Digital</option>
         <option value="Metah">Metah</option>
       </select>
         {/* Enviar */}
+        <button type="button" onClick={handlePrevStep}>Etapa Anterior</button>
         <button type="submit">Enviar</button>
+        </div>
+        )}
       </form>
     </>
   );
