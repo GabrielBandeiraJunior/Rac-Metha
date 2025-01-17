@@ -15,7 +15,10 @@ function RacForm() {
     cidade: '',
     responsavel: '',
     setor: '',
+    dataInicio: '',
     horaInicio: '',
+    pausas: [],
+    dataTermino: '',
     horaTermino: '',
     instalacaoDeEquipamentos: false,
     manutencaoDeEquipamentos: false,
@@ -43,12 +46,30 @@ function RacForm() {
     codigoComponente: '',
     observacoes: '',
     prestadoraDoServico: '',
-    
+    file: null
   });
 
-  const [step, setStep] = useState(1);
+  // PAUSAS
+  const handleAddPause = () => {
+    if (formData.pausas.length < 10) {
+      setFormData({
+        ...formData,
+        pausas: [...formData.pausas, { horaInicio: '', horaTermino: '' }],
+      });
+    }
+  };
 
+  const handlePauseChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedPausas = [...formData.pausas];
+    updatedPausas[index][name] = value;
+    setFormData({
+      ...formData,
+      pausas: updatedPausas,
+    });
+  };
 
+  // Alteração de dados do formulário
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -65,44 +86,43 @@ function RacForm() {
     });
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
     const formDataToSend = new FormData();
-  
-    // Função para formatar a data no formato correto para o MySQL
+
     const formatDateForMySQL = (dateString) => {
-      if (!dateString || isNaN(new Date(dateString))) return ''; // Verifica se o valor da data/hora é inválido
+      if (!dateString || isNaN(new Date(dateString))) return ''; // Verifica se a data é válida
       const date = new Date(dateString);
-      return date.toISOString().slice(0, 19).replace('T', ' '); // Converte para 'YYYY-MM-DD HH:MM:SS'
+      return date.toISOString().slice(0, 19).replace('T', ' '); // 'YYYY-MM-DD HH:MM:SS'
     };
-  
-    // Formatando as datas para o formato correto
+
     const formattedHoraInicio = formatDateForMySQL(formData.horaInicio);
     const formattedHoraTermino = formatDateForMySQL(formData.horaTermino);
-  
-    // Adiciona todos os dados do formulário com as datas corrigidas
+
     for (const [key, value] of Object.entries(formData)) {
       if (key === 'horaInicio') {
         formDataToSend.append(key, formattedHoraInicio);
       } else if (key === 'horaTermino') {
         formDataToSend.append(key, formattedHoraTermino);
-      } else if (key !== 'file') { // Não adiciona o arquivo diretamente aqui
+      } else if (key !== 'file') {
         formDataToSend.append(key, value);
       }
     }
-  
-    // Adiciona o arquivo, se houver
+
     if (formData.file) {
       formDataToSend.append('file', formData.file);
     }
-  
+
+    formData.pausas.forEach((pausa, index) => {
+      const formattedPausaInicio = formatDateForMySQL(pausa.horaInicio);
+      const formattedPausaTermino = formatDateForMySQL(pausa.horaTermino);
+      formDataToSend.append(`pausa${index + 1}HoraInicio`, formattedPausaInicio);
+      formDataToSend.append(`pausa${index + 1}HoraTermino`, formattedPausaTermino);
+    });
+
     try {
       const response = await axios.post('http://localhost:3000/racvirtual/register', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert(response.data.message);
     } catch (error) {
@@ -110,7 +130,6 @@ function RacForm() {
       alert('Erro ao enviar os dados!');
     }
   };
-  
 
   const links = [
     { label: 'Autenticacao', url: '/Autenticacao' },
@@ -128,51 +147,61 @@ function RacForm() {
     setStep(step - 1);
   };
 
+  const [step, setStep] = useState(1);
   return (
     <>
       <Headers links={links} />
       <form className="form-group" onSubmit={handleSubmit}>
-      {step === 1 && (
-        <div className="form-page">
-        <label htmlFor="tecnico">Nome do Técnico</label>
-        <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Nome do Técnico" required />
-        
-        <label htmlFor="razaoSocial">Razão Social da Empresa</label>
-        <input type="text" id="razaoSocial" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social da Empresa" />
-        
-        <label htmlFor="cnpj">CNPJ da Empresa</label>
-        <input type="text" id="cnpj" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ da Empresa" required />
-        
-        <label htmlFor="endereco">Endereço Completo</label>
-        <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço Completo" required />
-        
-        <label htmlFor="numero">Número do Endereço</label>
-        <input type="text" id="numero" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número do Endereço" required />
-        
-        <label htmlFor="responsavel">Nome do Responsável</label>
-        <input type="text" id="responsavel" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Nome do Responsável" required />
-        
-        <label htmlFor="setor">Setor da Empresa</label>
-        <input type="text" id="setor" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor da Empresa" required />
-        
-        <label htmlFor="cidade">Cidade da Empresa</label>
-        <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa" required />
-        
-        <label htmlFor="dataInicio">Data de Início da Atividade</label>
-        <input type="date" id="dataInicio" name="dataInicio" value={formData.dataInicio} onChange={handleChange} placeholder="Data de Início da Atividade" />
-
-        <label htmlFor="horaInicio">Hora de Início da Atividade</label>
-        <input type="time" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} placeholder="Hora de Início da Atividade" />
-        
-        <label htmlFor="dataTermino">Data de Término da Atividade</label>
-        <input type="date" id="dataTermino" name="dataTermino" value={formData.dataTermino} onChange={handleChange} placeholder="Data de Término da Atividade" />
-
-        <label htmlFor="horaTermino">Hora de Término da Atividade</label>
-        <input type="time" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora de Término da Atividade" />
-   
-   <button type="button" onClick={handleNextStep}>Próxima Etapa</button>
-        </div>
-      )}
+        {step === 1 && (
+          <div className="form-page">
+            <label htmlFor="tecnico">Nome do Técnico</label>
+            <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Nome do Técnico" required />
+            <label htmlFor="razaoSocial">Razão Social da Empresa</label>
+            <input type="text" id="razaoSocial" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social da Empresa" />
+            <label htmlFor="cnpj">CNPJ da Empresa</label>
+            <input type="text" id="cnpj" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ da Empresa" required />
+            <label htmlFor="endereco">Endereço Completo</label>
+            <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço Completo" required />
+            <label htmlFor="numero">Número do Endereço</label>
+            <input type="text" id="numero" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número do Endereço" required />
+            <label htmlFor="responsavel">Nome do Responsável</label>
+            <input type="text" id="responsavel" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Nome do Responsável" required />
+            <label htmlFor="setor">Setor da Empresa</label>
+            <input type="text" id="setor" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor da Empresa" required />
+            <label htmlFor="cidade">Cidade da Empresa</label>
+            <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa" required />
+            <label htmlFor="dataInicio">Data de Início da Atividade</label>
+            <input type="date" id="dataInicio" name="dataInicio" value={formData.dataInicio} onChange={handleChange} />
+            <label htmlFor="horaInicio">Hora de Início da Atividade</label>
+            <input type="time" id="horaInicio" name="horaInicio" value={formData.horaInicio} onChange={handleChange} />
+            <label htmlFor="dataTermino">Data de Término da Atividade</label>
+            <input type="date" id="dataTermino" name="dataTermino" value={formData.dataTermino} onChange={handleChange} />
+            <label htmlFor="horaTermino">Hora de Término da Atividade</label>
+            <input type="time" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} />
+            {formData.pausas.map((pause, index) => (
+              <div key={index} className="pausa">
+                <label htmlFor={`horaInicioPausa${index}`}>Hora de Início da Pausa {index + 1}</label>
+                <input
+                  type="time"
+                  id={`horaInicioPausa${index}`}
+                  name="horaInicio"
+                  value={pause.horaInicio}
+                  onChange={(e) => handlePauseChange(index, e)}
+                />
+                <label htmlFor={`horaTerminoPausa${index}`}>Hora de Término da Pausa {index + 1}</label>
+                <input
+                  type="time"
+                  id={`horaTerminoPausa${index}`}
+                  name="horaTermino"
+                  value={pause.horaTermino}
+                  onChange={(e) => handlePauseChange(index, e)}
+                />
+              </div>
+            ))}
+            <button type="button" onClick={handleAddPause}>Adicionar Pausa</button>
+            <button type="button" onClick={handleNextStep}>Próxima Etapa</button>
+          </div>
+        )}
        {step === 2 && (
       <div className="form-page">
         
