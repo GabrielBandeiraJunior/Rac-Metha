@@ -2,9 +2,14 @@ const express = require('express');
 const mysql = require('mysql2/promise');
 const multer = require('multer');
 const cors = require('cors');
+const xlsx = require('xlsx');
+const path = require('path');
 
 const app = express();
 const PORT = 3000;
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 // Configuração do Banco de Dados
 const dbConfig = {
@@ -13,10 +18,6 @@ const dbConfig = {
   password: '000000',
   database: 'racvirtual',
 };
-
-// Configuração do Multer para upload de arquivos
-const storage = multer.memoryStorage(); // Armazena arquivos na memória
-const upload = multer({ storage });
 
 // Middleware
 app.use(cors());
@@ -98,6 +99,9 @@ function processBooleanFields(formData) {
     'idface',
     'idflex',
   ];
+
+  
+
 
   booleanFields.forEach(field => {
     if (formData[field] !== undefined) {
@@ -212,6 +216,66 @@ app.delete('/racvirtual/delete/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao deletar RAC', error: error.message });
   }
 });
+
+
+const handleFileUpload = async (event) => {
+  const formData = new FormData();
+  formData.append('file', event.target.files[0]);
+
+  try {
+    const response = await axios.post('http://localhost:3000/racvirtual/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log(response.data);
+  } catch (error) {
+    console.error('Erro no upload:', error);
+    alert(`Erro ao carregar o arquivo: ${error.response ? error.response.data.message : error.message}`);
+  }
+};
+
+
+
+app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'Nenhum arquivo enviado' });
+  }
+
+  try {
+    // Aqui você pode usar uma biblioteca como xlsx para processar a planilha
+    const xlsx = require('xlsx');
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+
+    // Processa os dados da planilha (exemplo: pegando a primeira aba e convertendo para JSON)
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
+
+    // Exemplo: inserir dados no banco de dados (adaptar conforme a estrutura da planilha)
+    const query = 'INSERT INTO RacForm (tecnico, razaoSocial, cnpj, endereco, numero, responsavel, setor) VALUES ?';
+    const values = data.map(item => [
+      item.tecnico,
+      item.razaoSocial,
+      item.cnpj,
+      item.endereco,
+      item.numero,
+      item.responsavel,
+      item.setor
+    ]);
+
+    await db.query(query, [values]);
+
+    res.status(200).json({ message: 'Arquivo carregado e dados inseridos com sucesso' });
+  } catch (error) {
+    console.error('Erro ao processar o arquivo:', error);
+    res.status(500).json({ message: 'Erro ao processar o arquivo', error: error.message });
+  }
+});
+
+
+
+
 
 // Inicializar o servidor
 app.listen(PORT, async () => {
