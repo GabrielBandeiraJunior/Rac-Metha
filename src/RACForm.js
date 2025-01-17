@@ -17,7 +17,7 @@ function RacForm() {
     setor: '',
     dataInicio: '',
     horaInicio: '',
-    pausas: [],
+    
     dataTermino: '',
     horaTermino: '',
     instalacaoDeEquipamentos: false,
@@ -109,16 +109,9 @@ function RacForm() {
       }
     }
 
-    if (formData.file) {
-      formDataToSend.append('file', formData.file);
-    }
+   
 
-    formData.pausas.forEach((pausa, index) => {
-      const formattedPausaInicio = formatDateForMySQL(pausa.horaInicio);
-      const formattedPausaTermino = formatDateForMySQL(pausa.horaTermino);
-      formDataToSend.append(`pausa${index + 1}HoraInicio`, formattedPausaInicio);
-      formDataToSend.append(`pausa${index + 1}HoraTermino`, formattedPausaTermino);
-    });
+    
 
     try {
       const response = await axios.post('http://localhost:3000/racvirtual/register', formDataToSend, {
@@ -178,26 +171,7 @@ function RacForm() {
             <input type="date" id="dataTermino" name="dataTermino" value={formData.dataTermino} onChange={handleChange} />
             <label htmlFor="horaTermino">Hora de Término da Atividade</label>
             <input type="time" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} />
-            {formData.pausas.map((pause, index) => (
-              <div key={index} className="pausa">
-                <label htmlFor={`horaInicioPausa${index}`}>Hora de Início da Pausa {index + 1}</label>
-                <input
-                  type="time"
-                  id={`horaInicioPausa${index}`}
-                  name="horaInicio"
-                  value={pause.horaInicio}
-                  onChange={(e) => handlePauseChange(index, e)}
-                />
-                <label htmlFor={`horaTerminoPausa${index}`}>Hora de Término da Pausa {index + 1}</label>
-                <input
-                  type="time"
-                  id={`horaTerminoPausa${index}`}
-                  name="horaTermino"
-                  value={pause.horaTermino}
-                  onChange={(e) => handlePauseChange(index, e)}
-                />
-              </div>
-            ))}
+            
             <button type="button" onClick={handleAddPause}>Adicionar Pausa</button>
             <button type="button" onClick={handleNextStep}>Próxima Etapa</button>
           </div>

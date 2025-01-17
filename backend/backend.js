@@ -76,7 +76,6 @@ async function createTableIfNotExists(connection) {
 const db = mysql.createPool(dbConfig);
 
 // Função para processar campos booleanos
-// Função para processar campos booleanos
 function processBooleanFields(formData) {
   const booleanFields = [
     'instalacaoDeEquipamentos',
@@ -100,30 +99,14 @@ function processBooleanFields(formData) {
     'idflex',
   ];
 
-  // Verifique se "formData.pausas" é um array antes de usar forEach
-  if (Array.isArray(formData.pausas)) {
-    formData.pausas.forEach((pausa, index) => {
-      const formattedPausaInicio = formatDateForMySQL(pausa.horaInicio);
-      const formattedPausaTermino = formatDateForMySQL(pausa.horaTermino);
-      formData[`pausa${index + 1}HoraInicio`] = formattedPausaInicio;
-      formData[`pausa${index + 1}HoraTermino`] = formattedPausaTermino;
-    });
-  } else {
-    console.warn('A propriedade "pausas" não é um array:', formData.pausas);
-  }
-
-  // Processamento de campos booleanos
-  booleanFields.forEach((field) => {
+  booleanFields.forEach(field => {
     if (formData[field] !== undefined) {
-      formData[field] = formData[field] === 'true' || formData[field] === true ? 1 : 0;
+      formData[field] = formData[field] === 'true'; // Converte strings 'true'/'false' em valores booleanos
     }
   });
 
   return formData;
 }
-
-
-
 
 // Função para processar campos de data
 function processDateFields(formData) {
@@ -215,21 +198,20 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
   }
 });
 
+// Endpoint para deletar uma RAC
 app.delete('/racvirtual/delete/:id', async (req, res) => {
-  const { id } = req.params
+  const { id } = req.params;
   try {
-    const [result] = await db.query('DELETE FROM RacForm WHERE id = ?', [id])
-    
+    const [result] = await db.query('DELETE FROM RacForm WHERE id = ?', [id]);
     if (result.affectedRows === 0) {
-      return res.status(404).json({ message: 'RAC não encontrada' })
+      return res.status(404).json({ message: 'RAC não encontrada' });
     }
-    
-    res.status(200).json({ message: 'RAC deletada com sucesso' })
+    res.status(200).json({ message: 'RAC deletada com sucesso' });
   } catch (error) {
-    console.error(error)  // Log de erro para depuração
-    res.status(500).json({ message: 'Erro ao deletar RAC', error: error.message })
+    console.error('Erro ao deletar RAC:', error);  // Log de erro detalhado
+    res.status(500).json({ message: 'Erro ao deletar RAC', error: error.message });
   }
-})
+});
 
 // Inicializar o servidor
 app.listen(PORT, async () => {
