@@ -16,7 +16,8 @@ const Perfil = () => {
     { label: 'Autenticacao', url: '/Autenticacao' },
     { label: 'Nova Rac', url: '/novarac' },
     { label: 'Consultar Racs', url: '/racscadastradas' },
-    { label: 'Home', url: '/' },  
+    { label: 'Home', url: '/' },
+    { label: 'Importar Planilha', url: '/importarplanilha' }
   ];
 
   return (

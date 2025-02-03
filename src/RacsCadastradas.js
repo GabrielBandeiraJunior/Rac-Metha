@@ -46,7 +46,8 @@ export default function RacsCadastradas() {
     const links = [
         { label: 'Meu Perfil', url: '/perfil' },
         { label: 'Nova RAC', url: '/novarac' },
-        { label: 'Home', url: '/' }
+        { label: 'Home', url: '/' },
+        { label: 'Importar Planilha', url: '/importarplanilha' }
     ];
 
     useEffect(() => {
@@ -160,6 +161,15 @@ export default function RacsCadastradas() {
         }));
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return "Data inválida"; // Evita erro se a data estiver vazia
+        const date = new Date(dateString);
+        const dia = String(date.getDate()).padStart(2, '0');
+        const mes = String(date.getMonth() + 1).padStart(2, '0'); // Mês começa de 0
+        const ano = date.getFullYear();
+        return `${dia}/${mes}/${ano}`;
+    };
+    
 return (
 <div pagina-inteira-racscadastradas >
 <header>
@@ -176,11 +186,14 @@ return (
         <div key={item.id} className="dados-item">
             <p><strong>Técnico:</strong> {item.tecnico}</p>
             <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
-            <p><strong>Data de Registro:</strong>{item.date}</p>
+            <p><strong>Data de Registro:</strong>{formatDate(item.date)}</p>
             
             <button onClick={() => toggleExpand(item.id)}>
                 {expandedId === item.id ? 'Esconder Detalhes' : 'Expandir Detalhes'}
             </button>
+            <button onClick={() => handleEditClick(item)}>Editar</button>
+            <button onClick={() => handleDelete(item.id)}>Excluir</button>
+            <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
             {expandedId === item.id && (
              <div className="rac-expandida">
              {/* <p><strong>Técnico:</strong> {item.tecnico}</p>
@@ -191,14 +204,14 @@ return (
              <p><strong>Responsável:</strong> {item.responsavel}</p>
              <p><strong>Setor:</strong> {item.setor}</p>
              <p><strong>Cidade:</strong> {item.cidade}</p>
-             <p><strong>Data de Início:</strong> {item.dataInicio}</p>
+             <p><strong>Data de Início:</strong> {formatDate(item.dataInicio)}</p>
              <p><strong>Hora de Início:</strong> {item.horaInicio}</p>
-             <p><strong>Data de Término:</strong> {item.dataTermino}</p>
+             <p><strong>Data de Término:</strong> {formatDate(item.dataTermino)}</p>
              <p><strong>Hora de Término:</strong> {item.horaTermino}</p>
              <p><strong>Instalação de Equipamentos:</strong> {item.instalacaoDeEquipamentos ? 'Sim' : 'Não'}</p>
              <p><strong>Manutenção de Equipamentos:</strong> {item.manutencaoDeEquipamentos ? 'Sim' : 'Não'}</p>
              <p><strong>Homologação De Infra:</strong> {item.homologacaoDeInfra ? 'Sim' : 'Não'}</p>
-             <p><strong>Treinamento Operacional:</strong>{item.treinamentoOperacional? 'sim':'Não'}</p>
+             <p><strong>Treinamento Operacional:</strong>{item.treinamentoOperacional ? 'sim':'Não'}</p>
              <p><strong>Implantação de Sistemas:</strong> {item.implantacaoDeSistemas ? 'Sim' : 'Não'}</p>
              <p><strong>Manutenção Preventiva Contratual:</strong> {item.manutencaoPreventivaContratual ? 'Sim' : 'Não'}</p>
              <p><strong>REP Print Point 2:</strong> {item.repprintpoint2 ? 'Sim' : 'Não'}</p>
@@ -222,9 +235,8 @@ return (
              <p><strong>Observações:</strong> {item.observacoes}</p>
              <p><strong>Serviço Prestado Pela:</strong> {item.prestadoraDoServico}</p>
              
-             <button onClick={() => handleEditClick(item)}>Editar</button>
-             <button onClick={() => handleDelete(item.id)}>Excluir</button>
-             <button onClick={() => gerarPDF(item)}>Gerar PDF</button>
+             
+
             </div>
             )}
         </div>
@@ -252,6 +264,7 @@ return (
             <label>Setor:</label>
             <input type="text" name="setor" value={formData.setor} onChange={handleInputChange} />
 
+            
             <label>Data de Início:</label>
             <input type="date" name="dataInicio" value={formData.dataInicio} onChange={handleInputChange} />
             <label>Hora de Início:</label>
@@ -260,13 +273,13 @@ return (
             <input type="date" name="dataTermino" value={formData.dataTermino} onChange={handleInputChange} />
             <label>Hora de Término:</label>
             <input type="time" name="horaTermino" value={formData.horaTermino} onChange={handleInputChange} />
-
+            
             <label>Instalação de Equipamentos:</label>
             <input type="checkbox" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleInputChange} />
             <label>Manutenção de Equipamentos:</label>
             <input type="checkbox" name="manutencaoDeEquipamentos" checked={formData.manutencaoDeEquipamentos} onChange={handleInputChange} />
-            <label>Homolocaçãp de Infra</label>
-            <input type="checkbox" id="homologacaoDeInfra" name="homologacaoDeInfra" value={formData.homologacaoDeInfra} onChange={handleInputChange} />
+            <label>Homolocação de Infra</label>
+            <input type="checkbox" name="homologacaoDeInfra" value={formData.homologacaoDeInfra} onChange={handleInputChange} />
             <label>Instalação Preventiva Contratual:</label>
             <input type="checkbox" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleInputChange} />
             <label>REP Print Point 2:</label>

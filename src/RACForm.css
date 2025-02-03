@@ -1,29 +1,44 @@
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .form-group {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.form-page {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #45a049;
 }
 
 label {
-  width: 150px;
-  margin-right: 10px;
+  font-weight: bold;
 }
 
-input[type="text"],
-input[type="datetime-local"] {
-  width: 200px;
-  padding: 8px;
+input[type="text"], input[type="datetime-local"], select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 input[type="checkbox"] {
-  margin-right: 5px;
+  margin-top: 10px;
 }
-
-

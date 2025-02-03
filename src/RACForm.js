@@ -100,41 +100,54 @@ function RacForm() {
     }
   };
 
+  const handleNextStep = () => {
+    setStep(step + 1);
+  };
+
+  const handlePrevStep = () => {
+    setStep(step - 1);
+  };
+
+  const [step, setStep] = useState(1);
+
   const links = [
     { label: 'Autenticacao', url: '/Autenticacao' },
     { label: 'Perfil', url: '/perfil' },
     { label: 'Consultar Racs', url: '/racscadastradas' },
     { label: 'Home', url: '/' },
+    { label: 'Importar Planilha', url: '/importarplanilha' }
   ];
 
   return (
     <>
       <Headers links={links} />
       <form className="form-group" onSubmit={handleSubmit}>
+        {step === 1 && (
+          <div className="form-page">
         {/* Campos do formulário */}
         <label htmlFor="tecnico">Nome do Técnico</label>
-        <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Nome do Técnico" required />
+        <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} placeholder="Nome do Técnico"  />
         
         <label htmlFor="razaoSocial">Razão Social da Empresa</label>
         <input type="text" id="razaoSocial" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} placeholder="Razão Social da Empresa" />
         
         <label htmlFor="cnpj">CNPJ da Empresa</label>
-        <input type="text" id="cnpj" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ da Empresa" required />
+        <input type="text" id="cnpj" name="cnpj" value={formData.cnpj} onChange={handleChange} placeholder="CNPJ da Empresa"  />
         
         <label htmlFor="endereco">Endereço Completo</label>
-        <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço Completo" required />
+        <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço Completo"  />
         
         <label htmlFor="numero">Número do Endereço</label>
-        <input type="text" id="numero" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número do Endereço" required />
+        <input type="text" id="numero" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número do Endereço"  />
         
         <label htmlFor="responsavel">Nome do Responsável</label>
-        <input type="text" id="responsavel" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Nome do Responsável" required />
+        <input type="text" id="responsavel" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Nome do Responsável"  />
         
         <label htmlFor="setor">Setor da Empresa</label>
-        <input type="text" id="setor" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor da Empresa" required />
+        <input type="text" id="setor" name="setor" value={formData.setor} onChange={handleChange} placeholder="Setor da Empresa"  />
         
         <label htmlFor="cidade">Cidade da Empresa</label>
-        <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa" required />
+        <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa"  />
         
         <label htmlFor="dataInicio">Data de Início da Atividade</label>
         <input type="date" id="dataInicio" name="dataInicio" value={formData.dataInicio} onChange={handleChange} placeholder="Data de Início da Atividade" />
@@ -147,7 +160,11 @@ function RacForm() {
 
         <label htmlFor="horaTermino">Hora de Término da Atividade</label>
         <input type="time" id="horaTermino" name="horaTermino" value={formData.horaTermino} onChange={handleChange} placeholder="Hora de Término da Atividade" />
-        
+        <button type="button" onClick={handleNextStep}>Próxima Etapa</button>
+        </div>
+      )}
+      {step === 2 &&(   
+      <div className="form-page">
         {/* Campos de checkbox */}
         <label htmlFor="instalacaoDeEquipamentos">Instalação de Equipamentos</label>
         <input type="checkbox" id="instalacaoDeEquipamentos" name="instalacaoDeEquipamentos" checked={formData.instalacaoDeEquipamentos} onChange={handleChange} />
@@ -161,7 +178,8 @@ function RacForm() {
           checked={formData.homologacaoDeInfra} 
           onChange={handleChange} 
         />
-                
+      
+              
         <label htmlFor="treinamentoOperacional">Treinamento Operacional</label>
         <input type="checkbox" id="treinamentoOperacional" name="treinamentoOperacional" checked={formData.treinamentoOperacional} onChange={handleChange} />
         
@@ -170,7 +188,12 @@ function RacForm() {
         
         <label htmlFor="manutencaoPreventivaContratual">Manutenção Preventiva Contratual</label>
         <input type="checkbox" id="manutencaoPreventivaContratual" name="manutencaoPreventivaContratual" checked={formData.manutencaoPreventivaContratual} onChange={handleChange} />
-        
+        <button type="button" onClick={handlePrevStep}>Etapa Anterior</button>
+        <button type="button" onClick={handleNextStep}>Próxima Etapa</button>
+        </div>
+      )}
+      {step === 3 && (
+        <div className="form-page">
         <label htmlFor="repprintpoint2">REP Print Point2</label>
         <input type="checkbox" id="repprintpoint2" name="repprintpoint2" checked={formData.repprintpoint2} onChange={handleChange} />
 
@@ -236,14 +259,22 @@ function RacForm() {
         name="prestadoraDoServico"
         checked={formData.prestadoraDoServico}
         onChange={handleChange}
-        required
+        
       >
         <option value="">Selecione a Prestadora</option>
         <option value="Mega Digital">Mega Digital</option>
         <option value="Metah">Metah</option>
       </select>
         {/* Enviar */}
+
+        
+        <button type="button" onClick={handlePrevStep}>Próxima Etapa</button>
+
         <button type="submit">Enviar</button>
+
+
+        </div>
+      )}
       </form>
     </>
   );
