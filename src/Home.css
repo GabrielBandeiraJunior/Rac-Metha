@@ -1,0 +1,16 @@
+body{
+    background-color: rgb(4, 126, 182);
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}  
+#descritivo{
+    display: flex;
+    justify-content: center;
+}
+#listagem{
+    display: flex;
+    justify-content: center;
+}
+#tudo{
+    /* display: flex; */
+    justify-content: center;
+}

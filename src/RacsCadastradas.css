@@ -1,0 +1,197 @@
+/* RacsCadastradas.css */
+
+/* Definições iniciais e para desktop */
+.pagina-inteira-racscadastradas {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #003366;
+  padding: 20px;
+  color: white;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2em;
+  margin: 20px 0;
+}
+
+.filtros {
+  margin: 20px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.filtros input {
+  padding: 8px;
+  width: 30%;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.rac-escondida {
+  margin: 20px;
+  max-width: 70%;
+  justify-self: 80%;
+  justify-content: center;
+}
+
+.dados-item {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dados-item p {
+  margin: 5px 0;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.rac-expandida {
+  background-color: #e9ecef;
+  padding: 20px;
+  margin-top: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  justify-content: left;
+  max-width: 50%;
+}
+
+.form-editar {
+  background-color: #f4f4f4;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  max-width: 50%;
+}
+
+.form-editar form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-editar label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-editar input {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-editar input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+}
+
+.form-editar button {
+  background-color: #28a745;
+}
+
+.form-editar button:hover {
+  background-color: #218838;
+}
+
+/* Media Query para telas pequenas (como celular) */
+@media (max-width: 768px) {
+  .filtros {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+  }
+
+  .filtros input {
+    width: 100%;
+  }
+
+  .rac-escondida {
+    max-width: 100%;
+  }
+
+  .dados-item {
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+
+  .rac-expandida {
+    max-width: 100%;
+  }
+
+  .form-editar {
+    max-width: 100%;
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .form-editar input,
+  .form-editar button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  h1 {
+    font-size: 1.5em;
+  }
+
+  button {
+    padding: 8px;
+  }
+
+  /* Ajusta a largura dos botões na lista de dados */
+  .dados-item button {
+    width: 100%;
+  }
+}
+
+/* Media Query para telas muito pequenas (como dispositivos móveis em paisagem) */
+@media (max-width: 480px) {
+  header {
+    padding: 15px;
+  }
+
+  .filtros input {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .form-editar input,
+  .form-editar button {
+    padding: 12px;
+  }
+
+  .dados-item p {
+    font-size: 14px;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .rac-expandida {
+    padding: 15px;
+  }
+}

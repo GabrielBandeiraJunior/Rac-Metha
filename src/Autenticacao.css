@@ -1,0 +1,29 @@
+.ContainersWrapper {
+    display: flex; /* Faz com que os contêineres sejam exibidos em linha */
+    justify-content: center; /* Centraliza os contêineres horizontalmente */
+    margin: 20px; /* Margem ao redor do contêiner pai */
+}
+
+.Container, .Container2 {
+    display: flex;
+    flex-direction: column; /* Alinha os itens em coluna */
+    max-width: 400px; /* Define uma largura máxima para cada contêiner */
+    margin: 0 10px; /* Mantém a margem lateral de 10px para cada contêiner */
+    padding: 20px; /* Adiciona um pouco de espaço interno */
+    border: 1px solid #ccc; /* Adiciona uma borda */
+    border-radius: 5px; /* Arredonda os cantos da borda */
+    background-color: #f9f9f9; /* Define a cor de fundo */
+}
+
+/* Media query para telas menores */
+@media (max-width: 768px) {
+    .ContainersWrapper {
+        flex-direction: column; /* Muda para coluna em telas menores */
+        align-items: center; /* Centraliza os contêineres */
+    }
+    
+    .Container, .Container2 {
+        margin: 10px 0; /* Remove margens laterais e adiciona margens verticais */
+        max-width: 100%; /* Faz os contêineres ocuparem toda a largura disponível */
+    }
+}
