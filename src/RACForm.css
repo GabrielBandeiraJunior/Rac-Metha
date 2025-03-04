@@ -122,3 +122,58 @@ input[type="checkbox"] {
     font-size: 16px;
   }
 }
+
+
+select[multiple] {
+  height: 150px;  /* Aumenta a altura do select */
+}
+
+
+
+custom-select {
+  width: 200px;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.select-items {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.select-items div {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.select-items div:hover {
+  background-color: #f1f1f1;
+}
+
+.selected-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.selected-items span {
+  background-color: #4CAF50;
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+}

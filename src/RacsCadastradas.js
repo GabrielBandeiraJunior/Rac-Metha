@@ -399,6 +399,7 @@ export default function RacsCadastradas() {
                                 <option value="">SELECIONE COMPONENTES</option>
                                 <option value="impressora">impressora</option>
                                 <option value="cabecote">cabecote</option>
+                                <option value="fonte"> Fonte</option>
                             </select>
 
                         <label>Código do Componente:</label>

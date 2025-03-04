@@ -287,7 +287,7 @@ function RacForm() {
               <option value="">Selecione o Componente</option>
               <option value="impressora">Impressora</option>
               <option value="cabecote">Cabecote</option>
-              <option type="checkbox" value="fonte"> Fonte</option>
+              <option value="fonte"> Fonte</option>
 
 
             </select>
