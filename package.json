@@ -26,6 +26,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
     "react-scripts": "^5.0.1",
+    "react-signature-canvas": "^1.1.0-alpha.1",
     "stream-browserify": "^3.0.0",
     "sweetalert2": "^11.17.2",
     "web-vitals": "^2.1.4",
