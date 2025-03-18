@@ -123,15 +123,14 @@ function processBooleanFields(data) {
     'idface',
     'idflex',
   ];
-
-  booleanFields.forEach((field) => {
-    if (data[field] !== undefined) {
-      data[field] = Boolean(data[field]);
-    }
-  });
-
-  return data;
-}
+    booleanFields.forEach((field) => {
+      if (data[field] !== undefined) {
+        data[field] = Boolean(data[field]);
+      }
+    });
+  
+    return data;
+  }
 
 
 function processDateFields(formData) {
@@ -432,29 +431,6 @@ app.get('/endereco/:cep', async (req, res) => {
       res.status(500).json({ error: error.message }); // Retorna um JSON de erro
   }
 });
-//================
-
-// Endpoint para editar uma RAC
-// app.put('/racvirtual/edit/:id', async (req, res) => {
-//   const { id } = req.params
-//   const formData = req.body
-
-//   if (!formData || Object.keys(formData).length === 0) {
-//     return res.status(400).json({ message: 'Dados ausentes para atualização' })
-//   }
-
-//   const processedData = processFormData(formData)  // Chama a função definida acima
-
-//   try {
-//     const [result] = await db.query('UPDATE RacForm SET ? WHERE id = ?', [processedData, id])
-//     if (result.affectedRows === 0) {
-//       return res.status(404).json({ message: 'RAC não encontrada' })
-//     }
-//     res.status(200).json({ message: 'RAC atualizada com sucesso' })
-//   } catch (error) {
-//     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message })
-//   }
-// })
 
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params;
@@ -464,9 +440,56 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     return res.status(400).json({ message: 'Dados ausentes para atualização' });
   }
 
-  const processedData = processFormData(formData)
+  // Lista de campos válidos na tabela RacForm
+  const validFields = [
+    'tecnico',
+    'razaoSocial',
+    'cnpj',
+    'endereco',
+    'numero',
+    'responsavel',
+    'setor',
+    'cidade',
+    'dataInicio',
+    'horaInicio',
+    'dataTermino',
+    'horaTermino',
+    'instalacaoDeEquipamentos',
+    'manutencaoDeEquipamentos',
+    'homologacaoDeInfra',
+    'treinamentoOperacional',
+    'implantacaoDeSistemas',
+    'manutencaoPreventivaContratual',
+    'repprintpoint2',
+    'repprintpoint3',
+    'repminiprint',
+    'repsmart',
+    'relogiomicropoint',
+    'relogiobiopoint',
+    'catracamicropoint',
+    'catracabiopoint',
+    'catracaceros',
+    'catracaidblock',
+    'catracaidnext',
+    'idface',
+    'idflex',
+    'nSerie',
+    'localinstalacao',
+    'observacaoproblemas',
+    'componente',
+    'observacoes',
+    'prestadoraDoServico',
+    'date',
+    'horaIntervaloInicio',
+    'horaIntervaloTermino',
+    'horaIntervaloInicio2',
+    'horaIntervaloTermino2',
+    'file',
+    'componentes',
+    'codigocomponente',
+    'assinatura',
+  ];
 
-  // Lista de campos booleanos
   const booleanFields = [
     'instalacaoDeEquipamentos',
     'manutencaoDeEquipamentos',
@@ -489,26 +512,62 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     'idflex',
   ];
 
-  // Cria um objeto com apenas os campos que foram enviados na requisição
-  const updatedData = {};
-  for (const key in formData) {
-    if (formData.hasOwnProperty(key)) {
-      if (booleanFields.includes(key)) {
-        // Converte para booleano (true/false)
-        updatedData[key] = formData[key] === 'true' || formData[key] === true || formData[key] === 1;
-      } else {
-        updatedData[key] = formData[key];
-      }
+  // Função para formatar a hora no formato MySQL (HH:MM:SS)
+// Função para formatar a data no formato MySQL (YYYY-MM-DD)
+function formatDateForMySQL(date) {
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = (d.getMonth() + 1).toString().padStart(2, '0');
+  const day = d.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Função para formatar a hora no formato MySQL (HH:MM:SS)
+
+function formatTimeForMySQL(time) {
+  const t = new Date(time);
+  
+  // Verifique se a data é válida
+  if (isNaN(t.getTime())) {
+    return '00:00:00'; // Retorna uma hora padrão se o valor for inválido
+  }
+  
+  const hours = t.getHours().toString().padStart(2, '0');
+  const minutes = t.getMinutes().toString().padStart(2, '0');
+  const seconds = t.getSeconds().toString().padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+
+// Cria um objeto com apenas os campos que foram enviados na requisição
+const updatedData = {};
+for (const key in formData) {
+  if (formData.hasOwnProperty(key) && validFields.includes(key)) {
+    if (booleanFields.includes(key)) {
+      // Converte para booleano (true/false)
+      updatedData[key] = formData[key] === 'true' || formData[key] === true || formData[key] === 1;
+    } else if (key === 'componentes' || key === 'codigocomponente') {
+      // Serializa objetos/arrays para JSON
+      updatedData[key] = JSON.stringify(formData[key]);
+    } else if (key === 'dataInicio' || key === 'dataTermino' || key === 'date') {
+      // Formata datas para o formato MySQL (YYYY-MM-DD)
+      updatedData[key] = formatDateForMySQL(formData[key]);
+    } else if (key === 'horaInicio' || key === 'horaTermino' || key === 'horaIntervaloInicio' || key === 'horaIntervaloTermino' || key === 'horaIntervaloInicio2' || key === 'horaIntervaloTermino2') {
+      // Formata horas para o formato MySQL (HH:MM:SS)
+      updatedData[key] = formatTimeForMySQL(formData[key]);
+    } else {
+      updatedData[key] = formData[key];
     }
   }
+}
+
 
   try {
-    // Atualiza apenas os campos que foram enviados na requisição
     const [result] = await db.query('UPDATE RacForm SET ? WHERE id = ?', [updatedData, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'RAC não encontrada' });
     }
-    res.status(200).json({ message: 'RAC atualizada com sucesso' });
+    res.json({ message: 'RAC atualizada com sucesso', data: updatedData });
   } catch (error) {
     console.error('Erro ao atualizar RAC:', error);
     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message });
@@ -553,7 +612,7 @@ app.post('/assinatura', (req, res) => {
   });
 });
 
-app.get('/assinatura', (req, res) => {
+app.get('/obterassinatura', (req, res) => {
   const id = req.query.id || 1;
 
   db.query('SELECT assinatura FROM racform WHERE id = ?', [id], (err, result) => {

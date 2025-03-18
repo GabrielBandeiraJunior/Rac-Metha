@@ -328,19 +328,22 @@ function RacForm() {
               </label>
             </div>
 
-            {formData.componentes.map((componente) => (
-              <div key={componente}>
-                <label htmlFor={`codigo-${componente}`}>Código do {componente}</label>
-                <input
-                  type="text"
-                  id={`codigo-${componente}`}
-                  name={`codigo-${componente}`}
-                  value={formData.codigoComponente[componente] || ''}
-                  onChange={(e) => handleCodigoComponenteChange(e, componente)}
-                  placeholder={`Código do ${componente}`}
-                />
-              </div>
-            ))}
+            <div>
+  {(formData.componentes || []).map((componente) => (
+    <div key={componente}>
+      <label htmlFor={`codigo-${componente}`}>Código do {componente}</label>
+      <input
+        type="text"
+        id={`codigo-${componente}`}
+        name={`codigo-${componente}`}
+        value={formData.codigoComponente[componente] || ''}
+        onChange={(e) => handleCodigoComponenteChange(e, componente)}
+        placeholder={`Código do ${componente}`}
+      />
+    </div>
+  ))}
+</div>
+
 
             <label htmlFor="nSerie">Número de Série</label>
             <input type="text" id="nSerie" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" />
