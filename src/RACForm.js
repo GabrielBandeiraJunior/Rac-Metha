@@ -1,5 +1,4 @@
-import React, { useRef, useState } from 'react';
-import SignatureCanvas from 'react-signature-canvas';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Headers from './Components/Headers.js';
 import './RACForm.css';
@@ -46,19 +45,16 @@ function RacForm() {
     nSerie: '',
     localInstalacao: '',
     observacaoProblemas: '',
-    componentes: [],
-    codigoComponente: {},
+    componentes: '',
+    codigoComponente: '',
     observacoes: '',
     prestadoraDoServico: '',
-    assinatura: '',
   });
 
   const [step, setStep] = useState(1);
   const [cep, setCep] = useState('');
   const [endereco, setEndereco] = useState({});
   const [erro, setErro] = useState('');
-  const [mensagem, setMensagem] = useState('');
-  const signatureRef = useRef();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -66,30 +62,6 @@ function RacForm() {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-  };
-
-  const handleComponentChange = (e) => {
-    const { value, checked } = e.target;
-    setFormData((prevState) => {
-      const componentes = checked
-        ? [...prevState.componentes, value]
-        : prevState.componentes.filter((componente) => componente !== value);
-      return {
-        ...prevState,
-        componentes,
-      };
-    });
-  };
-
-  const handleCodigoComponenteChange = (e, componente) => {
-    const { value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      codigoComponente: {
-        ...prevState.codigoComponente,
-        [componente]: value,
-      },
-    }));
   };
 
   const obterEnderecoPorCEP = async () => {
@@ -105,11 +77,12 @@ function RacForm() {
       setEndereco(data);
       setErro('');
 
+      // Monta o endereço completo e atualiza o estado
       const enderecoCompleto = `${data.logradouro || ''}, ${data.bairro || ''}, ${data.localidade || ''}, ${data.uf || ''}`;
       setFormData((prevState) => ({
         ...prevState,
-        endereco: enderecoCompleto.trim(),
-        cidade: data.localidade || '',
+        endereco: enderecoCompleto.trim(), // Remove espaços extras
+        cidade: data.localidade || '', // Preenche a cidade automaticamente
       }));
     } catch (error) {
       console.error('Erro:', error);
@@ -120,15 +93,9 @@ function RacForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const assinaturaDataUrl = signatureRef.current.toDataURL();
-      const dadosComAssinatura = {
-        ...formData,
-        assinatura: assinaturaDataUrl,
-      };
-
       const response = await axios.post(
         'http://localhost:3000/racvirtual/register',
-        dadosComAssinatura,
+        formData,
         { headers: { 'Content-Type': 'application/json' } }
       );
       if (response.status === 200) {
@@ -154,11 +121,6 @@ function RacForm() {
 
   const handlePrevStep = () => {
     if (step > 1) setStep(step - 1);
-  };
-
-  const limparAssinatura = () => {
-    signatureRef.current.clear();
-    setMensagem('');
   };
 
   return (
@@ -189,11 +151,34 @@ function RacForm() {
               Consultar
             </button>
 
+            {/* <div id="enderecoResultado">
+              {erro ? (
+                <p style={{ color: 'red' }}>{erro}</p>
+              ) : (
+                <>
+                  <p>
+                    <strong>Rua:</strong> <span id="rua">{endereco.logradouro || 'Não informado'}</span>
+                  </p>
+                  <p>
+                    <strong>Cidade:</strong> <span id="cidade">{endereco.localidade || 'Não informado'}</span>
+                  </p>
+                  <p>
+                    <strong>Estado:</strong> <span id="estado">{endereco.uf || 'Não informado'}</span>
+                  </p>
+                </>
+              )}
+            </div> */}
+
             <label htmlFor="endereco">Endereço Completo</label>
             <input type="text" id="endereco" name="endereco" value={formData.endereco} onChange={handleChange} placeholder="Endereço Completo" />
 
+            {/* <label htmlFor="cidade">Cidade da Empresa</label>
+            <input type="text" id="cidade" name="cidade" value={formData.cidade} onChange={handleChange} placeholder="Cidade da Empresa" /> */}
+
             <label htmlFor="numero">Número do Endereço</label>
             <input type="text" id="numero" name="numero" value={formData.numero} onChange={handleChange} placeholder="Número do Endereço" />
+
+            
 
             <label htmlFor="responsavel">Nome do Responsável</label>
             <input type="text" id="responsavel" name="responsavel" value={formData.responsavel} onChange={handleChange} placeholder="Nome do Responsável" />
@@ -298,52 +283,14 @@ function RacForm() {
             <input type="checkbox" id="idflex" name="idflex" checked={formData.idflex} onChange={handleChange} />
 
             <label htmlFor="componentes">Componentes</label>
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  value="impressora"
-                  checked={formData.componentes.includes('impressora')}
-                  onChange={handleComponentChange}
-                />
-                Impressora
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  value="cabecote"
-                  checked={formData.componentes.includes('cabecote')}
-                  onChange={handleComponentChange}
-                />
-                Cabecote
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  value="fonte"
-                  checked={formData.componentes.includes('fonte')}
-                  onChange={handleComponentChange}
-                />
-                Fonte
-              </label>
-            </div>
+            <select id="componentes" name="componentes" value={formData.componentes} onChange={handleChange}>
+              <option value="">Selecione o Componente</option>
+              <option value="impressora">Impressora</option>
+              <option value="cabecote">Cabecote</option>
+              <option type="checkbox" value="fonte"> Fonte</option>
 
-            <div>
-  {(formData.componentes || []).map((componente) => (
-    <div key={componente}>
-      <label htmlFor={`codigo-${componente}`}>Código do {componente}</label>
-      <input
-        type="text"
-        id={`codigo-${componente}`}
-        name={`codigo-${componente}`}
-        value={formData.codigoComponente[componente] || ''}
-        onChange={(e) => handleCodigoComponenteChange(e, componente)}
-        placeholder={`Código do ${componente}`}
-      />
-    </div>
-  ))}
-</div>
 
+            </select>
 
             <label htmlFor="nSerie">Número de Série</label>
             <input type="text" id="nSerie" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" />
@@ -354,6 +301,9 @@ function RacForm() {
             <label htmlFor="observacaoProblemas">Observações sobre os Problemas</label>
             <input type="text" id="observacaoProblemas" name="observacaoProblemas" value={formData.observacaoProblemas} onChange={handleChange} placeholder="Observações sobre os Problemas" />
 
+            <label htmlFor="codigoComponente">Código do Componente</label>
+            <input type="text" id="codigoComponente" name="codigoComponente" value={formData.codigoComponente} onChange={handleChange} placeholder="Código do Componente" />
+
             <label htmlFor="observacoes">Observações Gerais</label>
             <input type="text" id="observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações Gerais" />
 
@@ -363,18 +313,6 @@ function RacForm() {
               <option value="Mega Digital">Mega Digital</option>
               <option value="Metah">Metah</option>
             </select>
-
-            <div>
-              <SignatureCanvas
-                ref={signatureRef}
-                penColor="black"
-                backgroundColor="white"
-                canvasProps={{ width: 500, height: 200, className: 'signature-canvas' }}
-              />
-            </div>
-            <div>
-              <button type="button" onClick={limparAssinatura}>Limpar</button>
-            </div>
 
             <button type="button" onClick={handlePrevStep}>Etapa Anterior</button>
             <button type="submit">Enviar</button>

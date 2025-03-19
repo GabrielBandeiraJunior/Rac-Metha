@@ -4,12 +4,9 @@ import React, { useEffect, useState } from 'react';
  import Headers from './Components/Headers';
  import './RacsCadastradas.css';
 
-
 export default function RacsCadastradas() {
-    
     const [dados, setDados] = useState([]);
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState({ date: '', tecnico: '', empresa: '' });
     const [editingItem, setEditingItem] = useState(null);
     const [expandedId, setExpandedId] = useState(null);
@@ -18,8 +15,10 @@ export default function RacsCadastradas() {
         cidade: '', responsavel: '', setor: '',
         dataInicio: '', horaInicio: '',
         dataTermino: '', horaTermino: '',
+
         horaIntervaloInicio: '', horaIntervaloTermino: '',
         horaIntervaloInicio2: '', horaIntervaloTermino2: '',
+        
         instalacaoDeEquipamentos: false, manutencaoDeEquipamentos: false,
         homologacaoDeInfra: false, treinamentoOperacional: false,
         implantacaoDeSistemas: false, manutencaoPreventivaContratual: false,
@@ -28,10 +27,10 @@ export default function RacsCadastradas() {
         catracamicropoint: false, catracabiopoint: false, catracaceros: false,
         catracaidblock: false, catracaidnext: false, idface: false, idflex: false,
         nSerie: '', localinstalacao: '', observacaoproblemas: '',
-        componentes: [], // Inicialize como array vazio
-        codigocomponente: [], observacoes: '', prestadoraDoServico: '', assinatura:''
+        componentes: '', codigocomponente: '', observacoes: '', prestadoraDoServico: ''
     });
-   
+    const [loading, setLoading] = useState(true);
+
     const links = [
         { label: 'Meu Perfil', url: '/perfil' },
         { label: 'Nova RAC', url: '/novarac' },
@@ -40,45 +39,24 @@ export default function RacsCadastradas() {
     ];
 
     useEffect(() => {
-        // Chamada para buscar os dados da API
         axios.get('http://localhost:3000/api/dados')
             .then(response => {
-                const dadosFormatados = response.data.map(item => {
-                    if (typeof item.componentes === 'string') {
-                        try {
-                            item.componentes = JSON.parse(item.componentes);
-                        } catch (error) {
-                            item.componentes = item.componentes.split(',').map(s => s.trim());
-                        }
-                    }
-                    if (item.assinatura) {
-                        item.assinatura = item.assinatura;
-                    }
-                    return item;
-                });
-                setDados(dadosFormatados);
+                console.log("Dados recebidos:", response.data); // Verifique os dados
+                setDados(response.data);
             })
             .catch(error => {
                 console.error("Erro ao buscar dados:", error);
                 setError('Erro ao buscar dados.');
             })
-            .finally(() => setLoading(false)); 
-    }, []); 
- 
+            .finally(() => setLoading(false));
+    }, []);
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
         setFilter(prev => ({ ...prev, [name]: value }));
     };
 
-    const filteredDados = dados.filter(item => {
-        return (
-            (filter.date ? item.date.includes(filter.date) : true) &&
-            (filter.tecnico ? item.tecnico.includes(filter.tecnico) : true) &&
-            (filter.empresa ? item.razaoSocial.includes(filter.empresa) : true)
-        );
-    });
-    
+    const filteredDados = dados; // Remova os filtros temporariamente para teste
 
     const toggleExpand = (id) => {
         setExpandedId(expandedId === id ? null : id);
@@ -86,39 +64,73 @@ export default function RacsCadastradas() {
 
     const handleEditClick = (item) => {
         setEditingItem(item);
-        setFormData(item); // Preenche o formData com os dados do item selecionado
+        setFormData(item);
     };
 
-    // Ao salvar, altere a chave de "assinaturaBase64" para a coluna correta
     const handleSaveEdit = async () => {
         try {
-            const payload = { ...formData }
-            const booleanFields = [
-                'instalacaoDeEquipamentos', 'manutencaoDeEquipamentos', 'homologacaoDeInfra',
-                'treinamentoOperacional', 'implantacaoDeSistemas', 'manutencaoPreventivaContratual',
-                'repprintpoint2', 'repprintpoint3', 'repminiprint', 'repsmart', 'relogiomicropoint',
-                'relogiobiopoint', 'catracamicropoint', 'catracabiopoint', 'catracaceros',
-                'catracaidblock', 'catracaidnext', 'idface', 'idflex'
-            ]
+          // Envia apenas os campos que foram alterados
+          const payload = { ...formData };
 
-            if (payload.assinatura && payload.assinatura.startsWith('data:image/png;base64,data:image')) {
-                payload.assinatura = payload.assinatura.replace('data:image/png;base64,', '')
-            }
-
-            if (typeof payload.codigocomponente === 'object') {
-                payload.codigocomponente = JSON.stringify(payload.codigocomponente)
+        // Remove campos que não foram alterados (opcional, dependendo da lógica do seu formulário)
+        // for (const key in payload) {
+        //     if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
+        //         delete payload[key];
+        //     }
+        //   }
+      
+          // Garante que os campos booleanos sejam enviados como true/false
+          const booleanFields = [
+            'instalacaoDeEquipamentos',
+            'manutencaoDeEquipamentos',
+            'homologacaoDeInfra',
+            'treinamentoOperacional',
+            'implantacaoDeSistemas',
+            'manutencaoPreventivaContratual',
+            'repprintpoint2',
+            'repprintpoint3',
+            'repminiprint',
+            'repsmart',
+            'relogiomicropoint',
+            'relogiobiopoint',
+            'catracamicropoint',
+            'catracabiopoint',
+            'catracaceros',
+            'catracaidblock',
+            'catracaidnext',
+            'idface',
+            'idflex',
+          ];
+      
+          booleanFields.forEach((field) => {
+            if (payload[field] === undefined) {
+                // Se o campo não foi passado, define explicitamente como false
+                payload[field] = false;
+            } else if (payload[field] === '' || payload[field] === null) {
+                // Garantir que valores vazios ou nulos sejam convertidos para false
+                payload[field] = false;
             } else {
-                payload.codigocomponente = String(payload.codigocomponente) // Garantir que seja string
+                // Se o valor for true, ou um valor booleano '1' ou 'true', mantemos como true
+                payload[field] = payload[field] === true || payload[field] === 1 || payload[field] === 'true';
             }
+        });
 
-            await axios.put(`http://localhost:3000/racvirtual/edit/${editingItem.id}`, payload)
-            const response = await axios.get('http://localhost:3000/api/dados')
-            setDados(response.data)
-            setEditingItem(null)
-        } catch (error) {
-            console.error("Erro ao editar:", error)
+          for (const key in payload) {
+            if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
+                delete payload[key];
+            }
         }
-    }
+      
+          await axios.put(`http://localhost:3000/racvirtual/edit/${editingItem.id}`, payload);
+      
+          // Atualiza a lista de dados após a edição
+          const response = await axios.get('http://localhost:3000/api/dados');
+          setDados(response.data);
+          setEditingItem(null);
+        } catch (error) {
+          console.error("Erro ao editar:", error);
+        }
+      };
 
     const handleDelete = async (id) => {
         try {
@@ -170,21 +182,20 @@ export default function RacsCadastradas() {
             { label: "Componentes", key: "componentes" },
             { label: "Código do Componente", key: "codigocomponente" },
             { label: "Observações", key: "observacoes" },
-            { label: "Serviço Prestado Pela:", key: "prestadoraDoServico" },
-            { label: "Assinatura:", key: "assinatura" },//CONVERTER PRA IMAGEM
-        ]
+            { label: "Serviço Prestado Pela:", key: "prestadoraDoServico" }
+        ];
     
-        let yPosition = 5
-        doc.text(`RAC Report - ${item.date}`, 1, yPosition)
-        yPosition += 5
+        let yPosition = 5;
+        doc.text(`RAC Report - ${item.date}`, 1, yPosition);
+        yPosition += 5;
     
         campos.forEach(campo => {
-            const fieldValue = item[campo.key] !== undefined ? item[campo.key] : 'Não disponível'
+            const fieldValue = item[campo.key] !== undefined ? item[campo.key] : 'Não disponível';
     
             // Verifica se o valor é booleano e false
             if (typeof fieldValue === 'boolean' && !fieldValue) {
                 // Se for falso, não adiciona ao PDF
-                return
+                return;
             }
     
             if (typeof fieldValue === 'boolean' && fieldValue) {
@@ -200,9 +211,6 @@ export default function RacsCadastradas() {
 
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
-
-        console.log("Mudando campo:", name, "Novo valor:", value); // Depuração
-
         setFormData(prevData => ({
             ...prevData,
             [name]: type === 'checkbox' ? checked : value
@@ -218,39 +226,6 @@ export default function RacsCadastradas() {
         return `${dia}/${mes}/${ano}`;
     };
 
-    const renderSignature = (signatureBase64) => {
-        if (signatureBase64 && signatureBase64.startsWith('data:image')) {
-            return (
-                <div>
-                    <h2>Assinatura do Cliente</h2>
-                    <img 
-                        src={signatureBase64} 
-                        alt="Assinatura" 
-                        style={{ maxWidth: '200px', height: 'auto', border: '1px solid #ccc', padding: '5px' }} 
-                    />
-                </div>
-            );
-        } else {
-            return <p>Assinatura não disponível</p>;
-        }
-    };
-
-    const handleComponentChange = (e) => {
-        const value = e.target.value;
-        setFormData((prevFormData) => {
-          const updatedComponents = e.target.checked
-            ? [...prevFormData.componentes, value]
-            : prevFormData.componentes.filter((item) => item !== value);
-      
-          return {
-            ...prevFormData,
-            componentes: updatedComponents,
-          };
-        });
-      };
-      
-    
-
     return (
         <div className="pagina-inteira-racscadastradas">
             <header>
@@ -258,7 +233,7 @@ export default function RacsCadastradas() {
             </header>
             <h1>RACs Cadastradas</h1>
             <div className="filtros">
-                <input type="date" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
+                <input type="datetime-local" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
                 <input type="text" name="tecnico" placeholder="Filtrar por técnico" onChange={handleFilterChange} />
                 <input type="text" name="empresa" placeholder="Filtrar por empresa" onChange={handleFilterChange} />
             </div>
@@ -269,7 +244,7 @@ export default function RacsCadastradas() {
             ) : (
                 <div className="rac-escondida">
                     {filteredDados.map(item => (
-                        //item.COLUNA_BANCO_DADOS
+                        //item.NOME_COLUNA_EXATA_BANCO_DE_DADOS
                         <div key={item.id} className="dados-item">
                             <p><strong>Técnico:</strong> {item.tecnico }</p>
                             <p><strong>Razão Social:</strong> {item.razaoSocial }</p>
@@ -322,37 +297,16 @@ export default function RacsCadastradas() {
                                     <p><strong>Número de Série:</strong> {item.nSerie }</p>
                                     <p><strong>Local de Instalação:</strong> {item.localinstalacao }</p>
                                     <p><strong>Problemas Observados:</strong> {item.observacaoproblemas }</p>
-
-                                    <p><strong>Componentes:</strong></p>
-
-                                    {/* Verifique se `item.componentes` é um array antes de usar `map()` */}
-                                    {Array.isArray(item.componentes) && item.componentes.map((componente, index) => (
-                                      <p key={index}>{componente}</p>
-                                    ))}
-                                    
-                                    
-                                    {/* Verifique se `item.componentes` é um array antes de usar `map()` */}
-                                    <p><strong>Códigos dos Componentes:</strong></p>
-                                    {Array.isArray(item.componentes) && item.componentes.map((componente, index) => (
-                                      <p key={index}>
-                                        {componente}: {item.codigocomponente[componente]}
-                                      </p>
-                                    ))}
-
-
+                                    <p><strong>Componentes:</strong> {item.COMPONENTES }</p>
+                                    <p><strong>Código do Componente:</strong> {item.codigocomponente }</p>
                                     <p><strong>Observações:</strong> {item.observacoes }</p>
-                                    <p><strong>Serviço Prestado Pela:</strong> {item.prestadoraDoServico }</p>                                 
-                                     
-                                    {renderSignature(item.assinatura)}
-
-                                
+                                    <p><strong>Serviço Prestado Pela:</strong> {item.prestadoraDoServico }</p>
                                 </div>
                             )}
                         </div>
                     ))}
                 </div>
             )}
-            
             {editingItem && (
                 <div className="form-editar">
                     <h2>Editar RAC</h2>
@@ -435,76 +389,28 @@ export default function RacsCadastradas() {
                         <label>Observação dos Problemas:</label>
                         <input type="text" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleInputChange} />
 
-                           {/* <label>Componentes:</label>
+                        <label>Componentes:</label>
                             <select
                                 name="COMPONENTES"
-                                value={formData.componentes || ""}
+                                value={formData.COMPONENTES || ""}
                                 onChange={handleInputChange}
-                                
+                                required
                             >
                                 <option value="">SELECIONE COMPONENTES</option>
                                 <option value="impressora">impressora</option>
                                 <option value="cabecote">cabecote</option>
-                                <option value="fonte"> Fonte</option>
                             </select>
 
-                           <label>Código do Componente:</label>
-                           <input type="text" name="codigocomponente" value={formData.codigocomponente} onChange={handleInputChange} /> */}
-
-                            <label htmlFor="componentes">Componentes</label>
-                            <div>
-                            <label>
-                                <input
-                                type="checkbox"
-                                value="impressora"
-                                checked={formData.componentes.includes('impressora')}
-                                onChange={handleComponentChange}
-                                />
-                                Impressora
-                            </label>
-                            <label>
-                                <input
-                                type="checkbox"
-                                value="cabecote"
-                                checked={formData.componentes.includes('cabecote')}
-                                onChange={handleComponentChange}
-                                />
-                                Cabecote
-                            </label>
-                            <label>
-                                <input
-                                type="checkbox"
-                                value="fonte"
-                                checked={formData.componentes.includes('fonte')}
-                                onChange={handleComponentChange}
-                                />
-                                Fonte
-                            </label>
-                            </div>
-
-                            {/* Para cada componente selecionado, renderiza um campo de código */}
-                            {formData.componentes.map((componente) => (
-                            <div key={componente}>
-                                <label htmlFor={`codigo-${componente}`}>Código do {componente}</label>
-                                <input
-                        type="text"
-                        name="codigocomponente"
-                        value={formData.codigocomponente}
-                        onChange={handleInputChange} // Usando a função correta
-                        placeholder="Código do Componente"
-                    />
-                            </div>
-                        ))}
-
+                        <label>Código do Componente:</label>
+                        <input type="text" name="codigocomponente" value={formData.codigocomponente} onChange={handleInputChange} />
                         <label>Observações:</label>
                         <input type="text" name="observacoes" value={formData.observacoes} onChange={handleInputChange} />
-
                         <label>Serviço Prestado Pela:</label>
                         <select
                             name="prestadoraDoServico"
                             value={formData.prestadoraDoServico}
                             onChange={handleInputChange}
-                            
+                            required
                         >
                             <option value="">Selecione uma prestadora</option>
                             <option value="Mega Digital Equipamentos">Mega Digital Equipamentos - CNPJ: 21.922.053/0001-30</option>

@@ -19,15 +19,8 @@ const dbConfig = {
 }
 
 // Configuração do Multer para upload de arquivos
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  },
-});
-const upload = multer({ storage });
+const storage = multer.memoryStorage() // Armazena arquivos na memória
+const upload = multer({ storage })
 
 // Middleware
 app.use(cors())
@@ -80,16 +73,15 @@ async function createTableIfNotExists(connection) {
       idflex BOOLEAN,
       nSerie VARCHAR(255),
       localinstalacao VARCHAR(255),
-      observacaoProblemas TEXT,
-      componentes TEXT,
-      codigoComponente TEXT,
+      observacaoproblemas TEXT,
+
+      componentes VARCHAR(255),
+
+      codigocomponente VARCHAR(255),
       observacoes TEXT,
-      prestadoraDoServico VARCHAR(100),
-      assinatura TEXT,
+      prestadoraDoServico VARCHAR(255),
+      
       date DATETIME DEFAULT CURRENT_TIMESTAMP
-
-
-
       
     )
   `
@@ -101,7 +93,8 @@ async function createTableIfNotExists(connection) {
 const db = mysql.createPool(dbConfig)
 
 // Função para processar campos booleanos
-function processBooleanFields(data) {
+function processBooleanFields(formData) {
+  console.log('Processando campos booleanos...')
   const booleanFields = [
     'instalacaoDeEquipamentos',
     'manutencaoDeEquipamentos',
@@ -122,15 +115,18 @@ function processBooleanFields(data) {
     'catracaidnext',
     'idface',
     'idflex',
-  ];
-    booleanFields.forEach((field) => {
-      if (data[field] !== undefined) {
-        data[field] = Boolean(data[field]);
-      }
-    });
-  
-    return data;
-  }
+  ]
+
+  booleanFields.forEach((field) => {
+    if (formData[field] !== undefined) {
+      // Mantém o valor booleano original
+      console.log(`Campo ${field}: ${formData[field]} (mantido como booleano)`)
+      formData[field] = formData[field] === 'true' || formData[field] === true ? true : false
+    }
+  })
+
+  return formData
+}
 
 
 function processDateFields(formData) {
@@ -353,48 +349,39 @@ app.get('/api/dados', async (req, res) => {
 
 // Endpoint para registrar dados
 app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
-  const formData = req.body;
+  const formData = req.body
 
   // Log do corpo da requisição
-  console.log('Dados recebidos no corpo da requisição:', formData);
+  console.log('Dados recebidos no corpo da requisição:', formData)
 
   if (!formData || Object.keys(formData).length === 0) {
-    return res.status(400).json({ message: 'Dados ausentes no corpo da requisição' });
+    return res.status(400).json({ message: 'Dados ausentes no corpo da requisição' })
   }
 
-  // Serializa os campos componentes e codigoComponente
-  if (formData.componentes) {
-    formData.componentes = JSON.stringify(formData.componentes); // Converte array para string JSON
-  }
-  if (formData.codigoComponente) {
-    formData.codigoComponente = JSON.stringify(formData.codigoComponente); // Converte objeto para string JSON
-  }
-
-  // Processa os campos booleanos
-  const processedData = processBooleanFields(formData);
+  const processedData = processBooleanFields(formData)
 
   // Log dos dados processados
-  console.log('Dados processados:', processedData);
+  console.log('Dados processados:', processedData)
 
   // Verifica se há um arquivo carregado
-  const fileName = req.file ? req.file.filename : null;
+  const fileName = req.file ? req.file.filename : null
 
   // Adiciona o campo 'file' ao processedData
-  processedData.file = fileName;
+  processedData.file = fileName
 
   try {
     // Inserção correta no banco de dados
-    const [result] = await db.query('INSERT INTO RacForm SET ?', [processedData]);
+    const [result] = await db.query('INSERT INTO RacForm SET ?', [processedData])
 
     // Log após inserção no banco de dados
-    console.log('Dados inseridos no banco de dados:', result);
+    console.log('Dados inseridos no banco de dados:', result)
 
-    res.status(201).json({ message: 'Dados salvos com sucesso', data: processedData });
+    res.status(201).json({ message: 'Dados salvos com sucesso', data: processedData })
   } catch (error) {
-    console.error('Erro ao salvar os dados:', error);
-    res.status(500).json({ message: 'Erro interno no servidor', error: error.message });
+    console.error('Erro ao salvar os dados:', error)
+    res.status(500).json({ message: 'Erro interno no servidor', error: error.message })
   }
-});
+})
 
 // Endpoint para buscar uma RAC específica
 app.get('/racvirtual/:id', async (req, res) => {
@@ -431,6 +418,29 @@ app.get('/endereco/:cep', async (req, res) => {
       res.status(500).json({ error: error.message }); // Retorna um JSON de erro
   }
 });
+//================
+
+// Endpoint para editar uma RAC
+// app.put('/racvirtual/edit/:id', async (req, res) => {
+//   const { id } = req.params
+//   const formData = req.body
+
+//   if (!formData || Object.keys(formData).length === 0) {
+//     return res.status(400).json({ message: 'Dados ausentes para atualização' })
+//   }
+
+//   const processedData = processFormData(formData)  // Chama a função definida acima
+
+//   try {
+//     const [result] = await db.query('UPDATE RacForm SET ? WHERE id = ?', [processedData, id])
+//     if (result.affectedRows === 0) {
+//       return res.status(404).json({ message: 'RAC não encontrada' })
+//     }
+//     res.status(200).json({ message: 'RAC atualizada com sucesso' })
+//   } catch (error) {
+//     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message })
+//   }
+// })
 
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params;
@@ -440,56 +450,9 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     return res.status(400).json({ message: 'Dados ausentes para atualização' });
   }
 
-  // Lista de campos válidos na tabela RacForm
-  const validFields = [
-    'tecnico',
-    'razaoSocial',
-    'cnpj',
-    'endereco',
-    'numero',
-    'responsavel',
-    'setor',
-    'cidade',
-    'dataInicio',
-    'horaInicio',
-    'dataTermino',
-    'horaTermino',
-    'instalacaoDeEquipamentos',
-    'manutencaoDeEquipamentos',
-    'homologacaoDeInfra',
-    'treinamentoOperacional',
-    'implantacaoDeSistemas',
-    'manutencaoPreventivaContratual',
-    'repprintpoint2',
-    'repprintpoint3',
-    'repminiprint',
-    'repsmart',
-    'relogiomicropoint',
-    'relogiobiopoint',
-    'catracamicropoint',
-    'catracabiopoint',
-    'catracaceros',
-    'catracaidblock',
-    'catracaidnext',
-    'idface',
-    'idflex',
-    'nSerie',
-    'localinstalacao',
-    'observacaoproblemas',
-    'componente',
-    'observacoes',
-    'prestadoraDoServico',
-    'date',
-    'horaIntervaloInicio',
-    'horaIntervaloTermino',
-    'horaIntervaloInicio2',
-    'horaIntervaloTermino2',
-    'file',
-    'componentes',
-    'codigocomponente',
-    'assinatura',
-  ];
+  const processedData = processFormData(formData)
 
+  // Lista de campos booleanos
   const booleanFields = [
     'instalacaoDeEquipamentos',
     'manutencaoDeEquipamentos',
@@ -512,62 +475,26 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     'idflex',
   ];
 
-  // Função para formatar a hora no formato MySQL (HH:MM:SS)
-// Função para formatar a data no formato MySQL (YYYY-MM-DD)
-function formatDateForMySQL(date) {
-  const d = new Date(date);
-  const year = d.getFullYear();
-  const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  const day = d.getDate().toString().padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-// Função para formatar a hora no formato MySQL (HH:MM:SS)
-
-function formatTimeForMySQL(time) {
-  const t = new Date(time);
-  
-  // Verifique se a data é válida
-  if (isNaN(t.getTime())) {
-    return '00:00:00'; // Retorna uma hora padrão se o valor for inválido
-  }
-  
-  const hours = t.getHours().toString().padStart(2, '0');
-  const minutes = t.getMinutes().toString().padStart(2, '0');
-  const seconds = t.getSeconds().toString().padStart(2, '0');
-  return `${hours}:${minutes}:${seconds}`;
-}
-
-
-// Cria um objeto com apenas os campos que foram enviados na requisição
-const updatedData = {};
-for (const key in formData) {
-  if (formData.hasOwnProperty(key) && validFields.includes(key)) {
-    if (booleanFields.includes(key)) {
-      // Converte para booleano (true/false)
-      updatedData[key] = formData[key] === 'true' || formData[key] === true || formData[key] === 1;
-    } else if (key === 'componentes' || key === 'codigocomponente') {
-      // Serializa objetos/arrays para JSON
-      updatedData[key] = JSON.stringify(formData[key]);
-    } else if (key === 'dataInicio' || key === 'dataTermino' || key === 'date') {
-      // Formata datas para o formato MySQL (YYYY-MM-DD)
-      updatedData[key] = formatDateForMySQL(formData[key]);
-    } else if (key === 'horaInicio' || key === 'horaTermino' || key === 'horaIntervaloInicio' || key === 'horaIntervaloTermino' || key === 'horaIntervaloInicio2' || key === 'horaIntervaloTermino2') {
-      // Formata horas para o formato MySQL (HH:MM:SS)
-      updatedData[key] = formatTimeForMySQL(formData[key]);
-    } else {
-      updatedData[key] = formData[key];
+  // Cria um objeto com apenas os campos que foram enviados na requisição
+  const updatedData = {};
+  for (const key in formData) {
+    if (formData.hasOwnProperty(key)) {
+      if (booleanFields.includes(key)) {
+        // Converte para booleano (true/false)
+        updatedData[key] = formData[key] === 'true' || formData[key] === true || formData[key] === 1;
+      } else {
+        updatedData[key] = formData[key];
+      }
     }
   }
-}
-
 
   try {
+    // Atualiza apenas os campos que foram enviados na requisição
     const [result] = await db.query('UPDATE RacForm SET ? WHERE id = ?', [updatedData, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'RAC não encontrada' });
     }
-    res.json({ message: 'RAC atualizada com sucesso', data: updatedData });
+    res.status(200).json({ message: 'RAC atualizada com sucesso' });
   } catch (error) {
     console.error('Erro ao atualizar RAC:', error);
     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message });
@@ -587,53 +514,6 @@ app.delete('/racvirtual/delete/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao deletar RAC', error: error.message })
   }
 })
-
-
-app.post('/assinatura', (req, res) => {
-  const { assinatura } = req.body;
-
-  if (!assinatura) {
-    return res.status(400).json({ message: 'Assinatura não recebida.' });
-  }
-
-  // Definir o caminho do arquivo onde a imagem será salva
-  const nomeArquivo = `assinatura_${Date.now()}.png`;
-  const caminhoArquivo = path.join(__dirname, 'assinaturas', nomeArquivo);
-
-  // Converter a assinatura base64 em imagem e salvar
-  const base64Data = assinatura.replace(/^data:image\/png;base64,/, '');
-  fs.writeFile(caminhoArquivo, base64Data, 'base64', (err) => {
-    if (err) {
-      return res.status(500).json({ message: 'Erro ao salvar a assinatura.' });
-    }
-
-    // Retornar resposta de sucesso
-    res.status(200).json({ message: 'Assinatura salva com sucesso!' });
-  });
-});
-
-app.get('/obterassinatura', (req, res) => {
-  const id = req.query.id || 1;
-
-  db.query('SELECT assinatura FROM racform WHERE id = ?', [id], (err, result) => {
-    if (err) {
-      console.error("Erro ao buscar a assinatura no banco de dados:", err);
-      return res.status(500).send('Erro ao recuperar a imagem');
-    }
-
-    if (result.length > 0) {
-      const imageData = result[0].assinatura;
-      if (!imageData) {
-        return res.status(404).send('Assinatura não encontrada no banco de dados');
-      }
-
-      console.log("Imagem retornada do banco de dados:", imageData);  // Adicionando o log
-      res.json({ image: imageData });
-    } else {
-      res.status(404).send('Imagem não encontrada');
-    }
-  });
-});
 
 
 app.listen(PORT, async () => {
