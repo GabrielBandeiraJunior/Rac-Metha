@@ -42,11 +42,17 @@ function RacForm() {
     catracaidnext: false,
     idface: false,
     idflex: false,
+    impressora: false,
+    fonte: false,
+    cabecote: false,
+    leitor: false,
+    codigoImpressora:'',
+    codigoFonte:'',
+    codigoCabecote:'',
+    codigoLeitor:'',
     nSerie: '',
     localInstalacao: '',
     observacaoProblemas: '',
-    componentes: '',
-    codigoComponente: '',
     observacoes: '',
     prestadoraDoServico: '',
   });
@@ -282,15 +288,83 @@ function RacForm() {
             <label htmlFor="idflex">ID Flex</label>
             <input type="checkbox" id="idflex" name="idflex" checked={formData.idflex} onChange={handleChange} />
 
-            <label htmlFor="componentes">Componentes</label>
-            <select id="componentes" name="componentes" value={formData.componentes} onChange={handleChange}>
-              <option value="">Selecione o Componente</option>
-              <option value="impressora">Impressora</option>
-              <option value="cabecote">Cabecote</option>
-              <option type="checkbox" value="fonte"> Fonte</option>
+            <h2>Componentes:</h2>
+              
+              <div>
+              <strong>Cabecote</strong>
+              <input
+                type="checkbox"
+                name="cabecote"
+                checked={formData.cabecote}
+                onChange={handleChange}
+              />
+              {formData.cabecote && (
+                <input
+                  type="text"
+                  name="codigoCabecote"
+                  placeholder="Código do Cabecote"
+                  value={formData.codigoCabecote}
+                  onChange={handleChange}
+                />
+              )}
+            </div>
 
+      {/* Checkbox e Input para Leitor */}
+      <div>
+        <strong>Leitor</strong>
+        <input
+          type="checkbox"
+          name="leitor"
+          checked={formData.leitor}
+          onChange={handleChange}
+        />
+        {formData.leitor && (
+          <input
+            type="text"
+            name="codigoLeitor"
+            placeholder="Código do Leitor"
+            value={formData.codigoLeitor}
+            onChange={handleChange}
+          />
+        )}
+      </div>
+      <div>
+        <strong>Fonte</strong>
+        <input
+          type="checkbox"
+          name="fonte"
+          checked={formData.fonte}
+          onChange={handleChange}
+        />
+        {formData.fonte && (
+          <input
+            type="text"
+            name="codigoFonte"
+            placeholder="Código da Fonte"
+            value={formData.codigoFonte}
+            onChange={handleChange}
+          />
+        )}
+      </div>
+      <div>
+        <strong>Impressora</strong>
+        <input
+          type="checkbox"
+          name="impressora"
+          checked={formData.impressora}
+          onChange={handleChange}
+        />
+        {formData.impressora && (
+          <input
+            type="text"
+            name="codigoImpressora"
+            placeholder="Código da Impressora"
+            value={formData.codigoImpressora}
+            onChange={handleChange}
+          />
+        )}
+      </div>
 
-            </select>
 
             <label htmlFor="nSerie">Número de Série</label>
             <input type="text" id="nSerie" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" />
@@ -300,9 +374,6 @@ function RacForm() {
 
             <label htmlFor="observacaoProblemas">Observações sobre os Problemas</label>
             <input type="text" id="observacaoProblemas" name="observacaoProblemas" value={formData.observacaoProblemas} onChange={handleChange} placeholder="Observações sobre os Problemas" />
-
-            <label htmlFor="codigoComponente">Código do Componente</label>
-            <input type="text" id="codigoComponente" name="codigoComponente" value={formData.codigoComponente} onChange={handleChange} placeholder="Código do Componente" />
 
             <label htmlFor="observacoes">Observações Gerais</label>
             <input type="text" id="observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} placeholder="Observações Gerais" />
