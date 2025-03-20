@@ -9,7 +9,6 @@ import RACForm from './RACForm.js'
 import RacsCadastradas from './RacsCadastradas.js';
 import Autenticacao from './Autenticacao.js';
 import ImportarPlanilha from './ImportarPlanilha.js';
-import ConsultaCEP from './Components/ConsultaCEP.js'
 
 
 const ProtectedRoute = ({ element }) => {

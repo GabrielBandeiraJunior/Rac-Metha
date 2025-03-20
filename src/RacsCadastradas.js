@@ -5,6 +5,10 @@ import React, { useEffect, useState } from 'react';
  import './RacsCadastradas.css';
 
 export default function RacsCadastradas() {
+    const [step, setStep] = useState(1);
+      const [cep, setCep] = useState('');
+      const [endereco, setEndereco] = useState({});
+      const [erro, setErro] = useState('');
     const [dados, setDados] = useState([]);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState({ date: '', tecnico: '', empresa: '' });
@@ -234,6 +238,32 @@ export default function RacsCadastradas() {
         return `${dia}/${mes}/${ano}`;
     };
 
+    const obterEnderecoPorCEP = async () => {
+        try {
+          const response = await fetch(`http://localhost:3000/endereco/${cep}`);
+          if (!response.ok) {
+            throw new Error('Erro ao obter o endereço.');
+          }
+          const data = await response.json();
+          if (data.erro) {
+            throw new Error('CEP não encontrado.');
+          }
+          setEndereco(data);
+          setErro('');
+    
+          // Monta o endereço completo e atualiza o estado
+          const enderecoCompleto = `${data.logradouro || ''}, ${data.bairro || ''}, ${data.localidade || ''}, ${data.uf || ''}`;
+          setFormData((prevState) => ({
+            ...prevState,
+            endereco: enderecoCompleto.trim(), // Remove espaços extras
+            cidade: data.localidade || '', // Preenche a cidade automaticamente
+          }));
+        } catch (error) {
+          console.error('Erro:', error);
+          setErro(error.message || 'Erro ao buscar o endereço. Verifique o CEP e tente novamente.');
+        }
+      };
+
     return (
         <div className="pagina-inteira-racscadastradas">
             <header>
@@ -335,6 +365,20 @@ export default function RacsCadastradas() {
                         <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleInputChange} />
                         <label>CNPJ:</label>
                         <input type="text" name="cnpj" value={formData.cnpj} onChange={handleInputChange} />
+
+                        <h2>Consulta de Endereço por CEP</h2>
+                         <label htmlFor="cep">CEP:</label>
+                         <input
+                           type="text"
+                           id="cep"
+                           value={cep}
+                           onChange={(e) => setCep(e.target.value)}
+                           placeholder="Digite o CEP"
+                         />
+                         <button type="button" id="btnConsultar" onClick={obterEnderecoPorCEP}>
+                           Consultar
+                         </button>
+
                         <label>Endereço:</label>
                         <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
                         <label>Número:</label>
