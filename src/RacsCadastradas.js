@@ -5,6 +5,10 @@ import React, { useEffect, useState } from 'react';
  import './RacsCadastradas.css';
 
 export default function RacsCadastradas() {
+    const [step, setStep] = useState(1);
+      const [cep, setCep] = useState('');
+      const [endereco, setEndereco] = useState({});
+      const [erro, setErro] = useState('');
     const [dados, setDados] = useState([]);
     const [error, setError] = useState(null);
     const [filter, setFilter] = useState({ date: '', tecnico: '', empresa: '' });
@@ -26,6 +30,10 @@ export default function RacsCadastradas() {
         repsmart: false, relogiomicropoint: false, relogiobiopoint: false,
         catracamicropoint: false, catracabiopoint: false, catracaceros: false,
         catracaidblock: false, catracaidnext: false, idface: false, idflex: false,
+        impressora: false,
+        cabecote: false,
+        fonte: false,
+        leitor: false,
         nSerie: '', localinstalacao: '', observacaoproblemas: '',
         componentes: '', codigocomponente: '', observacoes: '', prestadoraDoServico: ''
     });
@@ -176,6 +184,10 @@ export default function RacsCadastradas() {
             { label: "Catraca Id Next", key: "catracaidnext" },
             { label: "Id Face", key: "idface" },
             { label: "Id Flex", key: "idflex" },
+            { label: "impressora", key: "impressora" },
+            { label: "cabecote", key: "cabecote" },
+            { label: "fonte", key: "fonte" },
+            { label: "leitor", key: "leitor" },
             { label: "Número de Série", key: "nSerie" },
             { label: "Local de Instalação", key: "localinstalacao" },
             { label: "Observação dos Problemas", key: "observacaoproblemas" },
@@ -225,6 +237,32 @@ export default function RacsCadastradas() {
         const ano = date.getFullYear();
         return `${dia}/${mes}/${ano}`;
     };
+
+    const obterEnderecoPorCEP = async () => {
+        try {
+          const response = await fetch(`http://localhost:3000/endereco/${cep}`);
+          if (!response.ok) {
+            throw new Error('Erro ao obter o endereço.');
+          }
+          const data = await response.json();
+          if (data.erro) {
+            throw new Error('CEP não encontrado.');
+          }
+          setEndereco(data);
+          setErro('');
+    
+          // Monta o endereço completo e atualiza o estado
+          const enderecoCompleto = `${data.logradouro || ''}, ${data.bairro || ''}, ${data.localidade || ''}, ${data.uf || ''}`;
+          setFormData((prevState) => ({
+            ...prevState,
+            endereco: enderecoCompleto.trim(), // Remove espaços extras
+            cidade: data.localidade || '', // Preenche a cidade automaticamente
+          }));
+        } catch (error) {
+          console.error('Erro:', error);
+          setErro(error.message || 'Erro ao buscar o endereço. Verifique o CEP e tente novamente.');
+        }
+      };
 
     return (
         <div className="pagina-inteira-racscadastradas">
@@ -293,6 +331,15 @@ export default function RacsCadastradas() {
                                     {item.catracaidnext && <p><strong>Catraca ID Next</strong></p>}
                                     {item.idface && <p><strong>ID Face</strong></p>}
                                     {item.idflex && <p><strong>ID Flex</strong></p>}
+                                    {item.impressora && <p><strong>Impressora</strong></p>}
+                                    <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora }</p>
+                                    {item.fonte && <p><strong>Fonte</strong></p>}
+                                    <p><strong>Codigo da Fonte:</strong> {item.codigoFonte }</p>
+                                    {item.cabecote && <p><strong>Cabecote</strong></p>}
+                                    <p><strong>Codigo do Cabecote:</strong> {item.codigoCabecote }</p>
+                                    {item.leitor && <p><strong>Leitor</strong></p>}
+                                    <p><strong>Codigo do Leitor:</strong> {item.codigoLeitor }</p>
+
                                     <h2>Outras Informações</h2>
                                     <p><strong>Número de Série:</strong> {item.nSerie }</p>
                                     <p><strong>Local de Instalação:</strong> {item.localinstalacao }</p>
@@ -318,6 +365,20 @@ export default function RacsCadastradas() {
                         <input type="text" name="razaoSocial" value={formData.razaoSocial} onChange={handleInputChange} />
                         <label>CNPJ:</label>
                         <input type="text" name="cnpj" value={formData.cnpj} onChange={handleInputChange} />
+
+                        <h2>Consulta de Endereço por CEP</h2>
+                         <label htmlFor="cep">CEP:</label>
+                         <input
+                           type="text"
+                           id="cep"
+                           value={cep}
+                           onChange={(e) => setCep(e.target.value)}
+                           placeholder="Digite o CEP"
+                         />
+                         <button type="button" id="btnConsultar" onClick={obterEnderecoPorCEP}>
+                           Consultar
+                         </button>
+
                         <label>Endereço:</label>
                         <input type="text" name="endereco" value={formData.endereco} onChange={handleInputChange} />
                         <label>Número:</label>
@@ -389,20 +450,81 @@ export default function RacsCadastradas() {
                         <label>Observação dos Problemas:</label>
                         <input type="text" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleInputChange} />
 
-                        <label>Componentes:</label>
-                            <select
-                                name="COMPONENTES"
-                                value={formData.COMPONENTES || ""}
-                                onChange={handleInputChange}
-                                required
-                            >
-                                <option value="">SELECIONE COMPONENTES</option>
-                                <option value="impressora">impressora</option>
-                                <option value="cabecote">cabecote</option>
-                            </select>
+    <div>
+        <strong>Cabecote</strong>
+        <input
+          type="checkbox"
+          name="cabecote"
+          checked={formData.cabecote}
+          onChange={handleInputChange}
+        />
+        {formData.cabecote && (
+          <input
+            type="text"
+            name="codigoCabecote"
+            placeholder="Código do Cabecote"
+            value={formData.codigoCabecote}
+            onChange={handleInputChange}
+          />
+        )}
+      </div>
 
-                        <label>Código do Componente:</label>
-                        <input type="text" name="codigocomponente" value={formData.codigocomponente} onChange={handleInputChange} />
+      {/* Checkbox e Input para Leitor */}
+      <div>
+        <strong>Leitor</strong>
+        <input
+          type="checkbox"
+          name="leitor"
+          checked={formData.leitor}
+          onChange={handleInputChange}
+        />
+        {formData.leitor && (
+          <input
+            type="text"
+            name="codigoLeitor"
+            placeholder="Código do Leitor"
+            value={formData.codigoLeitor}
+            onChange={handleInputChange}
+          />
+        )}
+      </div>
+      <div>
+        <strong>Fonte</strong>
+        <input
+          type="checkbox"
+          name="fonte"
+          checked={formData.fonte}
+          onChange={handleInputChange}
+        />
+        {formData.fonte && (
+          <input
+            type="text"
+            name="codigoFonte"
+            placeholder="Código da Fonte"
+            value={formData.codigoFonte}
+            onChange={handleInputChange}
+          />
+        )}
+      </div>
+      <div>
+        <strong>Impressora</strong>
+        <input
+          type="checkbox"
+          name="impressora"
+          checked={formData.impressora}
+          onChange={handleInputChange}
+        />
+        {formData.impressora && (
+          <input
+            type="text"
+            name="codigoImpressora"
+            placeholder="Código da Impressora"
+            value={formData.codigoImpressora}
+            onChange={handleInputChange}
+          />
+        )}
+    </div>
+
                         <label>Observações:</label>
                         <input type="text" name="observacoes" value={formData.observacoes} onChange={handleInputChange} />
                         <label>Serviço Prestado Pela:</label>
@@ -410,7 +532,7 @@ export default function RacsCadastradas() {
                             name="prestadoraDoServico"
                             value={formData.prestadoraDoServico}
                             onChange={handleInputChange}
-                            required
+                            
                         >
                             <option value="">Selecione uma prestadora</option>
                             <option value="Mega Digital Equipamentos">Mega Digital Equipamentos - CNPJ: 21.922.053/0001-30</option>
