@@ -348,6 +348,22 @@ export default function RacsCadastradas() {
                                     <p><strong>Código do Componente:</strong> {item.codigocomponente }</p>
                                     <p><strong>Observações:</strong> {item.observacoes }</p>
                                     <p><strong>Serviço Prestado Pela:</strong> {item.prestadoraDoServico }</p>
+
+                                    {item.assinatura && (
+                                        <div className="assinatura-section">
+                                            <h3>Assinatura Digital</h3>
+                                            <img 
+                                                src={`data:image/png;base64,${item.assinatura}`} 
+                                                alt="Assinatura digital" 
+                                                style={{ 
+                                                    maxWidth: '300px', 
+                                                    border: '1px solid #ddd',
+                                                    marginTop: '10px'
+                                                }}
+                                            />
+                                        </div>
+                                    )}
+                                    
                                 </div>
                             )}
                         </div>
@@ -449,6 +465,8 @@ export default function RacsCadastradas() {
                         <input type="text" name="localinstalacao" value={formData.localinstalacao} onChange={handleInputChange} />
                         <label>Observação dos Problemas:</label>
                         <input type="text" name="observacaoproblemas" value={formData.observacaoproblemas} onChange={handleInputChange} />
+
+                        
 
     <div>
         <strong>Cabecote</strong>

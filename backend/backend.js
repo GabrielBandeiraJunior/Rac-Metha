@@ -349,56 +349,75 @@ app.get('/api/dados', async (req, res) => {
 
 // Endpoint para registrar dados
 app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
-  const formData = req.body
+  const formData = req.body;
 
   // Log do corpo da requisição
-  console.log('Dados recebidos no corpo da requisição:', formData)
+  console.log('Dados recebidos no corpo da requisição:', Object.keys(formData));
 
   if (!formData || Object.keys(formData).length === 0) {
-    return res.status(400).json({ message: 'Dados ausentes no corpo da requisição' })
+    return res.status(400).json({ message: 'Dados ausentes no corpo da requisição' });
   }
 
-  const processedData = processBooleanFields(formData)
+  const processedData = processBooleanFields(formData);
+  
+  // Adicione esta função para processar a assinatura
+  function processSignature(signatureData) {
+    if (!signatureData) return null;
+    // Remove o cabeçalho da string base64 se existir
+    return signatureData.replace(/^data:image\/\w+;base64,/, '');
+  }
 
-  // Log dos dados processados
-  console.log('Dados processados:', processedData)
+  // Processa a assinatura (se existir) - mantendo a estrutura existente
+  if (formData.assinatura) {
+    processedData.assinatura = processSignature(formData.assinatura);
+  }
 
   // Verifica se há um arquivo carregado
-  const fileName = req.file ? req.file.filename : null
-
-  // Adiciona o campo 'file' ao processedData
-  processedData.file = fileName
+  const fileName = req.file ? req.file.filename : null;
+  processedData.file = fileName;
 
   try {
-    // Inserção correta no banco de dados
-    const [result] = await db.query('INSERT INTO RacForm SET ?', [processedData])
-
-    // Log após inserção no banco de dados
-    console.log('Dados inseridos no banco de dados:', result)
-
-    res.status(201).json({ message: 'Dados salvos com sucesso', data: processedData })
+    // Inserção no banco de dados (mantido igual)
+    const [result] = await db.query('INSERT INTO RacForm SET ?', [processedData]);
+    
+    console.log('Dados inseridos no banco de dados com sucesso');
+    
+    res.status(201).json({ 
+      message: 'Dados salvos com sucesso', 
+      data: {
+        ...processedData,
+        assinatura: formData.assinatura ? 'assinatura salva' : null
+      }
+    });
   } catch (error) {
-    console.error('Erro ao salvar os dados:', error)
-    res.status(500).json({ message: 'Erro interno no servidor', error: error.message })
+    console.error('Erro ao salvar os dados:', error);
+    res.status(500).json({ 
+      message: 'Erro interno no servidor', 
+      error: error.message 
+    });
   }
-})
+});
 
 // Endpoint para buscar uma RAC específica
-app.get('/racvirtual/:id', async (req, res) => {
-  const { id } = req.params
-
+// Adicione este endpoint para servir a assinatura
+app.get('/racvirtual/assinatura/:id', async (req, res) => {
+  const { id } = req.params;
+  
   try {
-    const [rows] = await db.query('SELECT * FROM RacForm WHERE id = ?', [id])
-    if (rows.length === 0) {
-      return res.status(404).json({ message: 'RAC não encontrada' })
+    const [rows] = await db.query('SELECT assinatura FROM RacForm WHERE id = ?', [id]);
+    
+    if (rows.length === 0 || !rows[0].assinatura) {
+      return res.status(404).json({ message: 'Assinatura não encontrada' });
     }
-    res.json(rows[0])
+    
+    // Reconstroi a URL da imagem base64
+    const signatureData = `data:image/png;base64,${rows[0].assinatura}`;
+    res.json({ assinatura: signatureData });
   } catch (error) {
-    res.status(500).json({ message: 'Erro ao buscar a RAC', error: error.message })
+    console.error('Erro ao buscar assinatura:', error);
+    res.status(500).json({ message: 'Erro ao buscar assinatura', error: error.message });
   }
-})
-
-
+});
 //OBTER CEP
 
 app.get('/endereco/:cep', async (req, res) => {
@@ -419,36 +438,15 @@ app.get('/endereco/:cep', async (req, res) => {
   }
 });
 //================
-
-// Endpoint para editar uma RAC
-// app.put('/racvirtual/edit/:id', async (req, res) => {
-//   const { id } = req.params
-//   const formData = req.body
-
-//   if (!formData || Object.keys(formData).length === 0) {
-//     return res.status(400).json({ message: 'Dados ausentes para atualização' })
-//   }
-
-//   const processedData = processFormData(formData)  // Chama a função definida acima
-
-//   try {
-//     const [result] = await db.query('UPDATE RacForm SET ? WHERE id = ?', [processedData, id])
-//     if (result.affectedRows === 0) {
-//       return res.status(404).json({ message: 'RAC não encontrada' })
-//     }
-//     res.status(200).json({ message: 'RAC atualizada com sucesso' })
-//   } catch (error) {
-//     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message })
-//   }
-// })
-
-//////TESTEEEEEEEEEEE
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params;
   const formData = req.body;
 
   if (!formData || Object.keys(formData).length === 0) {
     return res.status(400).json({ message: 'Dados ausentes para atualização' });
+  }
+  if (formData.assinatura) {
+    processedData.assinatura = processSignature(formData.assinatura);
   }
 
   const processedData = processFormData(formData)
@@ -490,8 +488,7 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
   }
 
   try {
-    // Atualiza apenas os campos que foram enviados na requisição
-    const [result] = await db.query('UPDATE RacForm SET ? WHERE id = ?', [updatedData, id]);
+    const [result] = await db.query('UPDATE RacForm SET ? WHERE id = ?', [processedData, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: 'RAC não encontrada' });
     }
@@ -501,6 +498,7 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message });
   }
 });
+//============================
 
 app.delete('/racvirtual/delete/:id', async (req, res) => {
   const { id } = req.params
@@ -515,6 +513,13 @@ app.delete('/racvirtual/delete/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao deletar RAC', error: error.message })
   }
 })
+
+function processSignature(signatureData) {
+  if (!signatureData) return null;
+  
+  // Remove o cabeçalho da string base64 se existir
+  return signatureData.replace(/^data:image\/\w+;base64,/, '');
+}
 
 
 app.listen(PORT, async () => {

@@ -3,6 +3,7 @@ import axios from 'axios';
 import Headers from './Components/Headers.js';
 import './RACForm.css';
 import './my-button.css';
+import Assinatura from './Components/Assinatura.js';
 
 function RacForm() {
   const [formData, setFormData] = useState({
@@ -55,6 +56,7 @@ function RacForm() {
     observacaoProblemas: '',
     observacoes: '',
     prestadoraDoServico: '',
+    assinatura: null,
   });
 
   const [step, setStep] = useState(1);
@@ -67,6 +69,13 @@ function RacForm() {
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+
+  const handleSignatureChange = (signature) => {
+    setFormData({
+      ...formData,
+      assinatura: signature
     });
   };
 
@@ -365,7 +374,6 @@ function RacForm() {
         )}
       </div>
 
-
             <label htmlFor="nSerie">Número de Série</label>
             <input type="text" id="nSerie" name="nSerie" value={formData.nSerie} onChange={handleChange} placeholder="Número de Série" />
 
@@ -384,6 +392,11 @@ function RacForm() {
               <option value="Mega Digital">Mega Digital</option>
               <option value="Metah">Metah</option>
             </select>
+
+            <Assinatura 
+            value={formData.assinatura}
+            onChange={handleSignatureChange}
+            />
 
             <button type="button" onClick={handlePrevStep}>Etapa Anterior</button>
             <button type="submit">Enviar</button>

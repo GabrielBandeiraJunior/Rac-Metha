@@ -177,3 +177,7 @@ custom-select {
   border-radius: 4px;
   font-size: 14px;
 }
+
+.signature-canvas{
+  background-color: whitesmoke;
+}
