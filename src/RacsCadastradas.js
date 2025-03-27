@@ -31,11 +31,15 @@ export default function RacsCadastradas() {
         catracamicropoint: false, catracabiopoint: false, catracaceros: false,
         catracaidblock: false, catracaidnext: false, idface: false, idflex: false,
         impressora: false,
-        cabecote: false,
         fonte: false,
+        cabecote: false,
         leitor: false,
+        codigoImpressora:'',
+        codigoFonte:'',
+        codigoCabecote:'',
+        codigoLeitor:'',
         nSerie: '', localinstalacao: '', observacaoproblemas: '',
-        componentes: '', codigocomponente: '', observacoes: '', prestadoraDoServico: ''
+        observacoes: '', prestadoraDoServico: ''
     });
     const [loading, setLoading] = useState(true);
 

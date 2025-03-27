@@ -5,7 +5,7 @@ const cors = require('cors')
 const axios = require('axios')
 const moment = require('moment')
 const xlsx = require('xlsx')
-const fetch = require ('node-fetch')
+const fetch = require('node-fetch')
 
 const app = express()
 const PORT = 3000
@@ -75,14 +75,22 @@ async function createTableIfNotExists(connection) {
       localinstalacao VARCHAR(255),
       observacaoproblemas TEXT,
 
-      componentes VARCHAR(255),
+      impressora BOOLEAN,
+      fonte BOOLEAN,
+      cabecote BOOLEAN,
+      leitor BOOLEAN,
+      codigoImpressora varchar(255),
+      codigoFonte varchar(255),
+      codigoCabecote varchar(255),
+      codigoLeitor varchar(255),
+      assinatura TEXT,
 
-      codigocomponente VARCHAR(255),
       observacoes TEXT,
       prestadoraDoServico VARCHAR(255),
+
+      file VARCHAR(255),
       
       date DATETIME DEFAULT CURRENT_TIMESTAMP
-      
     )
   `
   await connection.query(createTableQuery)
@@ -119,8 +127,6 @@ function processBooleanFields(formData) {
 
   booleanFields.forEach((field) => {
     if (formData[field] !== undefined) {
-      // Mantém o valor booleano original
-      console.log(`Campo ${field}: ${formData[field]} (mantido como booleano)`)
       formData[field] = formData[field] === 'true' || formData[field] === true ? true : false
     }
   })
@@ -128,16 +134,13 @@ function processBooleanFields(formData) {
   return formData
 }
 
-
 function processDateFields(formData) {
   console.log('Processando campos de data...')
   const dateFields = ['dataInicio', 'dataTermino', 'date']
 
   dateFields.forEach((field) => {
     if (formData[field]) {
-      // Converte para o formato 'YYYY-MM-DD HH:MM:SS'
       formData[field] = new Date(formData[field]).toISOString().slice(0, 19).replace('T', ' ')
-      console.log(`Campo de data ${field} formatado como: ${formData[field]}`)
     }
   })
 
@@ -147,17 +150,8 @@ function processDateFields(formData) {
 function processFormData(formData) {
   console.log('Processando dados do formulário...')
   formData = processBooleanFields(formData)
-  formData = processDateFields(formData)  // Formatação das datas
+  formData = processDateFields(formData)
   return formData
-}
-
-const handleFileChange = (e) => {
-  const file = e.target.files[0]
-  console.log('Arquivo selecionado:', file)
-  setFormData({
-    ...formData,
-    file: file,
-  })
 }
 
 // Função para processar as datas no formato correto
@@ -168,17 +162,16 @@ function processDate(dateString) {
   return formattedDate === 'Invalid date' ? null : formattedDate
 }
 
-// Função para processar as horas no formato correto (convertendo de decimal para HH:mm:ss)
+// Função para processar as horas no formato correto
 function processTime(decimalTime) {
   console.log(`Processando tempo decimal: ${decimalTime}`)
   if (decimalTime == null || isNaN(decimalTime)) return '00:00:00'
   
-  const totalMinutes = decimalTime * 24 * 60 // Converte para minutos
-  const hours = Math.floor(totalMinutes / 60) // Hora
-  const minutes = Math.floor(totalMinutes % 60) // Minutos
-  const seconds = Math.floor(((totalMinutes % 60) - minutes) * 60) // Segundos
+  const totalMinutes = decimalTime * 24 * 60
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = Math.floor(totalMinutes % 60)
+  const seconds = Math.floor(((totalMinutes % 60) - minutes) * 60)
   
-  // Formata a hora no formato HH:mm:ss
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
 }
 
@@ -235,25 +228,6 @@ function processData(sheetData) {
   })
 }
 
-// Função de upload
-const handleFileUpload = async (event) => {
-  const formData = new FormData()
-  formData.append('file', event.target.files[0])
-
-  try {
-    console.log('Iniciando upload...')
-    const response = await axios.post('http://localhost:3000/racvirtual/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    console.log(response.data)
-  } catch (error) {
-    console.error('Erro no upload:', error)
-    alert(`Erro ao carregar o arquivo: ${error.response ? error.response.data.message : error.message}`)
-  }
-}
-
 // Endpoint para importar os dados da planilha
 app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
@@ -262,8 +236,6 @@ app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
   }
 
   try {
-    // Aqui você pode usar uma biblioteca como xlsx para processar a planilha
-    const xlsx = require('xlsx')
     const workbook = xlsx.read(req.file.buffer, { type: 'buffer' })
     const sheetName = workbook.SheetNames[0]
     const sheet = workbook.Sheets[sheetName]
@@ -281,7 +253,6 @@ app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
       idface, idflex, nSerie, localInstalacao, observacaoProblemas, componentes, 
       codigoComponente, observacoes, prestadoraDoServico
     ) VALUES ?`
-      
 
     const values = data.map(item => [
       item.tecnico,
@@ -296,7 +267,7 @@ app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
       item.horaInicio,
       item.dataTermino,
       item.horaTermino,
-      item.instalacaoDeEquipamentos !== undefined ? item.instalacaoDeEquipamentos : null,  // Tratamento de nulos
+      item.instalacaoDeEquipamentos !== undefined ? item.instalacaoDeEquipamentos : null,
       item.manutencaoDeEquipamentos !== undefined ? item.manutencaoDeEquipamentos : null,
       item.homologacaoDeInfra !== undefined ? item.homologacaoDeInfra : null,
       item.treinamentoOperacional !== undefined ? item.treinamentoOperacional : null,
@@ -323,8 +294,6 @@ app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
       item.observacoes,
       item.prestadoraDoServico
     ])
-    
-    
 
     await db.query(query, [values])
     console.log('Dados inseridos com sucesso')
@@ -351,33 +320,25 @@ app.get('/api/dados', async (req, res) => {
 app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
   const formData = req.body;
 
-  // Log do corpo da requisição
-  console.log('Dados recebidos no corpo da requisição:', Object.keys(formData));
-
   if (!formData || Object.keys(formData).length === 0) {
     return res.status(400).json({ message: 'Dados ausentes no corpo da requisição' });
   }
 
-  const processedData = processBooleanFields(formData);
-  
-  // Adicione esta função para processar a assinatura
   function processSignature(signatureData) {
     if (!signatureData) return null;
-    // Remove o cabeçalho da string base64 se existir
     return signatureData.replace(/^data:image\/\w+;base64,/, '');
   }
 
-  // Processa a assinatura (se existir) - mantendo a estrutura existente
+  const processedData = processFormData(formData);
+
   if (formData.assinatura) {
     processedData.assinatura = processSignature(formData.assinatura);
   }
 
-  // Verifica se há um arquivo carregado
   const fileName = req.file ? req.file.filename : null;
   processedData.file = fileName;
 
   try {
-    // Inserção no banco de dados (mantido igual)
     const [result] = await db.query('INSERT INTO RacForm SET ?', [processedData]);
     
     console.log('Dados inseridos no banco de dados com sucesso');
@@ -398,8 +359,7 @@ app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
   }
 });
 
-// Endpoint para buscar uma RAC específica
-// Adicione este endpoint para servir a assinatura
+// Endpoint para buscar assinatura
 app.get('/racvirtual/assinatura/:id', async (req, res) => {
   const { id } = req.params;
   
@@ -410,7 +370,6 @@ app.get('/racvirtual/assinatura/:id', async (req, res) => {
       return res.status(404).json({ message: 'Assinatura não encontrada' });
     }
     
-    // Reconstroi a URL da imagem base64
     const signatureData = `data:image/png;base64,${rows[0].assinatura}`;
     res.json({ assinatura: signatureData });
   } catch (error) {
@@ -418,8 +377,8 @@ app.get('/racvirtual/assinatura/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao buscar assinatura', error: error.message });
   }
 });
-//OBTER CEP
 
+// Endpoint para obter CEP
 app.get('/endereco/:cep', async (req, res) => {
   const { cep } = req.params;
   try {
@@ -431,13 +390,14 @@ app.get('/endereco/:cep', async (req, res) => {
       if (data.erro) {
           throw new Error('CEP não encontrado.');
       }
-      res.json(data); // Retorna o JSON do endereço
+      res.json(data);
   } catch (error) {
       console.error('Erro no backend:', error.message);
-      res.status(500).json({ error: error.message }); // Retorna um JSON de erro
+      res.status(500).json({ error: error.message });
   }
 });
-//================
+
+// Endpoint para editar RAC
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params;
   const formData = req.body;
@@ -445,46 +405,16 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
   if (!formData || Object.keys(formData).length === 0) {
     return res.status(400).json({ message: 'Dados ausentes para atualização' });
   }
-  if (formData.assinatura) {
-    processedData.assinatura = processSignature(formData.assinatura);
+
+  function processSignature(signatureData) {
+    if (!signatureData) return null;
+    return signatureData.replace(/^data:image\/\w+;base64,/, '');
   }
 
-  const processedData = processFormData(formData)
+  const processedData = processFormData(formData);
 
-  // Lista de campos booleanos
-  const booleanFields = [
-    'instalacaoDeEquipamentos',
-    'manutencaoDeEquipamentos',
-    'homologacaoDeInfra',
-    'treinamentoOperacional',
-    'implantacaoDeSistemas',
-    'manutencaoPreventivaContratual',
-    'repprintpoint2',
-    'repprintpoint3',
-    'repminiprint',
-    'repsmart',
-    'relogiomicropoint',
-    'relogiobiopoint',
-    'catracamicropoint',
-    'catracabiopoint',
-    'catracaceros',
-    'catracaidblock',
-    'catracaidnext',
-    'idface',
-    'idflex',
-  ];
-
-  // Cria um objeto com apenas os campos que foram enviados na requisição
-  const updatedData = {};
-  for (const key in formData) {
-    if (formData.hasOwnProperty(key)) {
-      if (booleanFields.includes(key)) {
-        // Converte para booleano (true/false)
-        updatedData[key] = formData[key] === 'true' || formData[key] === true || formData[key] === 1;
-      } else {
-        updatedData[key] = formData[key];
-      }
-    }
+  if (formData.assinatura) {
+    processedData.assinatura = processSignature(formData.assinatura);
   }
 
   try {
@@ -498,8 +428,8 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message });
   }
 });
-//============================
 
+// Endpoint para deletar RAC
 app.delete('/racvirtual/delete/:id', async (req, res) => {
   const { id } = req.params
   try {
@@ -509,19 +439,12 @@ app.delete('/racvirtual/delete/:id', async (req, res) => {
     }
     res.status(200).json({ message: 'RAC deletada com sucesso' })
   } catch (error) {
-    console.error('Erro ao deletar RAC:', error)  // Log de erro detalhado
+    console.error('Erro ao deletar RAC:', error)
     res.status(500).json({ message: 'Erro ao deletar RAC', error: error.message })
   }
 })
 
-function processSignature(signatureData) {
-  if (!signatureData) return null;
-  
-  // Remove o cabeçalho da string base64 se existir
-  return signatureData.replace(/^data:image\/\w+;base64,/, '');
-}
-
-
+// Iniciar servidor
 app.listen(PORT, async () => {
   const connection = await db.getConnection()
   await createTableIfNotExists(connection)

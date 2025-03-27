@@ -57,6 +57,7 @@ function RacForm() {
     observacoes: '',
     prestadoraDoServico: '',
     assinatura: null,
+    
   });
 
   const [step, setStep] = useState(1);
