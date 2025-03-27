@@ -1,197 +1,352 @@
-/* RacsCadastradas.css */
+/* RacsCadastradas.css - Versão Aprimorada */
 
-/* Definições iniciais e para desktop */
+:root {
+  --primary-blue: #1a4b8c;
+  --secondary-blue: #2a75bb;
+  --light-blue: #e6f2ff;
+  --accent-blue: #0077cc;
+  --white: #ffffff;
+  --light-gray: #f5f5f5;
+  --medium-gray: #e0e0e0;
+  --dark-gray: #333333;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+/* Layout Principal */
 .pagina-inteira-racscadastradas {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  min-height: 100vh;
+  background-color: var(--light-gray);
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 header {
-  background-color: #003366;
-  padding: 20px;
-  color: white;
+  background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+  padding: 1.5rem;
+  color: var(--white);
   text-align: center;
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 h1 {
-  font-size: 2em;
-  margin: 20px 0;
+  font-size: 2rem;
+  margin: 1.5rem 0;
+  color: var(--primary-blue);
+  text-align: center;
+  font-weight: 600;
 }
 
+/* Container Principal */
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Filtros */
 .filtros {
-  margin: 20px;
   display: flex;
-  gap: 10px;
-  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
 }
 
 .filtros input {
-  padding: 8px;
-  width: 30%;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  padding: 0.75rem;
+  border: 1px solid var(--medium-gray);
+  border-radius: 6px;
+  flex: 1;
+  transition: var(--transition);
 }
 
-.rac-escondida {
-  margin: 20px;
-  max-width: 70%;
-  justify-self: 80%;
-  justify-content: center;
+.filtros input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(42, 117, 187, 0.2);
+}
+
+/* Lista de RACs */
+.racs-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 }
 
 .dados-item {
-  background-color: #f9f9f9;
-  padding: 15px;
-  margin-bottom: 20px;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  cursor: pointer;
+  border-left: 4px solid var(--primary-blue);
+}
+
+.dados-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .dados-item p {
-  margin: 5px 0;
+  margin: 0.5rem 0;
+  color: var(--dark-gray);
+}
+
+.dados-item strong {
+  color: var(--primary-blue);
+}
+
+/* Botões */
+.button-group {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 button {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--secondary-blue);
+  color: var(--white);
   border: none;
-  padding: 10px;
-  margin: 5px;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
   cursor: pointer;
-  border-radius: 4px;
+  transition: var(--transition);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 button:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-blue);
+  transform: translateY(-2px);
 }
 
+button:active {
+  transform: translateY(0);
+}
+
+/* Detalhes Expandidos */
 .rac-expandida {
-  background-color: #e9ecef;
-  padding: 20px;
-  margin-top: 10px;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  justify-content: left;
-  max-width: 50%;
+  background: var(--light-blue);
+  padding: 1.5rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.5s ease, opacity 0.3s ease, padding 0.3s ease;
+}
+
+.rac-expandida.show {
+  max-height: 2000px;
+  opacity: 1;
+  padding: 1.5rem;
+}
+
+.rac-expandida h2, .rac-expandida h3 {
+  color: var(--primary-blue);
+  margin: 1rem 0 0.5rem;
+  border-bottom: 1px solid var(--medium-gray);
+  padding-bottom: 0.5rem;
+}
+
+/* Formulário de Edição */
+.form-editar-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 500px;
+  height: 100vh;
+  background: var(--white);
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  padding: 2rem;
+}
+
+.form-editar-container.show {
+  transform: translateX(0);
 }
 
 .form-editar {
-  background-color: #f4f4f4;
-  padding: 20px;
-  margin: 20px;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  max-width: 50%;
-}
-
-.form-editar form {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
+}
+
+.form-editar h2 {
+  color: var(--primary-blue);
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
 
 .form-editar label {
-  margin-bottom: 5px;
-  font-weight: bold;
+  font-weight: 500;
+  color: var(--dark-gray);
+  margin-bottom: 0.25rem;
 }
 
-.form-editar input {
-  padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.form-editar input, 
+.form-editar select,
+.form-editar textarea {
+  padding: 0.75rem;
+  border: 1px solid var(--medium-gray);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: var(--transition);
+}
+
+.form-editar input:focus, 
+.form-editar select:focus,
+.form-editar textarea:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(42, 117, 187, 0.2);
 }
 
 .form-editar input[type="checkbox"] {
   width: auto;
-  margin-right: 10px;
+  margin-right: 0.5rem;
 }
 
-.form-editar button {
-  background-color: #28a745;
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
-.form-editar button:hover {
-  background-color: #218838;
+/* Assinatura */
+.assinatura-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--medium-gray);
 }
 
-/* Media Query para telas pequenas (como celular) */
+.assinatura-section img {
+  max-width: 100%;
+  border: 1px solid var(--medium-gray);
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+/* Overlay para o formulário de edição */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.overlay.show {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Responsividade */
+@media (max-width: 1200px) {
+  .main-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-editar-container {
+    max-width: 400px;
+  }
+}
+
 @media (max-width: 768px) {
   .filtros {
     flex-direction: column;
-    gap: 15px;
-    width: 100%;
   }
-
-  .filtros input {
-    width: 100%;
-  }
-
-  .rac-escondida {
+  
+  .form-editar-container {
     max-width: 100%;
+    padding: 1.5rem;
   }
-
-  .dados-item {
-    padding: 10px;
-    margin-bottom: 10px;
+  
+  .button-group {
+    flex-direction: column;
   }
-
-  .rac-expandida {
-    max-width: 100%;
-  }
-
-  .form-editar {
-    max-width: 100%;
-    margin: 10px;
-    padding: 15px;
-  }
-
-  .form-editar input,
-  .form-editar button {
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  h1 {
-    font-size: 1.5em;
-  }
-
+  
   button {
-    padding: 8px;
-  }
-
-  /* Ajusta a largura dos botões na lista de dados */
-  .dados-item button {
     width: 100%;
   }
 }
 
-/* Media Query para telas muito pequenas (como dispositivos móveis em paisagem) */
 @media (max-width: 480px) {
-  header {
-    padding: 15px;
+  h1 {
+    font-size: 1.5rem;
   }
+  
+  .dados-item, .rac-expandida {
+    padding: 1rem;
+  }
+  
+  .form-editar {
+    gap: 0.75rem;
+  }
+}
 
-  .filtros input {
-    width: 100%;
-    padding: 12px;
-  }
+/* Animações */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-  .form-editar input,
-  .form-editar button {
-    padding: 12px;
-  }
+.dados-item {
+  animation: fadeIn 0.5s ease forwards;
+}
 
-  .dados-item p {
-    font-size: 14px;
-  }
+.dados-item:nth-child(odd) {
+  animation-delay: 0.1s;
+}
 
-  button {
-    padding: 10px;
-    font-size: 14px;
-  }
+.dados-item:nth-child(even) {
+  animation-delay: 0.2s;
+}
 
-  .rac-expandida {
-    padding: 15px;
-  }
+/* Ícones (pode usar uma biblioteca como Font Awesome) */
+button::before {
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+}
+
+button[onclick*="toggleExpand"]::before {
+  content: '\f078';
+}
+
+button[onclick*="handleEditClick"]::before {
+  content: '\f044';
+}
+
+button[onclick*="handleDelete"]::before {
+  content: '\f1f8';
+}
+
+button[onclick*="gerarPDF"]::before {
+  content: '\f1c1';
 }
