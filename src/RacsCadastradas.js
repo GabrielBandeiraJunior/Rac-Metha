@@ -149,76 +149,81 @@ export default function RacsCadastradas() {
 
     const handleSaveEdit = async () => {
         try {
-          // Envia apenas os campos que foram alterados
-          const payload = { ...formData };
-
-          // Remove campos que não foram alterados (opcional, dependendo da lógica do seu formulário)
-          // for (const key in payload) {
-          //     if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
-          //         delete payload[key];
-          //     }
-          // }
-      
-          // Garante que os campos booleanos sejam enviados como true/false
-          const booleanFields = [
-            'instalacaoDeEquipamentos',
-            'manutencaoDeEquipamentos',
-            'homologacaoDeInfra',
-            'treinamentoOperacional',
-            'implantacaoDeSistemas',
-            'manutencaoPreventivaContratual',
-            'repprintpoint2',
-            'repprintpoint3',
-            'repminiprint',
-            'repsmart',
-            'relogiomicropoint',
-            'relogiobiopoint',
-            'catracamicropoint',
-            'catracabiopoint',
-            'catracaceros',
-            'catracaidblock',
-            'catracaidnext',
-            'idface',
-            'idflex',
-          ];
-      
-          booleanFields.forEach((field) => {
-            if (payload[field] === undefined) {
-                // Se o campo não foi passado, define explicitamente como false
-                payload[field] = false;
-            } else if (payload[field] === '' || payload[field] === null) {
-                // Garantir que valores vazios ou nulos sejam convertidos para false
-                payload[field] = false;
-            } else {
-                // Se o valor for true, ou um valor booleano '1' ou 'true', mantemos como true
-                payload[field] = payload[field] === true || payload[field] === 1 || payload[field] === 'true';
+            // Envia apenas os campos que foram alterados
+            const payload = { ...formData };
+    
+            // Garante que os campos booleanos sejam enviados como true/false
+            const booleanFields = [
+                'instalacaoDeEquipamentos',
+                'manutencaoDeEquipamentos',
+                'homologacaoDeInfra',
+                'treinamentoOperacional',
+                'implantacaoDeSistemas',
+                'manutencaoPreventivaContratual',
+                'repprintpoint2',
+                'repprintpoint3',
+                'repminiprint',
+                'repsmart',
+                'relogiomicropoint',
+                'relogiobiopoint',
+                'catracamicropoint',
+                'catracabiopoint',
+                'catracaceros',
+                'catracaidblock',
+                'catracaidnext',
+                'idface',
+                'idflex',
+            ];
+    
+            booleanFields.forEach((field) => {
+                if (payload[field] === undefined) {
+                    payload[field] = false;
+                } else if (payload[field] === '' || payload[field] === null) {
+                    payload[field] = false;
+                } else {
+                    payload[field] = payload[field] === true || payload[field] === 1 || payload[field] === 'true';
+                }
+            });
+    
+            for (const key in payload) {
+                if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
+                    delete payload[key];
+                }
             }
-        });
-
-          for (const key in payload) {
-            if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
-                delete payload[key];
-            }
-        }
-      
-          await axios.put(`http://localhost:3000/racvirtual/edit/${editingItem.id}`, payload);
-      
-          // Atualiza a lista de dados após a edição
-          const response = await axios.get('http://localhost:3000/api/dados');
-          setDados(response.data);
-          setEditingItem(null);
+    
+            await axios.put(`http://localhost:3000/racvirtual/edit/${editingItem.id}`, payload);
+    
+            // Atualiza a lista de RACs após a edição
+            const response = await axios.get('http://localhost:3000/racvirtual/list');
+            setRacs(response.data);
+            setEditingItem(null);
+            
+            // Fecha o modal de edição
+            setEditingItem(null);
+            
+            // Mostra mensagem de sucesso
+            alert('RAC atualizada com sucesso!');
         } catch (error) {
-          console.error("Erro ao editar:", error);
+            console.error("Erro ao editar:", error);
+            alert('Erro ao atualizar a RAC. Por favor, tente novamente.');
         }
     };
-
+    
     const handleDelete = async (id) => {
-        try {
-            await axios.delete(`http://localhost:3000/racvirtual/delete/${id}`);
-            const response = await axios.get('http://localhost:3000/api/dados');
-            setDados(response.data);
-        } catch (error) {
-            console.error("Erro ao deletar:", error);
+        if (window.confirm('Tem certeza que deseja excluir esta RAC?')) {
+            try {
+                await axios.delete(`http://localhost:3000/racvirtual/delete/${id}`);
+                
+                // Atualiza a lista de RACs após a exclusão
+                const response = await axios.get('http://localhost:3000/racvirtual/list');
+                setRacs(response.data);
+                
+                // Mostra mensagem de sucesso
+                alert('RAC excluída com sucesso!');
+            } catch (error) {
+                console.error("Erro ao deletar:", error);
+                alert('Erro ao excluir a RAC. Por favor, tente novamente.');
+            }
         }
     };
 
