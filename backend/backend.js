@@ -305,10 +305,57 @@ app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
 })
 
 // Endpoint para listar todas as RACs
-app.get('/api/dados', async (req, res) => {
+app.get('/racvirtual/list', async (req, res) => {
   try {
     console.log('Consultando dados...')
-    const [results] = await db.query('SELECT * FROM RacForm')
+    
+    // Obter parâmetros de filtro e ordenação
+    const { 
+      razaoSocial, 
+      tecnico, 
+      dataInicio,
+      sortBy = 'date',
+      sortOrder = 'DESC'
+    } = req.query
+    
+    // Construir a query base
+    let query = 'SELECT * FROM RacForm'
+    const conditions = []
+    const params = []
+    
+    // Adicionar filtros
+    if (razaoSocial) {
+      conditions.push('razaoSocial LIKE ?')
+      params.push(`%${razaoSocial}%`)
+    }
+    
+    if (tecnico) {
+      conditions.push('tecnico LIKE ?')
+      params.push(`%${tecnico}%`)
+    }
+    
+    if (dataInicio) {
+      conditions.push('dataInicio = ?')
+      params.push(dataInicio)
+    }
+    
+    // Adicionar condições à query
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ')
+    }
+    
+    // Adicionar ordenação
+    const validSortColumns = ['date', 'dataInicio', 'razaoSocial', 'tecnico']
+    const validSortOrders = ['ASC', 'DESC']
+    
+    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'date'
+    const sortDirection = validSortOrders.includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC'
+    
+    query += ` ORDER BY ${sortColumn} ${sortDirection}`
+    
+    // Executar a query
+    const [results] = await db.query(query, params)
+    
     res.json(results)
   } catch (error) {
     console.error('Erro ao consultar os dados:', error)
@@ -356,6 +403,31 @@ app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
       message: 'Erro interno no servidor', 
       error: error.message 
     });
+  }
+});
+
+// Endpoint para buscar uma RAC específica
+app.get('/racvirtual/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [rows] = await db.query('SELECT * FROM RacForm WHERE id = ?', [id]);
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'RAC não encontrada' });
+    }
+    
+    const rac = rows[0];
+    
+    // Se houver assinatura, formatar para enviar ao frontend
+    if (rac.assinatura) {
+      rac.assinatura = `data:image/png;base64,${rac.assinatura}`;
+    }
+    
+    res.json(rac);
+  } catch (error) {
+    console.error('Erro ao buscar RAC:', error);
+    res.status(500).json({ message: 'Erro ao buscar RAC', error: error.message });
   }
 });
 

@@ -86,7 +86,7 @@ const Assinatura = ({ value, onChange }) => {
       >
         Limpar Assinatura
       </button>
-      {value && (
+      {/* {value && (
         <div className="signature-preview">
           <p>Pré-visualização:</p>
           <img 
@@ -95,7 +95,7 @@ const Assinatura = ({ value, onChange }) => {
             className="preview-image"
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

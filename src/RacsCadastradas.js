@@ -1,16 +1,28 @@
 import React, { useEffect, useState } from 'react';
- import { jsPDF } from 'jspdf';
- import axios from 'axios';
- import Headers from './Components/Headers';
- import './RacsCadastradas.css';
+import { jsPDF } from 'jspdf';
+import axios from 'axios';
+import Headers from './Components/Headers';
+import './RacsCadastradas.css';
 
 export default function RacsCadastradas() {
-    const [step, setStep] = useState(1);
-      const [cep, setCep] = useState('');
-      const [endereco, setEndereco] = useState({});
-      const [erro, setErro] = useState('');
-    const [dados, setDados] = useState([]);
+    const [racs, setRacs] = useState([]);
+    const [filtros, setFiltros] = useState({
+        razaoSocial: '',
+        tecnico: '',
+        dataInicio: ''
+    });
+    const [ordenacao, setOrdenacao] = useState({
+        campo: 'createdAt',
+        direcao: 'desc'
+    });
+    const [carregando, setCarregando] = useState(true);
     const [error, setError] = useState(null);
+
+    const [step, setStep] = useState(1);
+    const [cep, setCep] = useState('');
+    const [endereco, setEndereco] = useState({});
+    const [erro, setErro] = useState('');
+    const [dados, setDados] = useState([]);
     const [filter, setFilter] = useState({ date: '', tecnico: '', empresa: '' });
     const [editingItem, setEditingItem] = useState(null);
     const [expandedId, setExpandedId] = useState(null);
@@ -51,17 +63,73 @@ export default function RacsCadastradas() {
     ];
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/dados')
-            .then(response => {
-                console.log("Dados recebidos:", response.data); // Verifique os dados
-                setDados(response.data);
-            })
-            .catch(error => {
-                console.error("Erro ao buscar dados:", error);
-                setError('Erro ao buscar dados.');
-            })
-            .finally(() => setLoading(false));
+        const buscarRacs = async () => {
+            try {
+                setCarregando(true);
+                // Primeiro busca todas as RACs sem filtros
+                const response = await axios.get('http://localhost:3000/racvirtual/list');
+                setRacs(response.data);
+                setError(null);
+            } catch (error) {
+                console.error('Erro ao buscar RACs:', error);
+                setError('Erro ao carregar RACs. Tente novamente.');
+            } finally {
+                setCarregando(false);
+            }
+        };
+
+        buscarRacs();
     }, []);
+
+    const aplicarFiltros = async () => {
+        try {
+            setCarregando(true);
+            // Aplica os filtros apenas quando o usuário clicar em filtrar
+            const response = await axios.get('http://localhost:3000/racvirtual/list', {
+                params: {
+                    razaoSocial: filtros.razaoSocial,
+                    tecnico: filtros.tecnico,
+                    dataInicio: filtros.dataInicio,
+                    sortBy: ordenacao.campo,
+                    sortOrder: ordenacao.direcao
+                }
+            });
+            setRacs(response.data);
+            setError(null);
+        } catch (error) {
+            console.error('Erro ao filtrar RACs:', error);
+            setError('Erro ao filtrar RACs. Verifique os dados e tente novamente.');
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+     const limparFiltros = async () => {
+        setFiltros({
+            razaoSocial: '',
+            tecnico: '',
+            dataInicio: ''
+        });
+        
+        // Recarrega todas as RACs novamente
+        try {
+            setCarregando(true);
+            const response = await axios.get('http://localhost:3000/racvirtual/list');
+            setRacs(response.data);
+            setError(null);
+        } catch (error) {
+            console.error('Erro ao buscar RACs:', error);
+            setError('Erro ao carregar RACs. Tente novamente.');
+        } finally {
+            setCarregando(false);
+        }
+    };
+
+    const formatarDataParaBackend = (dataString) => {
+        if (!dataString) return '';
+        const [dia, mes, ano] = dataString.split('/');
+        return `${ano}-${mes}-${dia}`;
+    };
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
@@ -71,25 +139,25 @@ export default function RacsCadastradas() {
     const filteredDados = dados; // Remova os filtros temporariamente para teste
 
     const toggleExpand = (id) => {
-      setExpandedId(expandedId === id ? null : id);
-  };
+        setExpandedId(expandedId === id ? null : id);
+    };
 
-  const handleEditClick = (item) => {
-    setEditingItem(item);
-    setFormData(item);
-};
+    const handleEditClick = (item) => {
+        setEditingItem(item);
+        setFormData(item);
+    };
 
     const handleSaveEdit = async () => {
         try {
           // Envia apenas os campos que foram alterados
           const payload = { ...formData };
 
-        // Remove campos que não foram alterados (opcional, dependendo da lógica do seu formulário)
-        // for (const key in payload) {
-        //     if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
-        //         delete payload[key];
-        //     }
-        //   }
+          // Remove campos que não foram alterados (opcional, dependendo da lógica do seu formulário)
+          // for (const key in payload) {
+          //     if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
+          //         delete payload[key];
+          //     }
+          // }
       
           // Garante que os campos booleanos sejam enviados como true/false
           const booleanFields = [
@@ -142,19 +210,7 @@ export default function RacsCadastradas() {
         } catch (error) {
           console.error("Erro ao editar:", error);
         }
-      };
-
-      // Adicione isso no seu CSS ou como estilo inline
-const closeBtnStyle = {
-  position: 'absolute',
-  top: '15px',
-  right: '15px',
-  background: 'transparent',
-  border: 'none',
-  fontSize: '1.5rem',
-  cursor: 'pointer',
-  color: 'var(--primary-blue)'
-};
+    };
 
     const handleDelete = async (id) => {
         try {
@@ -278,9 +334,9 @@ const closeBtnStyle = {
           console.error('Erro:', error);
           setErro(error.message || 'Erro ao buscar o endereço. Verifique o CEP e tente novamente.');
         }
-      };
+    };
 
-      return (
+    return (
         <div className="pagina-inteira-racscadastradas">
             {/* Overlay para o formulário de edição */}
             <div className={`overlay ${editingItem ? 'show' : ''}`} onClick={() => setEditingItem(null)}></div>
@@ -291,19 +347,60 @@ const closeBtnStyle = {
             
             <div className="main-container">
                 <h1>RACs Cadastradas</h1>
-                <div className="filtros">
-                    <input type="datetime-local" name="date" placeholder="Filtrar por data" onChange={handleFilterChange} />
-                    <input type="text" name="tecnico" placeholder="Filtrar por técnico" onChange={handleFilterChange} />
-                    <input type="text" name="empresa" placeholder="Filtrar por empresa" onChange={handleFilterChange} />
+                <div className="filtro-group">
+                    <label>Filtrar por:</label>
+                    <input
+                        type="text"
+                        placeholder="Nome da Empresa"
+                        value={filtros.razaoSocial}
+                        onChange={(e) => setFiltros({ ...filtros, razaoSocial: e.target.value })}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Nome do Técnico"
+                        value={filtros.tecnico}
+                        onChange={(e) => setFiltros({ ...filtros, tecnico: e.target.value })}
+                    />
+                    <input
+                        type="date"
+                        placeholder="Data da RAC"
+                        value={filtros.dataInicio}
+                        onChange={(e) => setFiltros({ ...filtros, dataInicio: e.target.value })}
+                    />
+                    <button onClick={aplicarFiltros} className="aplicar-filtros">Aplicar Filtros</button>
+                    <button onClick={limparFiltros} className="limpar-filtros">Limpar Filtros</button>
                 </div>
-                {loading ? (
+                
+                <div className="ordenacao-group">
+                    <label>Ordenar por:</label>
+                    <select 
+                        value={ordenacao.campo} 
+                        onChange={(e) => setOrdenacao({ ...ordenacao, campo: e.target.value })}
+                    >
+                        <option value="createdAt">Data de Registro</option>
+                        <option value="dataInicio">Data da RAC</option>
+                        <option value="razaoSocial">Nome da Empresa</option>
+                        <option value="tecnico">Nome do Técnico</option>
+                    </select>
+                    <select 
+                        value={ordenacao.direcao} 
+                        onChange={(e) => setOrdenacao({ ...ordenacao, direcao: e.target.value })}
+                    >
+                        <option value="desc">Decrescente</option>
+                        <option value="asc">Crescente</option>
+                    </select>
+                    <button onClick={aplicarFiltros} className="aplicar-ordenacao">Aplicar Ordenação</button>
+                </div>
+
+                {carregando ? (
                     <p>Carregando...</p>
                 ) : error ? (
-                    <p>{error}</p>
+                    <p className="error-message">{error}</p>
                 ) : (
                     <div className="racs-container">
-                        {filteredDados.map(item => (
+                        {racs.map(item => (
                             <div key={item.id} className="dados-item">
+                                {/* Restante do código de exibição permanece igual */}
                                 <p><strong>Técnico:</strong> {item.tecnico}</p>
                                 <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
                                 <p><strong>Data de Registro:</strong> {formatDate(item.date)}</p>
@@ -689,4 +786,5 @@ const closeBtnStyle = {
                 )}
             </div>
         </div>
-    );}
+    );
+}
