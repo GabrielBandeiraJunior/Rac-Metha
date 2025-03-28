@@ -1,10 +1,63 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Headers from './Components/Headers.js';
-import './RACForm.css';
-import './my-button.css';
+import React, { useState } from 'react'
+import axios from 'axios'
+import Headers from './Components/Headers.js'
+import './RACForm.css'
+import './my-button.css'
 import Assinatura from './Components/Assinatura.js'
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion'
+
+const INITIAL_STATE = {
+  date: new Date().toISOString().split('T')[0],
+  tecnico: '',
+  razaoSocial: '',
+  cnpj: '',
+  endereco: '',
+  numero: '',
+  cidade: '',
+  responsavel: '',
+  setor: '',
+  dataInicio: '',
+  horaInicio: '',
+  dataTermino: '',
+  horaTermino: '',
+  horaIntervaloInicio: '',
+  horaIntervaloTermino: '',
+  horaIntervaloInicio2: '',
+  horaIntervaloTermino2: '',
+  instalacaoDeEquipamentos: false,
+  manutencaoDeEquipamentos: false,
+  homologacaoDeInfra: false,
+  treinamentoOperacional: false,
+  implantacaoDeSistemas: false,
+  manutencaoPreventivaContratual: false,
+  repprintpoint2: false,
+  repprintpoint3: false,
+  repminiprint: false,
+  repsmart: false,
+  relogiomicropoint: false,
+  relogiobiopoint: false,
+  catracamicropoint: false,
+  catracabiopoint: false,
+  catracaceros: false,
+  catracaidblock: false,
+  catracaidnext: false,
+  idface: false,
+  idflex: false,
+  impressora: false,
+  fonte: false,
+  cabecote: false,
+  leitor: false,
+  codigoImpressora: '',
+  codigoFonte: '',
+  codigoCabecote: '',
+  codigoLeitor: '',
+  nSerie: '',
+  localInstalacao: '',
+  observacaoProblemas: '',
+  observacoes: '',
+  prestadoraDoServico: '',
+  assinatura: null,
+};
 
 export default function RacForm() {
   const [formData, setFormData] = useState({
@@ -58,44 +111,54 @@ export default function RacForm() {
     observacoes: '',
     prestadoraDoServico: '',
     assinatura: null,
-  });
+  })
 
-  const [step, setStep] = useState(1);
-  const [cep, setCep] = useState('');
-  const [endereco, setEndereco] = useState({});
-  const [erro, setErro] = useState('');
-  const [direction, setDirection] = useState('next');
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [step, setStep] = useState(1)
+  const [cep, setCep] = useState('')
+  const [endereco, setEndereco] = useState({})
+  const [erro, setErro] = useState('')
+  const [direction, setDirection] = useState('next')
+  const [submitStatus, setSubmitStatus] = useState(null)
+
+  const resetForm = () => {
+    setFormData({
+      ...INITIAL_STATE,
+      date: new Date().toISOString().split('T')[0] // Mantém a data atual
+    });
+    setCep('');
+    setEndereco({});
+    setErro('');
+    setStep(1);
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
-    });
-  };
+    })
+  }
 
   const handleSignatureChange = (signature) => {
     setFormData({
       ...formData,
       assinatura: signature
-    });
-  };
+    })
+  }
 
   const obterEnderecoPorCEP = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/endereco/${cep}`);
+      const response = await fetch(`http://localhost:3000/endereco/${cep}`)
       if (!response.ok) {
-        throw new Error('Erro ao obter o endereço.');
+        throw new Error('Erro ao obter o endereço.')
       }
-      const data = await response.json();
+      const data = await response.json()
       if (data.erro) {
-        throw new Error('CEP não encontrado.');
+        throw new Error('CEP não encontrado.')
       }
-      setEndereco(data);
-      setErro('');
+      setEndereco(data)
+      setErro('')
 
-      // Monta o endereço completo e atualiza o estado
       const enderecoCompleto = `${data.logradouro || ''}, ${data.bairro || ''}, ${data.localidade || ''}, ${data.uf || ''}`;
       setFormData(prevState => ({
         ...prevState,
@@ -103,19 +166,19 @@ export default function RacForm() {
         cidade: data.localidade || '',
       }));
     } catch (error) {
-      console.error('Erro:', error);
-      setErro(error.message || 'Erro ao buscar o endereço. Verifique o CEP e tente novamente.');
+      console.error('Erro:', error)
+      setErro(error.message || 'Erro ao buscar o endereço. Verifique o CEP e tente novamente.')
     }
-  };
+  }
 
-  const handleSubmit = async (e) => {
+   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitStatus('enviando');
 
     const timeout = setTimeout(() => {
       setSubmitStatus('erro');
       setTimeout(() => setSubmitStatus(null), 3000);
-    }, 10000); // 10 segundos de timeout
+    }, 10000);
     
     try {
       // Limpa campos vazios antes de enviar
@@ -129,74 +192,39 @@ export default function RacForm() {
       const response = await axios.post(
         'http://localhost:3000/racvirtual/register',
         payload,
-        { headers: { 'Content-Type': 'application/json' } }
+        { 
+          headers: { 'Content-Type': 'application/json' },
+          validateStatus: (status) => status < 500
+        }
       );
+
+      clearTimeout(timeout);
+
+      console.log('Resposta da API:', response);
       
-      if (response.status === 200) {
+      if (response.status >= 200 && response.status < 300) {
         setSubmitStatus('sucesso');
-        // Limpa o formulário após envio bem-sucedido
-        setFormData({
-          date: new Date().toISOString().split('T')[0],
-          tecnico: '',
-          razaoSocial: '',
-          cnpj: '',
-          endereco: '',
-          numero: '',
-          cidade: '',
-          responsavel: '',
-          setor: '',
-          dataInicio: '',
-          horaInicio: '',
-          dataTermino: '',
-          horaTermino: '',
-          horaIntervaloInicio: '',
-          horaIntervaloTermino: '',
-          horaIntervaloInicio2: '',
-          horaIntervaloTermino2: '',
-          instalacaoDeEquipamentos: false,
-          manutencaoDeEquipamentos: false,
-          homologacaoDeInfra: false,
-          treinamentoOperacional: false,
-          implantacaoDeSistemas: false,
-          manutencaoPreventivaContratual: false,
-          repprintpoint2: false,
-          repprintpoint3: false,
-          repminiprint: false,
-          repsmart: false,
-          relogiomicropoint: false,
-          relogiobiopoint: false,
-          catracamicropoint: false,
-          catracabiopoint: false,
-          catracaceros: false,
-          catracaidblock: false,
-          catracaidnext: false,
-          idface: false,
-          idflex: false,
-          impressora: false,
-          fonte: false,
-          cabecote: false,
-          leitor: false,
-          codigoImpressora: '',
-          codigoFonte: '',
-          codigoCabecote: '',
-          codigoLeitor: '',
-          nSerie: '',
-          localInstalacao: '',
-          observacaoProblemas: '',
-          observacoes: '',
-          prestadoraDoServico: '',
-          assinatura: null,
-        });
+        resetForm(); // Usa a função de reset aqui
         
-        // Resetar o status após 3 segundos
         setTimeout(() => setSubmitStatus(null), 3000);
-        
+      } else {
+        setSubmitStatus('erro');
+        setTimeout(() => setSubmitStatus(null), 3000);
       }
     } catch (error) {
-      
+      clearTimeout(timeout);
       console.error('Erro ao enviar dados:', error);
+      
+      let errorMessage = 'Erro ao enviar RAC. Por favor, tente novamente.';
+      if (error.response) {
+        console.error('Detalhes do erro:', error.response.data);
+        errorMessage = error.response.data.message || errorMessage;
+      } else if (error.request) {
+        console.error('Sem resposta do servidor');
+        errorMessage = 'Sem resposta do servidor. Verifique sua conexão.';
+      }
+      
       setSubmitStatus('erro');
-      // Resetar o status após 3 segundos
       setTimeout(() => setSubmitStatus(null), 3000);
     }
   };
@@ -207,18 +235,17 @@ export default function RacForm() {
     { label: 'Consultar Racs', url: '/racscadastradas' },
     { label: 'Importar Planilha', url: '/importarplanilha' },
     { label: 'Home', url: '/' },
-  ];
+  ]
 
   const handleNextStep = () => {
-    setDirection('next');
-    setTimeout(() => setStep(step + 1), 100);
-  };
+    setDirection('next')
+    setTimeout(() => setStep(step + 1), 100)
+  }
 
   const handlePrevStep = () => {
-    setDirection('prev');
-    setTimeout(() => setStep(step - 1), 100);
-  };
-
+    setDirection('prev')
+    setTimeout(() => setStep(step - 1), 100)
+  }
   return (
     <>
       <Headers links={links} />
@@ -556,5 +583,5 @@ export default function RacForm() {
         </AnimatePresence>
       </form>
     </>
-  );
+  )
 }
