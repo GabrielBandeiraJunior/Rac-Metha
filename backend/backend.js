@@ -516,6 +516,47 @@ app.delete('/racvirtual/delete/:id', async (req, res) => {
   }
 })
 
+// Endpoint para buscar empresas por razão social
+app.get('/empresas/buscar', async (req, res) => {
+  const { termo } = req.query;
+  
+  try {
+    const [rows] = await db.query(
+      `SELECT id, razaoSocial, cnpj, endereco, numero, cidade 
+       FROM DadosEmpresas 
+       WHERE razaoSocial LIKE ? 
+       LIMIT 10`, 
+      [`%${termo}%`]
+    );
+    res.json(rows);
+  } catch (error) {
+    console.error('Erro ao buscar empresas:', error);
+    res.status(500).json({ error: 'Erro ao buscar empresas' });
+  }
+});
+
+// Endpoint para buscar detalhes completos de uma empresa
+app.get('/empresas/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [rows] = await db.query(
+      `SELECT * FROM DadosEmpresas WHERE id = ?`,
+      [id]
+    );
+    
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Empresa não encontrada' });
+    }
+    
+    res.json(rows[0]);
+  } catch (error) {
+    console.error('Erro ao buscar empresa:', error);
+    res.status(500).json({ error: 'Erro ao buscar empresa' });
+  }
+});
+
+
 // Iniciar servidor
 app.listen(PORT, async () => {
   const connection = await db.getConnection()

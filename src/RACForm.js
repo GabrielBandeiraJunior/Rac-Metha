@@ -119,6 +119,12 @@ export default function RacForm() {
   const [erro, setErro] = useState('')
   const [direction, setDirection] = useState('next')
   const [submitStatus, setSubmitStatus] = useState(null)
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  
+  const [searchTerm, setSearchTerm] = useState('');
+  const [empresasEncontradas, setEmpresasEncontradas] = useState([]);
+  const [showEmpresaPopup, setShowEmpresaPopup] = useState(false);
 
   const resetForm = () => {
     setFormData({
@@ -246,6 +252,96 @@ export default function RacForm() {
     setDirection('prev')
     setTimeout(() => setStep(step - 1), 100)
   }
+
+  const fetchSuggestions = async (term) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/empresas/buscar?termo=${term}`);
+      setSuggestions(response.data);
+      setShowSuggestions(true);
+    } catch (error) {
+      console.error('Erro ao buscar sugestões:', error);
+      setSuggestions([]);
+    }
+  };
+  
+  const handleRazaoSocialChange = (e) => {
+    const value = e.target.value;
+    setFormData({ ...formData, razaoSocial: value });
+    setSearchTerm(value);
+    
+    if (value.length > 2) {
+      fetchSuggestions(value);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  };
+  
+  const handleSelectSuggestion = async (empresa) => {
+    try {
+      // Busca os detalhes completos da empresa
+      const response = await axios.get(`http://localhost:3000/empresas/${empresa.id}`);
+      const empresaCompleta = response.data;
+      
+      // Atualiza o formulário com os dados da empresa
+      setFormData({
+        ...formData,
+        razaoSocial: empresaCompleta.razaoSocial,
+        cnpj: empresaCompleta.cnpj || '',
+        endereco: empresaCompleta.endereco || '',
+        numero: empresaCompleta.numero || '',
+        cidade: empresaCompleta.cidade || '',
+        // Adicione outros campos conforme necessário
+      });
+      
+      setSearchTerm(empresaCompleta.razaoSocial);
+      setSuggestions([]);
+      setShowSuggestions(false);
+    } catch (error) {
+      console.error('Erro ao carregar detalhes da empresa:', error);
+    }
+  };
+
+  const buscarEmpresa = async () => {
+    if (searchTerm.length < 3) {
+      alert('Digite pelo menos 3 caracteres para buscar');
+      return;
+    }
+  
+    try {
+      const response = await axios.get(`http://localhost:3000/empresas/buscar?termo=${searchTerm}`);
+      setEmpresasEncontradas(response.data);
+      setShowEmpresaPopup(true);
+    } catch (error) {
+      console.error('Erro ao buscar empresas:', error);
+      alert('Erro ao buscar empresas');
+    }
+  };
+  
+  const selecionarEmpresa = async (empresa) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/empresas/${empresa.id}`);
+      const dadosEmpresa = response.data;
+      
+      setFormData({
+        ...formData,
+        razaoSocial: dadosEmpresa.razaoSocial,
+        cnpj: dadosEmpresa.cnpj || '',
+        endereco: dadosEmpresa.endereco || '',
+        numero: dadosEmpresa.numero || '',
+        cidade: dadosEmpresa.cidade || '',
+        responsavel: dadosEmpresa.responsavel || '',
+        setor: dadosEmpresa.setor || ''
+      });
+      
+      setShowEmpresaPopup(false);
+      setSearchTerm('');
+    } catch (error) {
+      console.error('Erro ao carregar dados da empresa:', error);
+      alert('Erro ao carregar dados da empresa');
+    }
+  };
+
   return (
     <>
       <Headers links={links} />
@@ -269,6 +365,27 @@ export default function RacForm() {
                       <label htmlFor="tecnico">Nome do Técnico</label>
                       <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} />
                     </div>
+
+
+                    <div className="input-group">
+  <label>Buscar Empresa Cadastrada</label>
+  <div className="search-container">
+    <input
+      type="text"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      placeholder="Digite o nome da empresa"
+    />
+    <button 
+      type="button" 
+      className="small-button" 
+      onClick={buscarEmpresa}
+    >
+      Buscar
+    </button>
+  </div>
+</div>
+
                     <div className="input-group">
                       <label htmlFor="razaoSocial">Razão Social</label>
                       <input type="text" id="razaoSocial" name="razaoSocial" value={formData.razaoSocial} onChange={handleChange} />
@@ -581,6 +698,40 @@ export default function RacForm() {
             )}
           </motion.div>
         </AnimatePresence>
+
+        {showEmpresaPopup && (
+  <div className="popup-overlay">
+    <div className="empresa-popup">
+      <h3>Selecione a Empresa</h3>
+      <div className="empresa-list">
+        {empresasEncontradas.length > 0 ? (
+          empresasEncontradas.map((empresa) => (
+            <div 
+              key={empresa.id} 
+              className="empresa-item"
+              onClick={() => selecionarEmpresa(empresa)}
+            >
+              <div className="empresa-nome">{empresa.razaoSocial}</div>
+              <div className="empresa-detalhes">
+                {empresa.cnpj && <span>CNPJ: {empresa.cnpj}</span>}
+                {empresa.cidade && <span>Cidade: {empresa.cidade}</span>}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="no-results">Nenhuma empresa encontrada</div>
+        )}
+      </div>
+      <button 
+        type="button" 
+        className="close-button"
+        onClick={() => setShowEmpresaPopup(false)}
+      >
+        Fechar
+      </button>
+    </div>
+  </div>
+)}
       </form>
     </>
   )

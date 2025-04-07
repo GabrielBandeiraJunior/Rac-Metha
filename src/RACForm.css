@@ -249,3 +249,120 @@ button, .nav-button {
 .form-page {
   animation: fadeIn 0.3s ease-out;
 }
+
+.suggestion-container {
+  position: relative;
+  width: 100%;
+}
+
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.suggestions-list li {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestions-list li:hover {
+  background-color: #f5f5f5;
+}
+
+.suggestions-list li:last-child {
+  border-bottom: none;
+}
+
+/* Estilos para a busca de empresas */
+.search-container {
+  display: flex;
+  gap: 8px;
+}
+
+.search-container input {
+  flex: 1;
+}
+
+/* Estilos para o popup */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.empresa-popup {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.empresa-list {
+  margin: 15px 0;
+}
+
+.empresa-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.empresa-item:hover {
+  background-color: #f5f5f5;
+}
+
+.empresa-nome {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.empresa-detalhes {
+  display: flex;
+  gap: 15px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.close-button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 8px 16px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: #d32f2f;
+}
