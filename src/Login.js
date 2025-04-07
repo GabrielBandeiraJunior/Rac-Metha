@@ -1,57 +1,98 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useAuth } from './auth'; // Importe o hook de autenticação
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './auth';
+import './Autenticacao.css';
 
 function Login() {
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
+  const [usuario, setUsuario] = useState('');
+  const [senha, setSenha] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const { login } = useAuth(); // Desestrutura a função de login do contexto
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+    console.log('Iniciando processo de login...'); // Log inicial
 
     try {
-      const response = await axios.post("http://localhost:3001/login", {
-        usuario,
-        senha,
-      });
-
-      if (response.data.existe) {
-        login('some-auth-token'); // Atualiza o estado de autenticação
-        navigate("/perfil"); // Redireciona para a rota /perfil
+      console.log('Chamando função login do auth context...');
+      const success = await login(usuario, senha);
+      
+      if (success) {
+        console.log('Login bem-sucedido, redirecionando para /perfil');
+        navigate('/perfil');
       } else {
-        alert("Email ou senha incorretos.");
+        console.warn('Credenciais inválidas');
+        setError('Usuário ou senha incorretos');
       }
     } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      alert("Erro ao fazer login!");
+      console.error("Erro completo no login:", {
+        message: error.message,
+        stack: error.stack,
+        response: error.response
+      });
+      setError('Erro ao fazer login. Tente novamente.');
+    } finally {
+      console.log('Processo de login finalizado');
+      setLoading(false);
     }
   };
 
-  return (<>
-    
-
-    <form onSubmit={handleSubmit}>
-      <input
-        type="usuario"
-        placeholder="usuario"
-        value={usuario}
-        onChange={(e) => setUsuario(e.target.value)}
+  return (
+    <div className="auth-container">
+      <h2>Login</h2>
+      {error && <div className="error-message">{error}</div>}
+      
+      <form onSubmit={handleSubmit} className="auth-form">
+        <input
+          type="text"
+          placeholder="Usuário"
+          value={usuario}
+          onChange={(e) => {
+            console.log('Usuário alterado:', e.target.value);
+            setUsuario(e.target.value);
+          }}
+          required
+          className="auth-input"
+        />
         
-      /><br/>
-
-      <input
-        type="senha"
-        placeholder="Senha"
-        value={senha}
-        onChange={(e) => setSenha(e.target.value)}
-      /><br/>
-
-      <button type="submit" className="styled-button">Login</button>
-    </form>
-    </>  );
+        <input
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={(e) => {
+            console.log('Senha alterada (valor oculto no log por segurança)');
+            setSenha(e.target.value);
+          }}
+          required
+          className="auth-input"
+        />
+        
+        <button 
+          type="submit" 
+          className="auth-button"
+          disabled={loading}
+        >
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
+      </form>
+      
+      <div className="auth-links">
+        <button 
+          onClick={() => {
+            console.log('Navegando para página de registro');
+            navigate('/register');
+          }}
+          className="auth-link-button"
+        >
+          Criar nova conta
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export default Login;

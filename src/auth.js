@@ -1,32 +1,72 @@
-import React, { createContext, useState, useContext } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
-// Cria o contexto de autenticação
 const AuthContext = createContext();
 
-// Fornece o contexto para os componentes filhos
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('authToken'));
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = (token, userData) => {
-    localStorage.setItem('authToken', token);
-    setUser(userData); // Define os dados do usuário
-    setIsAuthenticated(true);
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoading(false);
+  }, []);
+
+  const login = async (usuario, senha) => {
+    try {
+      const response = await fetch('http://localhost:3001/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario, senha })
+      });
+
+      if (!response.ok) {
+        throw new Error('Credenciais inválidas');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
+      return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    }
+  };
+
+  const register = async (usuario, senha, nome) => {
+    try {
+      const response = await fetch('http://localhost:3001/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario, senha, nome })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro no registro');
+      }
+
+      return await login(usuario, senha);
+    } catch (error) {
+      console.error('Register error:', error);
+      return false;
+    }
   };
 
   const logout = () => {
-    localStorage.removeItem('authToken');
-    setUser(null); // Limpa os dados do usuário ao sair
-    setIsAuthenticated(false);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
-      {children}
+    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
 };
 
-// Hook personalizado para acessar o contexto de autenticação
 export const useAuth = () => useContext(AuthContext);
-  
