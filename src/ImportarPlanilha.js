@@ -38,7 +38,8 @@ const links = [
   { label: 'Autenticacao', url: '/Autenticacao' },
   { label: 'Perfil', url: '/perfil' },
   { label: 'Consultar Racs', url: '/racscadastradas' },
-  { label: 'Registrar Nova RAC', url: '/novarac' },
+  { label: 'Cadastrar RAC', url: '/novarac' },
+  { label: 'Importar Planilha', url: '/importarplanilha' },
   { label: 'Home', url: '/' },
 ]
 

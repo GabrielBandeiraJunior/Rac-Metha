@@ -56,12 +56,13 @@ export default function RacsCadastradas() {
     const [loading, setLoading] = useState(true);
 
     const links = [
-        { label: 'Meu Perfil', url: '/perfil' },
-        { label: 'Nova RAC', url: '/novarac' },
+        { label: 'Autenticacao', url: '/Autenticacao' },
+        { label: 'Perfil', url: '/perfil' },
+        { label: 'Consultar Racs', url: '/racscadastradas' },
+        { label: 'Cadastrar RAC', url: '/novarac' },
         { label: 'Importar Planilha', url: '/importarplanilha' },
-        { label: 'Home', url: '/' }
-    ];
-
+        { label: 'Home', url: '/' },
+      ]
     useEffect(() => {
         const buscarRacs = async () => {
             try {
@@ -149,10 +150,10 @@ export default function RacsCadastradas() {
 
     const handleSaveEdit = async () => {
         try {
-            // Envia apenas os campos que foram alterados
+            // Cria uma cópia do formData
             const payload = { ...formData };
     
-            // Garante que os campos booleanos sejam enviados como true/false
+            // Lista de todos os campos booleanos
             const booleanFields = [
                 'instalacaoDeEquipamentos',
                 'manutencaoDeEquipamentos',
@@ -173,18 +174,18 @@ export default function RacsCadastradas() {
                 'catracaidnext',
                 'idface',
                 'idflex',
+                'impressora',
+                'fonte',
+                'cabecote',
+                'leitor'
             ];
     
-            booleanFields.forEach((field) => {
-                if (payload[field] === undefined) {
-                    payload[field] = false;
-                } else if (payload[field] === '' || payload[field] === null) {
-                    payload[field] = false;
-                } else {
-                    payload[field] = payload[field] === true || payload[field] === 1 || payload[field] === 'true';
-                }
+            // Garante que todos os campos booleanos tenham valor true/false
+            booleanFields.forEach(field => {
+                payload[field] = !!payload[field]; // Converte para boolean
             });
     
+            // Remove campos vazios ou nulos (opcional)
             for (const key in payload) {
                 if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
                     delete payload[key];
@@ -197,11 +198,6 @@ export default function RacsCadastradas() {
             const response = await axios.get('http://localhost:3000/racvirtual/list');
             setRacs(response.data);
             setEditingItem(null);
-            
-            // Fecha o modal de edição
-            setEditingItem(null);
-            
-            // Mostra mensagem de sucesso
             alert('RAC atualizada com sucesso!');
         } catch (error) {
             console.error("Erro ao editar:", error);
@@ -342,13 +338,13 @@ export default function RacsCadastradas() {
     };
 
     return (
+        
         <div className="pagina-inteira-racscadastradas">
+        <Headers links={links} />    
             {/* Overlay para o formulário de edição */}
             <div className={`overlay ${editingItem ? 'show' : ''}`} onClick={() => setEditingItem(null)}></div>
             
-            <header>
-                <Headers links={links} />
-            </header>
+            
             
             <div className="main-container">
                 <h1>RACs Cadastradas</h1>
@@ -791,5 +787,6 @@ export default function RacsCadastradas() {
                 )}
             </div>
         </div>
+        
     );
 }

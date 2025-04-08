@@ -1,5 +1,6 @@
 // src/Components/Headers.js
 import { useAuth } from '../auth';
+import './Headers.css'
 
 const Headers = ({ links }) => {
   const { user, logout } = useAuth();

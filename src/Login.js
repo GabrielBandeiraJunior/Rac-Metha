@@ -80,7 +80,7 @@ function Login() {
         </button>
       </form>
       
-      <div className="auth-links">
+      {/* <div className="auth-links">
         <button 
           onClick={() => {
             console.log('Navegando para página de registro');
@@ -90,7 +90,7 @@ function Login() {
         >
           Criar nova conta
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

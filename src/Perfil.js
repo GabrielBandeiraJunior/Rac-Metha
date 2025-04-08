@@ -3,6 +3,8 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './auth';
 import Headers from './Components/Headers';
+import RacsCadastradas from './RacsCadastradas';
+import RacForm from './RACForm';
 
 const Perfil = () => {
   const { user, logout } = useAuth(); // Adicionamos logout aqui
@@ -22,19 +24,22 @@ const Perfil = () => {
   if (!user) return null;
 
   const links = [
-    { label: 'Perfil', url: '/Perfil' },
     { label: 'Autenticacao', url: '/Autenticacao' },
-    { label: 'ImportarPlanilha', url: '/importarplanilha' }
-  ];
+    { label: 'Perfil', url: '/perfil' },
+    { label: 'Consultar Racs', url: '/racscadastradas' },
+    { label: 'Cadastrar RAC', url: '/novarac' },
+    { label: 'Importar Planilha', url: '/importarplanilha' },
+    { label: 'Home', url: '/' },
+  ]
 
   return (
     <div>
       <Headers links={links} />
       
-      <h1>Bem-vindo, {user.nome}!</h1>
-      <p>Usuário: {user.usuario}</p>
+      <h1>Bem-vindo, {user.nome} !</h1>
       
-      <button 
+      
+      {/* <button 
         onClick={handleLogout}
         style={{
           padding: '10px 20px',
@@ -47,7 +52,7 @@ const Perfil = () => {
         }}
       >
         Logout
-      </button>
+      </button> */}
     </div>
   );
 };

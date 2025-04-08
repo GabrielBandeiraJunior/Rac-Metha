@@ -1,23 +1,156 @@
+/* Estilo do Header */
 header {
-    background-color: #01239d; /* Cor de fundo */
-    color: rgb(255, 255, 255); /* Cor do texto */
-    padding: 15px 0; /* Espaçamento vertical, mas zero horizontal */
-    text-align: center; /* Alinhamento do texto */
-    margin: 0; /* Remove qualquer margem */
-    width: 100%; /* Garante que ocupa toda a largura */
-    box-sizing: border-box; /* Para incluir o padding na largura total */
-    
+    background-color: #01239d;
+    color: #fff;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    box-sizing: border-box;
 }
 
+/* Container do menu */
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Logo/Brand - opcional */
+.brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+/* Estilo do menu de navegação */
 nav {
-    margin-top: 10px; /* Espaçamento superior */
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-end;
 }
 
-nav a {
-    color: rgb(255, 255, 255); /* Cor do link */
-    margin: 0 15px; /* Espaçamento lateral */
-    text-decoration: none; /* Sem sublinhado */
-}
-body{
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
     margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+nav li {
+    display: inline-block;
+}
+
+/* Estilo para os links de navegação */
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 5px 10px;
+    white-space: nowrap; /* Impede que o texto quebre em várias linhas */
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+nav a:hover {
+    color: #000000;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Estilo ativo para link atual */
+nav a.active {
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+/* Estilo do botão de logout */
+.logout-btn {
+    background-color: #f44336;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 15px;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
+}
+
+/* Menu Hambúrguer para mobile - opcional */
+.menu-toggle {
+    display: none;
+    cursor: pointer;
+    padding: 10px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .nav-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .brand {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    nav {
+        justify-content: center;
+    }
+    
+    nav ul {
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    nav a {
+        font-size: 0.9rem;
+        padding: 5px 8px;
+    }
+    
+    .logout-btn {
+        margin: 10px auto 0;
+        display: block;
+        width: fit-content;
+    }
+}
+
+@media (max-width: 480px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    nav li {
+        width: 100%;
+        text-align: center;
+    }
+    
+    nav a {
+        display: block;
+        width: 100%;
+        padding: 8px 0;
+    }
+    
+    .logout-btn {
+        width: 100%;
+        margin-top: 10px;
+    }
 }

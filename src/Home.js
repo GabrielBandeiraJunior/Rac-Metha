@@ -9,10 +9,13 @@ export default function Home() {
   const navigate = useNavigate();
 
   const links = [
-    { label: 'Perfil', url: '/Perfil' },
     { label: 'Autenticacao', url: '/Autenticacao' },
-    { label: 'ImportarPlanilha', url: '/importarplanilha' }
-  ];
+    { label: 'Perfil', url: '/perfil' },
+    { label: 'Consultar Racs', url: '/racscadastradas' },
+    { label: 'Cadastrar RAC', url: '/novarac' },
+    { label: 'Importar Planilha', url: '/importarplanilha' },
+    { label: 'Home', url: '/' },
+  ]
 
   const handleLogout = () => {
     if (isAuthenticated) {

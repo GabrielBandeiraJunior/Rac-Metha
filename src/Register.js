@@ -98,14 +98,14 @@ function Register() {
         </button>
       </form>
       
-      <div className="auth-links">
+      {/* <div className="auth-links">
         <button 
           onClick={() => navigate('/login')}
           className="auth-link-button"
         >
           Já tem uma conta? Faça login
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

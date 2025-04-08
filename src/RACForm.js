@@ -239,6 +239,7 @@ export default function RacForm() {
     { label: 'Autenticacao', url: '/Autenticacao' },
     { label: 'Perfil', url: '/perfil' },
     { label: 'Consultar Racs', url: '/racscadastradas' },
+    { label: 'Cadastrar RAC', url: '/novarac' },
     { label: 'Importar Planilha', url: '/importarplanilha' },
     { label: 'Home', url: '/' },
   ]

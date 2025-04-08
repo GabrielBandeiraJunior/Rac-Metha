@@ -6,9 +6,12 @@ import Headers from './Components/Headers.js'
 
 export default function Autenticacao() {
     const links = [
+        { label: 'Autenticacao', url: '/Autenticacao' },
         { label: 'Perfil', url: '/perfil' },
+        { label: 'Consultar Racs', url: '/racscadastradas' },
+        { label: 'Cadastrar RAC', url: '/novarac' },
+        { label: 'Importar Planilha', url: '/importarplanilha' },
         { label: 'Home', url: '/' },
-        { label: 'nova RAC', url: '/novarac'},
       ]
     return (
         <>
