@@ -361,7 +361,8 @@ export default function RacsCadastradas() {
                         placeholder="Nome do Técnico"
                         value={filtros.tecnico}
                         onChange={(e) => setFiltros({ ...filtros, tecnico: e.target.value })}
-                    />
+                    /><br/>
+                    Data de Registro da Rac
                     <input
                         type="date"
                         placeholder="Data da RAC"
