@@ -613,12 +613,14 @@ export default function RacForm() {
                   <div className="components-grid">
                     {['cabecote', 'leitor', 'fonte', 'impressora'].map((component) => (
                       <div key={component} className="component-item">
+                        
                         <input
                           type="checkbox"
                           name={component}
                           checked={formData[component]}
                           onChange={handleChange}
-                        />
+                        /><br/>
+                        
                         <label>{component.charAt(0).toUpperCase() + component.slice(1)}</label>
                         {formData[component] && (
                           <input

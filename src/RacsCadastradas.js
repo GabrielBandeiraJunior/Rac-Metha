@@ -180,28 +180,21 @@ export default function RacsCadastradas() {
                 'leitor'
             ];
     
-            // Garante que todos os campos booleanos tenham valor true/false
             booleanFields.forEach(field => {
-                payload[field] = !!payload[field]; // Converte para boolean
+                payload[field] = !!payload[field];
             });
-    
-            // Remove campos vazios ou nulos (opcional)
+            
+            // Remove campos vazios ou nulos
             for (const key in payload) {
                 if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
                     delete payload[key];
                 }
             }
-    
+            
             await axios.put(`http://localhost:3000/racvirtual/edit/${editingItem.id}`, payload);
-    
-            // Atualiza a lista de RACs após a edição
-            const response = await axios.get('http://localhost:3000/racvirtual/list');
-            setRacs(response.data);
-            setEditingItem(null);
-            alert('RAC atualizada com sucesso!');
+            // ... resto do código
         } catch (error) {
-            console.error("Erro ao editar:", error);
-            alert('Erro ao atualizar a RAC. Por favor, tente novamente.');
+            // ... tratamento de erro
         }
     };
     
@@ -439,8 +432,8 @@ export default function RacsCadastradas() {
                                     {item.homologacaoDeInfra && <p><strong>Homologação De Infra</strong></p>}
                                     {item.treinamentoOperacional && <p><strong>Treinamento Operacional</strong></p>}
                                     {item.implantacaoDeSistemas && <p><strong>Implantação de Sistemas</strong></p>}
-                                    {item.manutencaoPreventivaContratual && <p><strong>Manutenção Preventiva Contratual</strong></p>}
-                                    
+                                    {item.manutencaoPreventivaContratual && <p><strong>Manutenção Preventiva Contratual</strong></p>}                                   
+
                                     <h2>Equipamento</h2>
                                     {item.repprintpoint2 && <p><strong>REP Print Point 2</strong></p>}
                                     {item.repprintpoint3 && <p><strong>REP Print Point 3</strong></p>}
@@ -457,13 +450,28 @@ export default function RacsCadastradas() {
                                     {item.idflex && <p><strong>ID Flex</strong></p>}
                                     
                                     {item.impressora && <p><strong>Impressora</strong></p>}
+                                    {/* <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p> */}
+                                    {item.codigoImpressora && item.codigoImpressora !== "" && (
                                     <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p>
+                                    )}
                                     {item.fonte && <p><strong>Fonte</strong></p>}
+                                    {/* <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p> */}
+                                    
+                                    {item.codigoFonte && item.codigoFonte !== "" && (
                                     <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p>
+                                    )}
+
                                     {item.cabecote && <p><strong>Cabecote</strong></p>}
-                                    <p><strong>Codigo do Cabecote:</strong> {item.codigoCabecote}</p>
+                                    {/* <p><strong>Codigo do Cabecote:</strong> {item.codigoCabecote}</p> */}
+                                    {item.codigoCabecote && item.codigoCabecote !== "" && (
+                                    <p><strong>Codigo da Cabecote:</strong> {item.codigoCabecote}</p>
+                                    )}
+                                
                                     {item.leitor && <p><strong>Leitor</strong></p>}
-                                    <p><strong>Codigo do Leitor:</strong> {item.codigoLeitor}</p>
+                                    {/* <p><strong>Codigo do Leitor:</strong> {item.codigoLeitor}</p> */}
+                                    {item.codigoLeitor && item.codigoLeitor !== "" && (
+                                    <p><strong>Codigo da Leitor:</strong> {item.codigoLeitor}</p>
+                                    )}
     
                                     <h2>Outras Informações</h2>
                                     <p><strong>Número de Série:</strong> {item.nSerie}</p>
