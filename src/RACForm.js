@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Headers from './Components/Headers.js'
 import './RACForm.css'
 import './my-button.css'
 import Assinatura from './Components/Assinatura.js'
 import { motion, AnimatePresence } from 'framer-motion'
+import {useAuth} from './auth.js'
 
-const INITIAL_STATE = {
+const INITIAL_STATE = (user) => ({
   date: new Date().toISOString().split('T')[0],
   tecnico: '',
   razaoSocial: '',
@@ -57,9 +58,10 @@ const INITIAL_STATE = {
   observacoes: '',
   prestadoraDoServico: '',
   assinatura: null,
-};
+})
 
 export default function RacForm() {
+  const {user} = useAuth()
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],
     tecnico: '',
@@ -113,6 +115,15 @@ export default function RacForm() {
     assinatura: null,
   })
 
+  useEffect(() => {
+    if (user?.nome) {
+      setFormData(prev => ({
+        ...prev,
+        tecnico: user.nome
+      }));
+    }
+  }, [user]);
+
   const [step, setStep] = useState(1)
   const [cep, setCep] = useState('')
   const [endereco, setEndereco] = useState({})
@@ -128,8 +139,8 @@ export default function RacForm() {
 
   const resetForm = () => {
     setFormData({
-      ...INITIAL_STATE,
-      date: new Date().toISOString().split('T')[0] // Mantém a data atual
+      ...INITIAL_STATE(user), // Passe o user aqui também
+      date: new Date().toISOString().split('T')[0]
     });
     setCep('');
     setEndereco({});
@@ -364,7 +375,14 @@ export default function RacForm() {
                   <div className="form-row">
                     <div className="input-group">
                       <label htmlFor="tecnico">Nome do Técnico</label>
-                      <input type="text" id="tecnico" name="tecnico" value={formData.tecnico} onChange={handleChange} />
+                      <input 
+                      type="text" 
+                      id="tecnico" 
+                      name="tecnico" 
+                      value={formData.tecnico} 
+                      onChange={handleChange}
+                      disabled // Desabilita a edição
+                    />
                     </div>
 
 
