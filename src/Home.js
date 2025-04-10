@@ -26,13 +26,17 @@ export default function Home() {
 
   return (
     <>
-      <div id="tudo">
+        
         <Headers links={links} handleLogout={handleLogout} />
+
+        <div id="tudo">
+        
         <h1>Home</h1>
         <Link to="/novarac" className='styled-button' >Registrar Nova Rac</Link> <br/><br/>
         <Link to="/racscadastradas" className="styled-button">Consultar Racs Cadastradas</Link>
         
       </div>
+      
     </>
   );
 }

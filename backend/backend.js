@@ -2,7 +2,6 @@ const express = require('express')
 const mysql = require('mysql2/promise')
 const multer = require('multer')
 const cors = require('cors')
-const axios = require('axios')
 const moment = require('moment')
 const xlsx = require('xlsx')
 const fetch = require('node-fetch')
@@ -40,24 +39,25 @@ async function createTableIfNotExists(connection) {
       responsavel VARCHAR(255),
       setor VARCHAR(255),
       cidade VARCHAR(255),
-  
+      
       dataInicio DATE,
       horaInicio TIME,
       dataTermino DATE,
       horaTermino TIME,
-  
+      
       horaIntervaloInicio TIME,
       horaIntervaloTermino TIME,
-  
+      
       horaIntervaloInicio2 TIME,
       horaIntervaloTermino2 TIME,
-  
+      
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
       homologacaoDeInfra BOOLEAN,
       treinamentoOperacional BOOLEAN,
       implantacaoDeSistemas BOOLEAN,
       manutencaoPreventivaContratual BOOLEAN,
+      
       repprintpoint2 BOOLEAN,
       repprintpoint3 BOOLEAN,
       repminiprint BOOLEAN,
@@ -71,24 +71,23 @@ async function createTableIfNotExists(connection) {
       catracaidnext BOOLEAN,
       idface BOOLEAN,
       idflex BOOLEAN,
-      nSerie VARCHAR(255),
-      localinstalacao VARCHAR(255),
-      observacaoproblemas TEXT,
-
+      
       impressora BOOLEAN,
       fonte BOOLEAN,
       cabecote BOOLEAN,
       leitor BOOLEAN,
-      codigoImpressora varchar(255),
-      codigoFonte varchar(255),
-      codigoCabecote varchar(255),
-      codigoLeitor varchar(255),
-      assinatura TEXT,
-
+      
+      nSerie VARCHAR(255),
+      localinstalacao VARCHAR(255),
+      observacaoproblemas TEXT,
+      codigoImpressora VARCHAR(255),
+      codigoFonte VARCHAR(255),
+      codigoCabecote VARCHAR(255),
+      codigoLeitor VARCHAR(255),
+      
       observacoes TEXT,
       prestadoraDoServico VARCHAR(255),
-
-      file VARCHAR(255),
+      assinatura TEXT,
       
       date DATETIME DEFAULT CURRENT_TIMESTAMP
     )
@@ -123,11 +122,15 @@ function processBooleanFields(formData) {
     'catracaidnext',
     'idface',
     'idflex',
+    'impressora',
+    'fonte',
+    'cabecote',
+    'leitor'
   ]
 
   booleanFields.forEach((field) => {
     if (formData[field] !== undefined) {
-      formData[field] = formData[field] === 'true' || formData[field] === true ? true : false
+      formData[field] = formData[field] === 'true' || formData[field] === true || formData[field] === 1 || formData[field] === '1'
     }
   })
 
@@ -136,99 +139,169 @@ function processBooleanFields(formData) {
 
 function processDateFields(formData) {
   console.log('Processando campos de data...')
-  const dateFields = ['dataInicio', 'dataTermino', 'date']
+  const dateFields = ['dataInicio', 'dataTermino']
 
   dateFields.forEach((field) => {
     if (formData[field]) {
-      formData[field] = new Date(formData[field]).toISOString().slice(0, 19).replace('T', ' ')
+      // Verifica se o valor é uma string antes de tentar split
+      if (typeof formData[field] === 'string') {
+        // Converte de DD/MM/AAAA para AAAA-MM-DD
+        const parts = formData[field].split('/')
+        if (parts.length === 3) {
+          formData[field] = `${parts[2]}-${parts[1]}-${parts[0]}`
+        }
+      } else if (formData[field] instanceof Date) {
+        // Se for um objeto Date, formata diretamente
+        formData[field] = moment(formData[field]).format('YYYY-MM-DD')
+      }
     }
   })
 
   return formData
+}
+
+function processTimeFields(formData) {
+  console.log('Processando campos de tempo...');
+  const timeFields = [
+    'horaInicio',
+    'horaTermino',
+    'horaIntervaloInicio',
+    'horaIntervaloTermino',
+    'horaIntervaloInicio2',
+    'horaIntervaloTermino2'
+  ];
+
+  timeFields.forEach((field) => {
+    if (formData[field] !== undefined && formData[field] !== null) {
+      // Caso 1: Já está no formato HH:MM:SS (não faz nada)
+      if (typeof formData[field] === 'string' && formData[field].match(/^\d{2}:\d{2}:\d{2}$/)) {
+        return;
+      }
+      
+      // Caso 2: É um número (formato Excel)
+      if (typeof formData[field] === 'number') {
+        // Converte o número do Excel para horário (HH:MM:SS)
+        const excelTime = formData[field];
+        const totalSeconds = Math.floor(excelTime * 86400); // 86400 segundos em um dia
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        formData[field] = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return;
+      }
+      
+      // Caso 3: É uma string no formato HH:MM
+      if (typeof formData[field] === 'string' && formData[field].match(/^\d{1,2}:\d{2}$/)) {
+        const [hours, minutes] = formData[field].split(':');
+        formData[field] = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
+        return;
+      }
+      
+      // Caso 4: É uma string no formato HH:MM:SS mas sem padding
+      if (typeof formData[field] === 'string' && formData[field].match(/^\d{1,2}:\d{1,2}:\d{1,2}$/)) {
+        const [hours, minutes, seconds] = formData[field].split(':');
+        formData[field] = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
+        return;
+      }
+      
+      // Caso 5: Outros formatos ou inválidos - define como null
+      console.warn(`Formato de tempo não reconhecido para ${field}:`, formData[field]);
+      formData[field] = null;
+    }
+  });
+
+  return formData;
 }
 
 function processFormData(formData) {
   console.log('Processando dados do formulário...')
   formData = processBooleanFields(formData)
   formData = processDateFields(formData)
+  formData = processTimeFields(formData)
+  
+  // Remove campos que não devem ser atualizados
+  delete formData.id; // Geralmente não se atualiza o ID
+  delete formData.date; // Ou formate corretamente como mostrado acima
+  
   return formData
 }
 
-// Função para processar as datas no formato correto
-function processDate(dateString) {
-  console.log(`Processando data: ${dateString}`)
-  const formattedDate = moment(dateString, ['YYYY/MM/DD', 'YYYY-MM-DD']).format('YYYY-MM-DD')
-  console.log(`Data formatada: ${formattedDate}`)
-  return formattedDate === 'Invalid date' ? null : formattedDate
-}
-
-// Função para processar as horas no formato correto
-function processTime(decimalTime) {
-  console.log(`Processando tempo decimal: ${decimalTime}`)
-  if (decimalTime == null || isNaN(decimalTime)) return '00:00:00'
+// Função para processar a planilha no formato especificado
+function processSheetData(workbook) {
+  const sheetName = workbook.SheetNames[0]
+  const sheet = workbook.Sheets[sheetName]
   
-  const totalMinutes = decimalTime * 24 * 60
-  const hours = Math.floor(totalMinutes / 60)
-  const minutes = Math.floor(totalMinutes % 60)
-  const seconds = Math.floor(((totalMinutes % 60) - minutes) * 60)
+  // Converter a planilha para JSON no formato de array de arrays
+  const sheetData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: null })
   
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+  // Organizar os dados conforme a estrutura especificada
+  const racData = {
+    // Coluna A (A1-A8)
+    tecnico: sheetData[0] && sheetData[0][1] !== undefined ? String(sheetData[0][1]) : null,
+    razaoSocial: sheetData[1] && sheetData[1][1] !== undefined ? String(sheetData[1][1]) : null,
+    cnpj: sheetData[2] && sheetData[2][1] !== undefined ? String(sheetData[2][1]) : null,
+    endereco: sheetData[3] && sheetData[3][1] !== undefined ? String(sheetData[3][1]) : null,
+    numero: sheetData[4] && sheetData[4][1] !== undefined ? String(sheetData[4][1]) : null,
+    responsavel: sheetData[5] && sheetData[5][1] !== undefined ? String(sheetData[5][1]) : null,
+    setor: sheetData[6] && sheetData[6][1] !== undefined ? String(sheetData[6][1]) : null,
+    cidade: sheetData[7] && sheetData[7][1] !== undefined ? String(sheetData[7][1]) : null,
+    
+    // Coluna C (C1-C8)
+    dataInicio: sheetData[0] && sheetData[0][3] !== undefined ? sheetData[0][3] : null,
+    horaInicio: sheetData[1] && sheetData[1][3] !== undefined ? sheetData[1][3] : null,
+    dataTermino: sheetData[2] && sheetData[2][3] !== undefined ? sheetData[2][3] : null,
+    horaTermino: sheetData[3] && sheetData[3][3] !== undefined ? sheetData[3][3] : null,
+    horaIntervaloInicio: sheetData[4] && sheetData[4][3] !== undefined ? sheetData[4][3] : null,
+    horaIntervaloTermino: sheetData[5] && sheetData[5][3] !== undefined ? sheetData[5][3] : null,
+    horaIntervaloInicio2: sheetData[6] && sheetData[6][3] !== undefined ? sheetData[6][3] : null,
+    horaIntervaloTermino2: sheetData[7] && sheetData[7][3] !== undefined ? sheetData[7][3] : null,
+    
+    // Coluna E (E1-E6)
+    instalacaoDeEquipamentos: sheetData[0] && sheetData[0][5] !== undefined ? sheetData[0][5] : null,
+    manutencaoDeEquipamentos: sheetData[1] && sheetData[1][5] !== undefined ? sheetData[1][5] : null,
+    homologacaoDeInfra: sheetData[2] && sheetData[2][5] !== undefined ? sheetData[2][5] : null,
+    treinamentoOperacional: sheetData[3] && sheetData[3][5] !== undefined ? sheetData[3][5] : null,
+    implantacaoDeSistemas: sheetData[4] && sheetData[4][5] !== undefined ? sheetData[4][5] : null,
+    manutencaoPreventivaContratual: sheetData[5] && sheetData[5][5] !== undefined ? sheetData[5][5] : null,
+    
+    // Coluna G (G1-G13)
+    repprintpoint2: sheetData[0] && sheetData[0][7] !== undefined ? sheetData[0][7] : null,
+    repprintpoint3: sheetData[1] && sheetData[1][7] !== undefined ? sheetData[1][7] : null,
+    repminiprint: sheetData[2] && sheetData[2][7] !== undefined ? sheetData[2][7] : null,
+    repsmart: sheetData[3] && sheetData[3][7] !== undefined ? sheetData[3][7] : null,
+    relogiomicropoint: sheetData[4] && sheetData[4][7] !== undefined ? sheetData[4][7] : null,
+    relogiobiopoint: sheetData[5] && sheetData[5][7] !== undefined ? sheetData[5][7] : null,
+    catracamicropoint: sheetData[6] && sheetData[6][7] !== undefined ? sheetData[6][7] : null,
+    catracabiopoint: sheetData[7] && sheetData[7][7] !== undefined ? sheetData[7][7] : null,
+    catracaceros: sheetData[8] && sheetData[8][7] !== undefined ? sheetData[8][7] : null,
+    catracaidblock: sheetData[9] && sheetData[9][7] !== undefined ? sheetData[9][7] : null,
+    catracaidnext: sheetData[10] && sheetData[10][7] !== undefined ? sheetData[10][7] : null,
+    idface: sheetData[11] && sheetData[11][7] !== undefined ? sheetData[11][7] : null,
+    idflex: sheetData[12] && sheetData[12][7] !== undefined ? sheetData[12][7] : null,
+    
+    // Coluna I (I1-I8)
+    impressora: sheetData[0] && sheetData[0][9] !== undefined ? sheetData[0][9] : null,
+    fonte: sheetData[1] && sheetData[1][9] !== undefined ? sheetData[1][9] : null,
+    cabecote: sheetData[2] && sheetData[2][9] !== undefined ? sheetData[2][9] : null,
+    leitor: sheetData[3] && sheetData[3][9] !== undefined ? sheetData[3][9] : null,
+    codigoImpressora: sheetData[4] && sheetData[4][9] !== undefined ? String(sheetData[4][9]) : null,
+    codigoFonte: sheetData[5] && sheetData[5][9] !== undefined ? String(sheetData[5][9]) : null,
+    codigoCabecote: sheetData[6] && sheetData[6][9] !== undefined ? String(sheetData[6][9]) : null,
+    codigoLeitor: sheetData[7] && sheetData[7][9] !== undefined ? String(sheetData[7][9]) : null,
+    
+    // Coluna K (K1-K5)
+    nSerie: sheetData[0] && sheetData[0][11] !== undefined ? String(sheetData[0][11]) : null,
+    localinstalacao: sheetData[1] && sheetData[1][11] !== undefined ? String(sheetData[1][11]) : null,
+    observacaoproblemas: sheetData[2] && sheetData[2][11] !== undefined ? String(sheetData[2][11]) : null,
+    observacoes: sheetData[3] && sheetData[3][11] !== undefined ? String(sheetData[3][11]) : null,
+    prestadoraDoServico: sheetData[4] && sheetData[4][11] !== undefined ? String(sheetData[4][11]) : null
+  }
+  
+  return processFormData(racData)
 }
 
-// Função para processar valores booleanos
-function processBoolean(value) {
-  console.log(`Processando valor booleano: ${value}`)
-  return value === 'true' || value === true || value === '1'
-}
-
-// Função para processar os dados da planilha
-function processData(sheetData) {
-  console.log('Processando dados da planilha...')
-  return sheetData.map(row => {
-    return {
-      tecnico: row[0],
-      razaoSocial: row[1],
-      cnpj: row[2],
-      endereco: row[3],
-      numero: row[4],
-      responsavel: row[5],
-      setor: row[6],
-      cidade: row[7],
-      dataInicio: processDate(row[8]),
-      horaInicio: processTime(row[9]),
-      dataTermino: processDate(row[10]),
-      horaTermino: processTime(row[11]),
-      instalacaoDeEquipamentos: processBoolean(row[12]),
-      manutencaoDeEquipamentos: processBoolean(row[13]),
-      homologacaoDeInfra: processBoolean(row[14]),
-      treinamentoOperacional: processBoolean(row[15]),
-      implantacaoDeSistemas: processBoolean(row[16]),
-      manutencaoPreventivaContratual: processBoolean(row[17]),
-      repprintpoint2: processBoolean(row[18]),
-      repprintpoint3: processBoolean(row[19]),
-      repminiprint: processBoolean(row[20]),
-      repsmart: processBoolean(row[21]),
-      relogiomicropoint: processBoolean(row[22]),
-      relogiobiopoint: processBoolean(row[23]),
-      catracamicropoint: processBoolean(row[24]),
-      catracabiopoint: processBoolean(row[25]),
-      catracaceros: processBoolean(row[26]),
-      catracaidblock: processBoolean(row[27]),
-      catracaidnext: processBoolean(row[28]),
-      idface: processBoolean(row[29]),
-      idflex: processBoolean(row[30]),
-      nSerie: row[31],
-      localInstalacao: row[32],
-      observacaoProblemas: row[33],
-      componentes: row[34],
-      codigoComponente: row[35],
-      observacoes: row[36],
-      prestadoraDoServico: row[37]
-    }
-  })
-}
-
-// Endpoint para importar os dados da planilha
+// Endpoint para importar dados da planilha
 app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     console.log('Nenhum arquivo enviado')
@@ -237,67 +310,13 @@ app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
 
   try {
     const workbook = xlsx.read(req.file.buffer, { type: 'buffer' })
-    const sheetName = workbook.SheetNames[0]
-    const sheet = workbook.Sheets[sheetName]
-    const data = xlsx.utils.sheet_to_json(sheet)
+    const racData = processSheetData(workbook)
 
-    console.log('Dados da planilha:', data)
-    const query = `INSERT INTO RacForm (
-      tecnico, razaoSocial, cnpj, endereco, numero, responsavel, setor, cidade, 
-      dataInicio, horaInicio, dataTermino, horaTermino, 
-      instalacaoDeEquipamentos, 
-      manutencaoDeEquipamentos, homologacaoDeInfra, treinamentoOperacional, 
-      implantacaoDeSistemas, manutencaoPreventivaContratual, repprintpoint2, 
-      repprintpoint3, repminiprint, repsmart, relogiomicropoint, relogiobiopoint, 
-      catracamicropoint, catracabiopoint, catracaceros, catracaidblock, catracaidnext, 
-      idface, idflex, nSerie, localInstalacao, observacaoProblemas, componentes, 
-      codigoComponente, observacoes, prestadoraDoServico
-    ) VALUES ?`
-
-    const values = data.map(item => [
-      item.tecnico,
-      item.razaoSocial,
-      item.cnpj,
-      item.endereco,
-      item.numero,
-      item.responsavel,
-      item.setor,
-      item.cidade,
-      item.dataInicio,
-      item.horaInicio,
-      item.dataTermino,
-      item.horaTermino,
-      item.instalacaoDeEquipamentos !== undefined ? item.instalacaoDeEquipamentos : null,
-      item.manutencaoDeEquipamentos !== undefined ? item.manutencaoDeEquipamentos : null,
-      item.homologacaoDeInfra !== undefined ? item.homologacaoDeInfra : null,
-      item.treinamentoOperacional !== undefined ? item.treinamentoOperacional : null,
-      item.implantacaoDeSistemas !== undefined ? item.implantacaoDeSistemas : null,
-      item.manutencaoPreventivaContratual !== undefined ? item.manutencaoPreventivaContratual : null,
-      item.repprintpoint2 !== undefined ? item.repprintpoint2 : null,
-      item.repprintpoint3 !== undefined ? item.repprintpoint3 : null,
-      item.repminiprint !== undefined ? item.repminiprint : null,
-      item.repsmart !== undefined ? item.repsmart : null,
-      item.relogiomicropoint !== undefined ? item.relogiomicropoint : null,
-      item.relogiobiopoint !== undefined ? item.relogiobiopoint : null,
-      item.catracamicropoint !== undefined ? item.catracamicropoint : null,
-      item.catracabiopoint !== undefined ? item.catracabiopoint : null,
-      item.catracaceros !== undefined ? item.catracaceros : null,
-      item.catracaidblock !== undefined ? item.catracaidblock : null,
-      item.catracaidnext !== undefined ? item.catracaidnext : null,
-      item.idface !== undefined ? item.idface : null,
-      item.idflex !== undefined ? item.idflex : null,
-      item.nSerie,
-      item.localInstalacao,
-      item.observacaoProblemas,
-      item.componentes,
-      item.codigoComponente,
-      item.observacoes,
-      item.prestadoraDoServico
-    ])
-
-    await db.query(query, [values])
+    const query = `INSERT INTO RacForm SET ?`
+    await db.query(query, [racData])
+    
     console.log('Dados inseridos com sucesso')
-    res.status(200).json({ message: 'Arquivo carregado e dados inseridos com sucesso' })
+    res.status(200).json({ message: 'Arquivo carregado e dados inseridos com sucesso', data: racData })
   } catch (error) {
     console.error('Erro ao processar o arquivo:', error)
     res.status(500).json({ message: 'Erro ao processar o arquivo', error: error.message })
@@ -363,7 +382,7 @@ app.get('/racvirtual/list', async (req, res) => {
   }
 })
 
-// Endpoint para registrar dados
+// Endpoint para registrar dados manualmente
 app.post('/racvirtual/register', upload.single('file'), async (req, res) => {
   const formData = req.body;
 
@@ -470,6 +489,7 @@ app.get('/endereco/:cep', async (req, res) => {
 });
 
 // Endpoint para editar RAC
+// Endpoint para editar RAC
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params;
   const formData = req.body;
@@ -484,6 +504,9 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
   }
 
   const processedData = processFormData(formData);
+
+  // Remove o campo date se ele existir (deixe o MySQL usar o valor atual ou DEFAULT)
+  delete processedData.date;
 
   if (formData.assinatura) {
     processedData.assinatura = processSignature(formData.assinatura);
@@ -555,7 +578,6 @@ app.get('/empresas/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar empresa' });
   }
 });
-
 
 // Iniciar servidor
 app.listen(PORT, async () => {

@@ -1,5 +1,5 @@
 body{
-    background-color: rgb(4, 126, 182);
+    background-color: rgb(0, 90, 143);
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }  
 #descritivo{
@@ -13,4 +13,5 @@ body{
 #tudo{
     /* display: flex; */
     justify-content: center;
+
 }
