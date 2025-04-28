@@ -381,7 +381,7 @@ export default function RacForm() {
                       name="tecnico" 
                       value={formData.tecnico} 
                       onChange={handleChange}
-                      disabled // Desabilita a edição
+                      
                     />
                     </div>
 

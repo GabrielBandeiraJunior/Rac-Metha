@@ -145,16 +145,34 @@ export default function RacsCadastradas() {
 
     const handleEditClick = (item) => {
         setEditingItem(item);
-        setFormData(item);
-    };
+        
+        // Formata as datas para o input type="date"
+        const formattedItem = {
+          ...item,
+          dataInicio: formatDateForInput(item.dataInicio),
+          dataTermino: formatDateForInput(item.dataTermino)
+        };
+        
+        setFormData(formattedItem);
+      };
 
     const handleSaveEdit = async () => {
         try {
             // Cria uma cópia do formData
             const payload = { ...formData };
+            if (payload.dataInicio) {
+                payload.dataInicio = formatDateForInput(payload.dataInicio);
+              }
+              if (payload.dataTermino) {
+                payload.dataTermino = formatDateForInput(payload.dataTermino);
+              }
+          
+              // Restante do código permanece o mesmo
+              const booleanFields = [
+                'instalacaoDeEquipamentos',
     
             // Lista de todos os campos booleanos
-            const booleanFields = [
+            
                 'instalacaoDeEquipamentos',
                 'manutencaoDeEquipamentos',
                 'homologacaoDeInfra',
@@ -183,6 +201,7 @@ export default function RacsCadastradas() {
             booleanFields.forEach(field => {
                 payload[field] = !!payload[field];
             });
+
             
             // Remove campos vazios ou nulos
             for (const key in payload) {
@@ -304,6 +323,18 @@ export default function RacsCadastradas() {
         return `${dia}/${mes}/${ano}`;
     };
 
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return ""; // Se for data inválida
+        
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}`;
+      };
+      
     const obterEnderecoPorCEP = async () => {
         try {
           const response = await fetch(`http://localhost:3000/endereco/${cep}`);
