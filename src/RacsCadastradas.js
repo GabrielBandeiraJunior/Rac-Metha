@@ -458,37 +458,37 @@ export default function RacsCadastradas() {
                                     <p><strong>Término do Segundo Intervalo:</strong> {item.horaIntervaloTermino2}</p>
                                     
                                     <h2>Serviço Prestado</h2>
-                                    {item.instalacaoDeEquipamentos && <p><strong>Instalação de Equipamentos</strong></p>}
-                                    {item.manutencaoDeEquipamentos && <p><strong>Manutenção de Equipamentos</strong></p>}
-                                    {item.homologacaoDeInfra && <p><strong>Homologação De Infra</strong></p>}
-                                    {item.treinamentoOperacional && <p><strong>Treinamento Operacional</strong></p>}
-                                    {item.implantacaoDeSistemas && <p><strong>Implantação de Sistemas</strong></p>}
-                                    {item.manutencaoPreventivaContratual && <p><strong>Manutenção Preventiva Contratual</strong></p>}                                   
+                                    {item.instalacaoDeEquipamentos === true && <p><strong>Instalação de Equipamentos</strong></p>}
+                                    {item.manutencaoDeEquipamentos === true && <p><strong>Manutenção de Equipamentos</strong></p>}
+                                    {item.homologacaoDeInfra === true && <p><strong>Homologação De Infra</strong></p>}
+                                    {item.treinamentoOperacional === true && <p><strong>Treinamento Operacional</strong></p>}
+                                    {item.implantacaoDeSistemas === true && <p><strong>Implantação de Sistemas</strong></p>}
+                                    {item.manutencaoPreventivaContratual === true && <p><strong>Manutenção Preventiva Contratual</strong></p>}
 
                                     <h2>Equipamento</h2>
-                                    {item.repprintpoint2 && <p><strong>REP Print Point 2</strong></p>}
-                                    {item.repprintpoint3 && <p><strong>REP Print Point 3</strong></p>}
-                                    {item.repminiprint && <p><strong>REP Mini Print</strong></p>}
-                                    {item.repsmart && <p><strong>REP Smart</strong></p>}
-                                    {item.relogiomicropoint && <p><strong>Relógio Micro Point</strong></p>}
-                                    {item.relogiobiopoint && <p><strong>Relógio Bio Point</strong></p>}
-                                    {item.catracamicropoint && <p><strong>Catraca Micro Point</strong></p>}
-                                    {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
-                                    {item.catracaceros && <p><strong>Catraca Ceros</strong></p>}
-                                    {item.catracaidblock && <p><strong>Catraca ID Block</strong></p>}
-                                    {item.catracaidnext && <p><strong>Catraca ID Next</strong></p>}
-                                    {item.idface && <p><strong>ID Face</strong></p>}
-                                    {item.idflex && <p><strong>ID Flex</strong></p>}
+                                    {item.repprintpoint2 === true && <p><strong>REP Print Point 2</strong></p>}
+                                    {item.repprintpoint3 === true && <p><strong>REP Print Point 3</strong></p>}
+                                    {item.repminiprint === true && <p><strong>REP Mini Print</strong></p>}
+                                    {item.repsmart === true && <p><strong>REP Smart</strong></p>}
+                                    {item.relogiomicropoint === true && <p><strong>Relógio Micro Point</strong></p>}
+                                    {item.relogiobiopoint === true && <p><strong>Relógio Bio Point</strong></p>}
+                                    {item.catracamicropoint === true && <p><strong>Catraca Micro Point</strong></p>}
+                                    {item.catracabiopoint === true && <p><strong>Catraca Bio Point</strong></p>}
+                                    {item.catracaceros === true && <p><strong>Catraca Ceros</strong></p>}
+                                    {item.catracaidblock === true && <p><strong>Catraca ID Block</strong></p>}
+                                    {item.catracaidnext === true && <p><strong>Catraca ID Next</strong></p>}
+                                    {item.idface === true && <p><strong>ID Face</strong></p>}
+                                    {item.idflex === true && <p><strong>ID Flex</strong></p>}
                                     
-                                    {item.impressora && <p><strong>Impressora</strong></p>}
+                                    {item.impressora === true && <p><strong>Impressora</strong></p>}
                                     {/* <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p> */}
-                                    {item.codigoImpressora && item.codigoImpressora !== "" && (
+                                    {item.codigoImpressora === true && item.codigoImpressora !== "" && (
                                     <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p>
                                     )}
-                                    {item.fonte && <p><strong>Fonte</strong></p>}
+                                    {item.fonte === true && <p><strong>Fonte</strong></p>}
                                     {/* <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p> */}
                                     
-                                    {item.codigoFonte && item.codigoFonte !== "" && (
+                                    {item.codigoFonte === true && item.codigoFonte !== "" && (
                                     <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p>
                                     )}
 
