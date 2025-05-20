@@ -38,7 +38,7 @@ header {
 h1 {
   font-size: 2rem;
   margin: 1.5rem 0;
-  color: var(--primary-blue);
+  color: var(--primary-white);
   text-align: center;
   font-weight: 600;
 }
@@ -51,8 +51,15 @@ h1 {
   padding: 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
-  width: 100%;
+  width: 100%; 
 }
+
+.racs-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;  
+}
+
 
 /* Filtros */
 .filtros {
@@ -80,11 +87,7 @@ h1 {
 }
 
 /* Lista de RACs */
-.racs-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
+
 
 .dados-item {
   background: var(--white);
@@ -300,6 +303,7 @@ button:active {
 @media (max-width: 480px) {
   h1 {
     font-size: 1.5rem;
+    
   }
   
   .dados-item, .rac-expandida {

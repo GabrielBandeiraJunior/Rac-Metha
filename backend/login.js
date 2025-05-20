@@ -14,7 +14,14 @@ const dbConfig = {
   host: 'localhost',
   user: 'root',
   password: '000000',
-  database: 'racvirtual'
+  database: 'racvirtual',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  connectTimeout: 10000, // 10 segundos
+  idleTimeout: 60000, // fecha conexões inativas após 60s
+  enableKeepAlive: true, // mantém conexões vivas
+  keepAliveInitialDelay: 0
 };
 
 // Criar tabela de usuários segura

@@ -27,7 +27,7 @@ export default function RacsCadastradas() {
     const [editingItem, setEditingItem] = useState(null);
     const [expandedId, setExpandedId] = useState(null);
     const [formData, setFormData] = useState({
-        date: '', tecnico: '', razaoSocial: '', cnpj: '', endereco: '', numero: '',
+        hora_registro:'',date: '', tecnico: '', razaoSocial: '', cnpj: '', endereco: '', numero: '',
         cidade: '', responsavel: '', setor: '',
         dataInicio: '', horaInicio: '',
         dataTermino: '', horaTermino: '',
@@ -361,6 +361,44 @@ export default function RacsCadastradas() {
         }
     };
 
+    
+    const formatarHora = (dateString) => {
+        if (!dateString) return "Hora inválida";
+        
+        try {
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return "Hora inválida";
+            
+            const horas = String(date.getHours()).padStart(2, '0');
+            const minutos = String(date.getMinutes()).padStart(2, '0');
+            return `${horas}:${minutos}`;
+        } catch (error) {
+            console.error('Erro ao formatar hora:', error);
+            return "Hora inválida";
+        }
+    };
+
+    const formatarHoraBrasilia = (dateString) => {
+        if (!dateString) return "Hora inválida";
+        
+        try {
+          const date = new Date(dateString);
+          // Ajusta para o fuso horário de Brasília (UTC-3)
+          const horaBrasilia = new Date(date.getTime() - 0 * 60 * 60 * 1000);
+          
+          return horaBrasilia.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          });
+        } catch (error) {
+          console.error("Erro ao formatar hora:", error);
+          return "Hora inválida";
+        }
+    };
+
+
+
     return (
         
         <div className="pagina-inteira-racscadastradas">
@@ -430,6 +468,8 @@ export default function RacsCadastradas() {
                                 <p><strong>Técnico:</strong> {item.tecnico}</p>
                                 <p><strong>Razão Social:</strong> {item.razaoSocial}</p>
                                 <p><strong>Data de Registro:</strong> {formatDate(item.date)}</p>
+                                <p><strong>Hora de Registro:</strong> {formatarHoraBrasilia(item.hora_registro)}</p>
+                                
                                 <div className="button-group">
                                     <button onClick={() => toggleExpand(item.id)}>
                                         {expandedId === item.id ? 'Esconder Detalhes' : 'Expandir Detalhes'}
@@ -480,26 +520,27 @@ export default function RacsCadastradas() {
                                     {item.idface === true && <p><strong>ID Face</strong></p>}
                                     {item.idflex === true && <p><strong>ID Flex</strong></p>}
                                     
-                                    {item.impressora === true && <p><strong>Impressora</strong></p>}
-                                    {/* <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p> */}
-                                    {item.codigoImpressora === true && item.codigoImpressora !== "" && (
+                                    <h2>Componentes</h2>
+                                    {/* {item.impressora && <p><strong>Impressora</strong></p>} */}
+
+                                    {item.codigoImpressora && item.codigoImpressora !== "" && (
                                     <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p>
                                     )}
-                                    {item.fonte === true && <p><strong>Fonte</strong></p>}
-                                    {/* <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p> */}
+
+                                    {/* {item.fonte && <p><strong>Fonte</strong></p>} */}
                                     
-                                    {item.codigoFonte === true && item.codigoFonte !== "" && (
+                                    {item.codigoFonte && item.codigoFonte !== "" && (
                                     <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p>
                                     )}
 
-                                    {item.cabecote && <p><strong>Cabecote</strong></p>}
-                                    {/* <p><strong>Codigo do Cabecote:</strong> {item.codigoCabecote}</p> */}
+                                    {/* {item.cabecote && <p><strong>Cabecote</strong></p>} */}
+
                                     {item.codigoCabecote && item.codigoCabecote !== "" && (
                                     <p><strong>Codigo da Cabecote:</strong> {item.codigoCabecote}</p>
                                     )}
                                 
-                                    {item.leitor && <p><strong>Leitor</strong></p>}
-                                    {/* <p><strong>Codigo do Leitor:</strong> {item.codigoLeitor}</p> */}
+                                    {/* {item.leitor && <p><strong>Leitor</strong></p>} */}
+
                                     {item.codigoLeitor && item.codigoLeitor !== "" && (
                                     <p><strong>Codigo da Leitor:</strong> {item.codigoLeitor}</p>
                                     )}

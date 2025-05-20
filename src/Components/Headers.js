@@ -15,6 +15,7 @@ const Headers = ({ links }) => {
     <header>
       <nav>
         <ul>
+        
           {links.map((link, index) => (
             <li key={index}>
               <a href={link.url}>{link.label}</a>
@@ -22,12 +23,16 @@ const Headers = ({ links }) => {
           ))}
           {user && (
             <li>
+              
               <button onClick={handleLogout}>Logout</button>
+              <h2>{user.nome}</h2>  
             </li>
+            
           )}
         </ul>
       </nav>
     </header>
+    
   );
 };
 

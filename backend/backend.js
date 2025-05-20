@@ -1,33 +1,28 @@
-const express = require('express')
-const mysql = require('mysql2/promise')
-const multer = require('multer')
-const cors = require('cors')
-const moment = require('moment')
-const xlsx = require('xlsx')
-const fetch = require('node-fetch')
+const express = require('express');
+const mysql = require('mysql2/promise');
+const multer = require('multer');
+const cors = require('cors');
+const moment = require('moment');
+const xlsx = require('xlsx');
+const fetch = require('node-fetch');
 
-const app = express()
-const PORT = 3000
+const app = express();
+const PORT = 3000;
 
-// Configuração do Banco de Dados
 const dbConfig = {
   host: 'localhost',
   user: 'root',
   password: '000000',
-  database: 'racvirtual',
-}
+  database: 'racvirtual'
+};
 
-// Configuração do Multer para upload de arquivos
-const storage = multer.memoryStorage() // Armazena arquivos na memória
-const upload = multer({ storage })
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-// Middleware
-app.use(cors())
-app.use(express.json())
+app.use(cors());
+app.use(express.json());
 
-// Função para criar a tabela se ela não existir
 async function createTableIfNotExists(connection) {
-  console.log('Verificando se a tabela RacForm existe...')
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS RacForm (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,25 +34,20 @@ async function createTableIfNotExists(connection) {
       responsavel VARCHAR(255),
       setor VARCHAR(255),
       cidade VARCHAR(255),
-      
       dataInicio DATE,
       horaInicio TIME,
       dataTermino DATE,
       horaTermino TIME,
-      
       horaIntervaloInicio TIME,
       horaIntervaloTermino TIME,
-      
       horaIntervaloInicio2 TIME,
       horaIntervaloTermino2 TIME,
-      
       instalacaoDeEquipamentos BOOLEAN,
       manutencaoDeEquipamentos BOOLEAN,
       homologacaoDeInfra BOOLEAN,
       treinamentoOperacional BOOLEAN,
       implantacaoDeSistemas BOOLEAN,
       manutencaoPreventivaContratual BOOLEAN,
-      
       repprintpoint2 BOOLEAN,
       repprintpoint3 BOOLEAN,
       repminiprint BOOLEAN,
@@ -71,12 +61,10 @@ async function createTableIfNotExists(connection) {
       catracaidnext BOOLEAN,
       idface BOOLEAN,
       idflex BOOLEAN,
-      
       impressora BOOLEAN,
       fonte BOOLEAN,
       cabecote BOOLEAN,
       leitor BOOLEAN,
-      
       nSerie VARCHAR(255),
       localinstalacao VARCHAR(255),
       observacaoproblemas TEXT,
@@ -84,24 +72,18 @@ async function createTableIfNotExists(connection) {
       codigoFonte VARCHAR(255),
       codigoCabecote VARCHAR(255),
       codigoLeitor VARCHAR(255),
-      
       observacoes TEXT,
       prestadoraDoServico VARCHAR(255),
       assinatura TEXT,
-      
       date DATETIME DEFAULT CURRENT_TIMESTAMP
     )
-  `
-  await connection.query(createTableQuery)
-  console.log('Tabela "RacForm" verificada/criada com sucesso.')
+  `;
+  await connection.query(createTableQuery);
 }
 
-// Inicializar banco de dados
-const db = mysql.createPool(dbConfig)
+const db = mysql.createPool(dbConfig);
 
-// Função para processar campos booleanos
 function processBooleanFields(formData) {
-  console.log('Processando campos booleanos...')
   const booleanFields = [
     'instalacaoDeEquipamentos',
     'manutencaoDeEquipamentos',
@@ -126,42 +108,39 @@ function processBooleanFields(formData) {
     'fonte',
     'cabecote',
     'leitor'
-  ]
+  ];
 
   booleanFields.forEach((field) => {
-    if (formData[field] !== undefined) {
-      formData[field] = formData[field] === 'true' || formData[field] === true || formData[field] === 1 || formData[field] === '1'
+    if (formData[field] !== undefined && formData[field] !== null) {
+      formData[field] = formData[field] === 'true' || formData[field] === true || formData[field] === 1 || formData[field] === '1';
+    } else {
+      formData[field] = false;
     }
-  })
+  });
 
-  return formData
+  return formData;
 }
 
 function processDateFields(formData) {
-  console.log('Processando campos de data...')
-  const dateFields = ['dataInicio', 'dataTermino']
+  const dateFields = ['dataInicio', 'dataTermino'];
 
   dateFields.forEach((field) => {
     if (formData[field]) {
-      // Verifica se o valor é uma string antes de tentar split
       if (typeof formData[field] === 'string') {
-        // Converte de DD/MM/AAAA para AAAA-MM-DD
-        const parts = formData[field].split('/')
+        const parts = formData[field].split('/');
         if (parts.length === 3) {
-          formData[field] = `${parts[2]}-${parts[1]}-${parts[0]}`
+          formData[field] = `${parts[2]}-${parts[1]}-${parts[0]}`;
         }
       } else if (formData[field] instanceof Date) {
-        // Se for um objeto Date, formata diretamente
-        formData[field] = moment(formData[field]).format('YYYY-MM-DD')
+        formData[field] = moment(formData[field]).format('YYYY-MM-DD');
       }
     }
-  })
+  });
 
-  return formData
+  return formData;
 }
 
 function processTimeFields(formData) {
-  console.log('Processando campos de tempo...');
   const timeFields = [
     'horaInicio',
     'horaTermino',
@@ -173,40 +152,32 @@ function processTimeFields(formData) {
 
   timeFields.forEach((field) => {
     if (formData[field] !== undefined && formData[field] !== null) {
-      // Caso 1: Já está no formato HH:MM:SS (não faz nada)
       if (typeof formData[field] === 'string' && formData[field].match(/^\d{2}:\d{2}:\d{2}$/)) {
         return;
       }
       
-      // Caso 2: É um número (formato Excel)
       if (typeof formData[field] === 'number') {
-        // Converte o número do Excel para horário (HH:MM:SS)
         const excelTime = formData[field];
-        const totalSeconds = Math.floor(excelTime * 86400); // 86400 segundos em um dia
+        const totalSeconds = Math.floor(excelTime * 86400);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
-        
         formData[field] = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         return;
       }
       
-      // Caso 3: É uma string no formato HH:MM
       if (typeof formData[field] === 'string' && formData[field].match(/^\d{1,2}:\d{2}$/)) {
         const [hours, minutes] = formData[field].split(':');
         formData[field] = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00`;
         return;
       }
       
-      // Caso 4: É uma string no formato HH:MM:SS mas sem padding
       if (typeof formData[field] === 'string' && formData[field].match(/^\d{1,2}:\d{1,2}:\d{1,2}$/)) {
         const [hours, minutes, seconds] = formData[field].split(':');
         formData[field] = `${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:${seconds.padStart(2, '0')}`;
         return;
       }
       
-      // Caso 5: Outros formatos ou inválidos - define como null
-      console.warn(`Formato de tempo não reconhecido para ${field}:`, formData[field]);
       formData[field] = null;
     }
   });
@@ -215,29 +186,27 @@ function processTimeFields(formData) {
 }
 
 function processFormData(formData) {
-  console.log('Processando dados do formulário...')
-  formData = processBooleanFields(formData)
-  formData = processDateFields(formData)
-  formData = processTimeFields(formData)
+  formData = processBooleanFields(formData);
+  formData = processDateFields(formData);
+  formData = processTimeFields(formData);
   
-  // Remove campos que não devem ser atualizados
-  delete formData.id; // Geralmente não se atualiza o ID
-  delete formData.date; // Ou formate corretamente como mostrado acima
+  if (!formData.impressora) formData.codigoImpressora = null;
+  if (!formData.fonte) formData.codigoFonte = null;
+  if (!formData.cabecote) formData.codigoCabecote = null;
+  if (!formData.leitor) formData.codigoLeitor = null;
   
-  return formData
+  delete formData.id;
+  delete formData.date;
+  
+  return formData;
 }
 
-// Função para processar a planilha no formato especificado
 function processSheetData(workbook) {
-  const sheetName = workbook.SheetNames[0]
-  const sheet = workbook.Sheets[sheetName]
-  
-  // Converter a planilha para JSON no formato de array de arrays
-  const sheetData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: null })
-  
-  // Organizar os dados conforme a estrutura especificada
+  const sheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[sheetName];
+  const sheetData = xlsx.utils.sheet_to_json(sheet, { header: 1, defval: null });
+
   const racData = {
-    // Coluna A (A1-A8)
     tecnico: sheetData[0] && sheetData[0][1] !== undefined ? String(sheetData[0][1]) : null,
     razaoSocial: sheetData[1] && sheetData[1][1] !== undefined ? String(sheetData[1][1]) : null,
     cnpj: sheetData[2] && sheetData[2][1] !== undefined ? String(sheetData[2][1]) : null,
@@ -246,8 +215,6 @@ function processSheetData(workbook) {
     responsavel: sheetData[5] && sheetData[5][1] !== undefined ? String(sheetData[5][1]) : null,
     setor: sheetData[6] && sheetData[6][1] !== undefined ? String(sheetData[6][1]) : null,
     cidade: sheetData[7] && sheetData[7][1] !== undefined ? String(sheetData[7][1]) : null,
-    
-    // Coluna C (C1-C8)
     dataInicio: sheetData[0] && sheetData[0][3] !== undefined ? sheetData[0][3] : null,
     horaInicio: sheetData[1] && sheetData[1][3] !== undefined ? sheetData[1][3] : null,
     dataTermino: sheetData[2] && sheetData[2][3] !== undefined ? sheetData[2][3] : null,
@@ -256,72 +223,95 @@ function processSheetData(workbook) {
     horaIntervaloTermino: sheetData[5] && sheetData[5][3] !== undefined ? sheetData[5][3] : null,
     horaIntervaloInicio2: sheetData[6] && sheetData[6][3] !== undefined ? sheetData[6][3] : null,
     horaIntervaloTermino2: sheetData[7] && sheetData[7][3] !== undefined ? sheetData[7][3] : null,
-    
-    // Coluna E (E1-E6)
-    instalacaoDeEquipamentos: sheetData[0] && sheetData[0][5] !== undefined ? sheetData[0][5] : null,
-    manutencaoDeEquipamentos: sheetData[1] && sheetData[1][5] !== undefined ? sheetData[1][5] : null,
-    homologacaoDeInfra: sheetData[2] && sheetData[2][5] !== undefined ? sheetData[2][5] : null,
-    treinamentoOperacional: sheetData[3] && sheetData[3][5] !== undefined ? sheetData[3][5] : null,
-    implantacaoDeSistemas: sheetData[4] && sheetData[4][5] !== undefined ? sheetData[4][5] : null,
-    manutencaoPreventivaContratual: sheetData[5] && sheetData[5][5] !== undefined ? sheetData[5][5] : null,
-    
-    // Coluna G (G1-G13)
-    repprintpoint2: sheetData[0] && sheetData[0][7] !== undefined ? sheetData[0][7] : null,
-    repprintpoint3: sheetData[1] && sheetData[1][7] !== undefined ? sheetData[1][7] : null,
-    repminiprint: sheetData[2] && sheetData[2][7] !== undefined ? sheetData[2][7] : null,
-    repsmart: sheetData[3] && sheetData[3][7] !== undefined ? sheetData[3][7] : null,
-    relogiomicropoint: sheetData[4] && sheetData[4][7] !== undefined ? sheetData[4][7] : null,
-    relogiobiopoint: sheetData[5] && sheetData[5][7] !== undefined ? sheetData[5][7] : null,
-    catracamicropoint: sheetData[6] && sheetData[6][7] !== undefined ? sheetData[6][7] : null,
-    catracabiopoint: sheetData[7] && sheetData[7][7] !== undefined ? sheetData[7][7] : null,
-    catracaceros: sheetData[8] && sheetData[8][7] !== undefined ? sheetData[8][7] : null,
-    catracaidblock: sheetData[9] && sheetData[9][7] !== undefined ? sheetData[9][7] : null,
-    catracaidnext: sheetData[10] && sheetData[10][7] !== undefined ? sheetData[10][7] : null,
-    idface: sheetData[11] && sheetData[11][7] !== undefined ? sheetData[11][7] : null,
-    idflex: sheetData[12] && sheetData[12][7] !== undefined ? sheetData[12][7] : null,
-    
-    // Coluna I (I1-I8)
-    impressora: sheetData[0] && sheetData[0][9] !== undefined ? sheetData[0][9] : null,
-    fonte: sheetData[1] && sheetData[1][9] !== undefined ? sheetData[1][9] : null,
-    cabecote: sheetData[2] && sheetData[2][9] !== undefined ? sheetData[2][9] : null,
-    leitor: sheetData[3] && sheetData[3][9] !== undefined ? sheetData[3][9] : null,
-    codigoImpressora: sheetData[4] && sheetData[4][9] !== undefined ? String(sheetData[4][9]) : null,
-    codigoFonte: sheetData[5] && sheetData[5][9] !== undefined ? String(sheetData[5][9]) : null,
-    codigoCabecote: sheetData[6] && sheetData[6][9] !== undefined ? String(sheetData[6][9]) : null,
-    codigoLeitor: sheetData[7] && sheetData[7][9] !== undefined ? String(sheetData[7][9]) : null,
-    
-    // Coluna K (K1-K5)
+    instalacaoDeEquipamentos: sheetData[0] && sheetData[0][5] !== undefined ? sheetData[0][5] : false,
+    manutencaoDeEquipamentos: sheetData[1] && sheetData[1][5] !== undefined ? sheetData[1][5] : false,
+    homologacaoDeInfra: sheetData[2] && sheetData[2][5] !== undefined ? sheetData[2][5] : false,
+    treinamentoOperacional: sheetData[3] && sheetData[3][5] !== undefined ? sheetData[3][5] : false,
+    implantacaoDeSistemas: sheetData[4] && sheetData[4][5] !== undefined ? sheetData[4][5] : false,
+    manutencaoPreventivaContratual: sheetData[5] && sheetData[5][5] !== undefined ? sheetData[5][5] : false,
+    repprintpoint2: sheetData[0] && sheetData[0][7] !== undefined ? sheetData[0][7] : false,
+    repprintpoint3: sheetData[1] && sheetData[1][7] !== undefined ? sheetData[1][7] : false,
+    repminiprint: sheetData[2] && sheetData[2][7] !== undefined ? sheetData[2][7] : false,
+    repsmart: sheetData[3] && sheetData[3][7] !== undefined ? sheetData[3][7] : false,
+    relogiomicropoint: sheetData[4] && sheetData[4][7] !== undefined ? sheetData[4][7] : false,
+    relogiobiopoint: sheetData[5] && sheetData[5][7] !== undefined ? sheetData[5][7] : false,
+    catracamicropoint: sheetData[6] && sheetData[6][7] !== undefined ? sheetData[6][7] : false,
+    catracabiopoint: sheetData[7] && sheetData[7][7] !== undefined ? sheetData[7][7] : false,
+    catracaceros: sheetData[8] && sheetData[8][7] !== undefined ? sheetData[8][7] : false,
+    catracaidblock: sheetData[9] && sheetData[9][7] !== undefined ? sheetData[9][7] : false,
+    catracaidnext: sheetData[10] && sheetData[10][7] !== undefined ? sheetData[10][7] : false,
+    idface: sheetData[11] && sheetData[11][7] !== undefined ? sheetData[11][7] : false,
+    idflex: sheetData[12] && sheetData[12][7] !== undefined ? sheetData[12][7] : false,
+    impressora: sheetData[0] && sheetData[0][9] !== undefined ? sheetData[0][9] : false,
+    fonte: sheetData[1] && sheetData[1][9] !== undefined ? sheetData[1][9] : false,
+    cabecote: sheetData[2] && sheetData[2][9] !== undefined ? sheetData[2][9] : false,
+    leitor: sheetData[3] && sheetData[3][9] !== undefined ? sheetData[3][9] : false,
+    codigoImpressora: sheetData[0] && sheetData[0][9] && sheetData[4] && sheetData[4][9] !== undefined ? String(sheetData[4][9]) : null,
+    codigoFonte: sheetData[1] && sheetData[1][9] && sheetData[5] && sheetData[5][9] !== undefined ? String(sheetData[5][9]) : null,
+    codigoCabecote: sheetData[2] && sheetData[2][9] && sheetData[6] && sheetData[6][9] !== undefined ? String(sheetData[6][9]) : null,
+    codigoLeitor: sheetData[3] && sheetData[3][9] && sheetData[7] && sheetData[7][9] !== undefined ? String(sheetData[7][9]) : null,
     nSerie: sheetData[0] && sheetData[0][11] !== undefined ? String(sheetData[0][11]) : null,
     localinstalacao: sheetData[1] && sheetData[1][11] !== undefined ? String(sheetData[1][11]) : null,
     observacaoproblemas: sheetData[2] && sheetData[2][11] !== undefined ? String(sheetData[2][11]) : null,
     observacoes: sheetData[3] && sheetData[3][11] !== undefined ? String(sheetData[3][11]) : null,
     prestadoraDoServico: sheetData[4] && sheetData[4][11] !== undefined ? String(sheetData[4][11]) : null
-  }
-  
-  return processFormData(racData)
+  };
+
+  return processFormData(racData);
 }
 
-// Endpoint para importar dados da planilha
 app.post('/racvirtual/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
-    console.log('Nenhum arquivo enviado')
-    return res.status(400).json({ message: 'Nenhum arquivo enviado' })
+    return res.status(400).json({ message: 'Nenhum arquivo enviado' });
   }
 
   try {
-    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' })
-    const racData = processSheetData(workbook)
-
-    const query = `INSERT INTO RacForm SET ?`
-    await db.query(query, [racData])
-    
-    console.log('Dados inseridos com sucesso')
-    res.status(200).json({ message: 'Arquivo carregado e dados inseridos com sucesso', data: racData })
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const racData = processSheetData(workbook);
+    const query = `INSERT INTO RacForm SET ?`;
+    await db.query(query, [racData]);
+    res.status(200).json({ message: 'Arquivo carregado e dados inseridos com sucesso', data: racData });
   } catch (error) {
-    console.error('Erro ao processar o arquivo:', error)
-    res.status(500).json({ message: 'Erro ao processar o arquivo', error: error.message })
+    res.status(500).json({ message: 'Erro ao processar o arquivo', error: error.message });
   }
-})
+});
+
+app.get('/racvirtual/list', async (req, res) => {
+  try {
+    const { razaoSocial, tecnico, dataInicio, sortBy = 'date', sortOrder = 'DESC' } = req.query;
+    let query = `SELECT *, impressora = 1 as impressora, fonte = 1 as fonte, cabecote = 1 as cabecote, leitor = 1 as leitor FROM RacForm`;
+    const conditions = [];
+    const params = [];
+
+    if (razaoSocial) {
+      conditions.push('razaoSocial LIKE ?');
+      params.push(`%${razaoSocial}%`);
+    }
+    if (tecnico) {
+      conditions.push('tecnico LIKE ?');
+      params.push(`%${tecnico}%`);
+    }
+    if (dataInicio) {
+      conditions.push('dataInicio = ?');
+      params.push(dataInicio);
+    }
+
+    if (conditions.length > 0) {
+      query += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    const validSortColumns = ['date', 'dataInicio', 'razaoSocial', 'tecnico'];
+    const validSortOrders = ['ASC', 'DESC'];
+    const sortColumn = validSortColumns.includes(sortBy) ? sortBy : 'date';
+    const sortDirection = validSortOrders.includes(sortOrder.toUpperCase()) ? sortOrder.toUpperCase() : 'DESC';
+    query += ` ORDER BY ${sortColumn} ${sortDirection}`;
+
+    const [results] = await db.query(query, params);
+    res.json(results);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Endpoint para listar todas as RACs
 app.get('/racvirtual/list', async (req, res) => {
@@ -578,6 +568,113 @@ app.get('/empresas/:id', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar empresa' });
   }
 });
+
+
+
+// IMPORTAÇÃO DE PLANILHA COM DADOS DOS CLIENTES
+// Adicione estas novas rotas ao seu arquivo backend existente
+
+// Rota para pré-visualização da planilha
+app.post('/api/importar/preview', upload.single('planilha'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+    }
+
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const dados = xlsx.utils.sheet_to_json(worksheet);
+
+    // Mapear os dados da planilha para o formato do banco de dados
+    const dadosMapeados = dados.map(item => ({
+      razaoSocial: item['Nome'] || item['Razão Social'] || null,
+      nomeFantasia: item['Fantasia'] || null,
+      cnpj: item['CNPJ/CPF'] || null,
+      endereco: item['Endereço'] || null,
+      cidade: item['Cidade'] || null,
+      responsavel: item['Contato'] || null,
+      telefone: item['Fone'] || null,
+      contato: item['Contato'] || null,
+      inscricaoEstadual: item['Inscr. Estadual'] || null,
+      uf: item['UF'] || null,
+      bairro: item['Bairro'] || null,
+      cep: item['Cep'] || null,
+      email: item['Email'] || null,
+      observacoes: item['Obs.'] || null
+    }));
+
+    res.json(dadosMapeados);
+  } catch (error) {
+    console.error('Erro ao processar planilha:', error);
+    res.status(500).json({ error: 'Erro ao processar planilha' });
+  }
+});
+
+// Rota para importação dos dados
+app.post('/api/importar', upload.single('planilha'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+    }
+
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const dados = xlsx.utils.sheet_to_json(worksheet);
+
+    const connection = await db.getConnection();
+
+    try {
+      await connection.beginTransaction();
+
+      let registrosInseridos = 0;
+
+      for (const item of dados) {
+        const query = `
+          INSERT INTO DadosEmpresas (
+            Código,Nome,Fantasia,Fone,Contato,
+            CNPJ/CPF,Inscr. Estadual,UF,Cidade,Bairro,
+            Endereço,Cep,Vendedor,Gerente,Grupo,Tabela,
+            Banco,FormaPag,Data Cad,Fone 2,Email,Obs.
+
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        const values = [
+          item['Nome'] || item['Fantasia'] || null,
+          item['CNPJ/CPF'] || null,
+          item['Endereço'] || null,
+          item['Cidade'] || null,
+          item['Contato'] || null,
+          item['Fone'] || null,
+          item['Contato'] || null,
+          item['Inscr. Estadual'] || null,
+          item['UF'] || null,
+          item['Bairro'] || null,
+          item['Cep'] || null,
+          item['Email'] || null,
+          item['Obs.'] || null
+        ];
+
+        await connection.execute(query, values);
+        registrosInseridos++;
+      }
+
+      await connection.commit();
+      res.json({ success: true, registrosInseridos });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Erro ao importar dados:', error);
+    res.status(500).json({ error: 'Erro ao importar dados' });
+  }
+});
+//////////////////////////////////////////////////////////////////
 
 // Iniciar servidor
 app.listen(PORT, async () => {

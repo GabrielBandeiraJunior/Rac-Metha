@@ -7,6 +7,7 @@ import Assinatura from './Components/Assinatura.js'
 import { motion, AnimatePresence } from 'framer-motion'
 import {useAuth} from './auth.js'
 
+
 const INITIAL_STATE = (user) => ({
   date: new Date().toISOString().split('T')[0],
   tecnico: '',
@@ -253,6 +254,7 @@ export default function RacForm() {
     { label: 'Cadastrar RAC', url: '/novarac' },
     { label: 'Importar Planilha', url: '/importarplanilha' },
     { label: 'Home', url: '/' },
+    { label: 'Importar Dados dos Clientes ', url: '/ImportExcelClientes' },
   ]
 
   const handleNextStep = () => {

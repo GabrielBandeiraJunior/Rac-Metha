@@ -9,6 +9,7 @@ import RACForm from './RACForm.js'
 import RacsCadastradas from './RacsCadastradas.js';
 import Autenticacao from './Autenticacao.js';
 import ImportarPlanilha from './ImportarPlanilha.js';
+import ImportExcelClientes from './ImportExcelClientes.js';
 
 
 const ProtectedRoute = ({ element }) => {
@@ -29,6 +30,8 @@ const RoutesComponent = () => (
         
         <Route path="/Racscadastradas" element={<ProtectedRoute element={<RacsCadastradas />}/>}/>
         <Route path="/importarplanilha" element={<ProtectedRoute element={<ImportarPlanilha />}/>}/>
+
+        <Route path="/ImportExcelClientes" element={<ProtectedRoute element={<ImportExcelClientes />}/>}/>
         
 
 
