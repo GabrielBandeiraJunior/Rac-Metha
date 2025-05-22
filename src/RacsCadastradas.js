@@ -62,6 +62,7 @@ export default function RacsCadastradas() {
         { label: 'Cadastrar RAC', url: '/novarac' },
         { label: 'Importar Planilha', url: '/importarplanilha' },
         { label: 'Home', url: '/' },
+        { label: 'Importar Empresas', url: '/ImportEmpresas' },
       ]
     useEffect(() => {
         const buscarRacs = async () => {

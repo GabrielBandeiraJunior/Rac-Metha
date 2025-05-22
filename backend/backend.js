@@ -469,6 +469,60 @@ app.get('/endereco/:cep', async (req, res) => {
   }
 });
 
+//=====FORMATACAO PARA DATA E HORA AO EDITAR RAC
+// Função para formatar hora no padrão HH:MM:SS
+function formatDateTimeFromInput(dateValue, timeValue) {
+  if (!dateValue || !timeValue) return null;
+
+  // Espera 'dd/mm/aaaa' para data e 'hh:mm:ss' para hora
+  const [day, month, year] = dateValue.split('/');
+  const [hour, minute, second = '00'] = timeValue.split(':');
+
+  if (!day || !month || !year || !hour || !minute) return null;
+
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')} ${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:${second.padStart(2, '0')}`;
+}
+
+// Função para processar todos os dados do formulário
+function processFormData(data) {
+  const processed = { ...data };
+
+  // Se date vier como ISO 8601, converte para formato MySQL datetime
+  if (processed.date) {
+    // Detecta se tem 'T' e 'Z' no valor, ou se é ISO
+    if (processed.date.includes('T')) {
+      processed.date = isoToMySQLDateTime(processed.date);
+    } else if (processed.date.includes('/')) {
+      // Se estiver no formato dd/mm/yyyy, converte para yyyy-mm-dd
+      const parts = processed.date.split('/');
+      if (parts.length === 3) {
+        const [day, month, year] = parts;
+        processed.date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      }
+    }
+  }
+
+  // Para hora_registro, converte para o formato correto MySQL TIME ou DATETIME se for combinado com a data
+  if (processed.hora_registro) {
+    // Se for hora simples, deixa no formato hh:mm:ss
+    if (processed.hora_registro.includes('T')) {
+      processed.hora_registro = isoToMySQLDateTime(processed.hora_registro);
+    } else {
+      // Pode usar sua função formatHora original
+      processed.hora_registro = formatHora(processed.hora_registro);
+    }
+  }
+
+  return processed;
+}
+
+
+// Função para remover o prefixo base64 da assinatura
+function processSignature(signatureData) {
+  if (!signatureData) return null;
+  return signatureData.replace(/^data:image\/\w+;base64,/, '');
+}
+
 // Endpoint para editar RAC
 app.put('/racvirtual/edit/:id', async (req, res) => {
   const { id } = req.params;
@@ -476,11 +530,6 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
 
   if (!formData || Object.keys(formData).length === 0) {
     return res.status(400).json({ message: 'Dados ausentes para atualização' });
-  }
-
-  function processSignature(signatureData) {
-    if (!signatureData) return null;
-    return signatureData.replace(/^data:image\/\w+;base64,/, '');
   }
 
   const processedData = processFormData(formData);
@@ -500,6 +549,9 @@ app.put('/racvirtual/edit/:id', async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar RAC', error: error.message });
   }
 });
+
+//===================
+
 
 // Endpoint para deletar RAC
 app.delete('/racvirtual/delete/:id', async (req, res) => {
@@ -522,9 +574,9 @@ app.get('/empresas/buscar', async (req, res) => {
   
   try {
     const [rows] = await db.query(
-      `SELECT id, razaoSocial, cnpj, endereco, numero, cidade 
+      `SELECT id, Nome, cnpj, endereço, cidade 
        FROM DadosEmpresas 
-       WHERE razaoSocial LIKE ? 
+       WHERE Nome LIKE ? 
        LIMIT 10`, 
       [`%${termo}%`]
     );
@@ -556,7 +608,124 @@ app.get('/empresas/:id', async (req, res) => {
   }
 });
 
+//=========================IMPORTACAO TABELA DE CLIENTES
+//=================================================================
 
+
+app.post('/empresas/upload', upload.single('file'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'Nenhum arquivo enviado' });
+  }
+
+  try {
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const data = xlsx.utils.sheet_to_json(sheet);
+
+    const query = `INSERT INTO DadosEmpresas (
+      Codigo, Nome, Fantasia, Fone, Contato, InscricaoEstadual, UF, Cidade,
+      Bairro, Endereço, Cep, Vendedor, Gerente, Grupo, Tabela, Banco,
+      FormaPag, \`Data Cad\`, \`Fone 2\`, Email, CNPJ
+    ) VALUES ?`;
+
+    const values = data.map(item => [
+      item.Codigo,
+      item.Nome,
+      item.Fantasia,
+      item.Fone,
+      item.Contato,
+      item.InscricaoEstadual || item['Inscr. Estadual'],
+      item.UF,
+      item.Cidade,
+      item.Bairro,
+      item.Endereço,
+      item.Cep,
+      item.Vendedor,
+      item.Gerente,
+      item.Grupo,
+      item.Tabela,
+      item.Banco,
+      item.FormaPag,
+      item['Data Cad'],
+      item['Fone 2'],
+      item.Email,
+      item.CNPJ
+    ]);
+
+    await db.query(query, [values]);
+    res.status(200).json({ message: 'Arquivo importado com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao importar:', error);
+    res.status(500).json({ message: 'Erro ao processar o arquivo', error: error.message });
+  }
+});
+
+// Rotas para CRUD de empresas
+app.get('/empresas', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM DadosEmpresas');
+    res.json(rows);
+  } catch (error) {
+    console.error('Erro ao buscar empresas:', error);
+    res.status(500).json({ error: 'Erro ao buscar empresas' });
+  }
+});
+
+app.post('/empresas', async (req, res) => {
+  const { Nome, CNPJ, Cidade, Endereço, numero } = req.body;
+  
+  try {
+    const [result] = await db.query(
+      'INSERT INTO DadosEmpresas (Nome, CNPJ, Cidade, Endereço, numero) VALUES (?, ?, ?, ?, ?)',
+      [Nome, CNPJ, Cidade, Endereço, numero]
+    );
+    res.status(201).json({ id: result.insertId, ...req.body });
+  } catch (error) {
+    console.error('Erro ao criar empresa:', error);
+    res.status(500).json({ error: 'Erro ao criar empresa' });
+  }
+});
+
+app.put('/empresas/:id', async (req, res) => {
+  const { id } = req.params;
+  const { Nome, CNPJ, Cidade, Endereço, numero } = req.body;
+  
+  try {
+    const [result] = await db.query(
+      'UPDATE DadosEmpresas SET Nome = ?, CNPJ = ?, Cidade = ?, Endereço = ?, numero = ? WHERE id = ?',
+      [Nome, CNPJ, Cidade, Endereço, numero, id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Empresa não encontrada' });
+    }
+    
+    res.json({ id, ...req.body });
+  } catch (error) {
+    console.error('Erro ao atualizar empresa:', error);
+    res.status(500).json({ error: 'Erro ao atualizar empresa' });
+  }
+});
+
+app.delete('/empresas/:id', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [result] = await db.query('DELETE FROM DadosEmpresas WHERE id = ?', [id]);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Empresa não encontrada' });
+    }
+    
+    res.json({ message: 'Empresa deletada com sucesso' });
+  } catch (error) {
+    console.error('Erro ao deletar empresa:', error);
+    res.status(500).json({ error: 'Erro ao deletar empresa' });
+  }
+});
+
+//===========================================================================
 // Iniciar servidor
 app.listen(PORT, async () => {
   const connection = await db.getConnection()

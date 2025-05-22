@@ -6,11 +6,12 @@ import './my-button.css'
 import Assinatura from './Components/Assinatura.js'
 import { motion, AnimatePresence } from 'framer-motion'
 
+
 const INITIAL_STATE = {
   date: new Date().toISOString().split('T')[0],
   tecnico: '',
   razaoSocial: '',
-  cnpj: '',
+  CNPJ: '',
   endereco: '',
   numero: '',
   cidade: '',
@@ -242,6 +243,7 @@ export default function RacForm() {
     { label: 'Cadastrar RAC', url: '/novarac' },
     { label: 'Importar Planilha', url: '/importarplanilha' },
     { label: 'Home', url: '/' },
+    { label: 'Importar Empresas', url: '/ImportEmpresas' },
   ]
 
   const handleNextStep = () => {
@@ -320,28 +322,27 @@ export default function RacForm() {
   };
   
   const selecionarEmpresa = async (empresa) => {
-    try {
-      const response = await axios.get(`http://localhost:3000/empresas/${empresa.id}`);
-      const dadosEmpresa = response.data;
-      
-      setFormData({
-        ...formData,
-        razaoSocial: dadosEmpresa.razaoSocial,
-        cnpj: dadosEmpresa.cnpj || '',
-        endereco: dadosEmpresa.endereco || '',
-        numero: dadosEmpresa.numero || '',
-        cidade: dadosEmpresa.cidade || '',
-        responsavel: dadosEmpresa.responsavel || '',
-        setor: dadosEmpresa.setor || ''
-      });
-      
-      setShowEmpresaPopup(false);
-      setSearchTerm('');
-    } catch (error) {
-      console.error('Erro ao carregar dados da empresa:', error);
-      alert('Erro ao carregar dados da empresa');
-    }
-  };
+  try {
+    const response = await axios.get(`http://localhost:3000/empresas/${empresa.id}`);
+    const dadosEmpresa = response.data;
+    
+    setFormData(prevState => ({
+      ...prevState,
+      razaoSocial: dadosEmpresa.Nome || '',
+      cnpj: dadosEmpresa.CNPJ || '',
+      endereco: dadosEmpresa.Endereço || '',
+      numero: dadosEmpresa.numero || '',
+      cidade: dadosEmpresa.Cidade || '',
+      // Adicione outros campos conforme necessário
+    }));
+    
+    setShowEmpresaPopup(false);
+    setSearchTerm(dadosEmpresa.Nome || '');
+  } catch (error) {
+    console.error('Erro ao carregar dados da empresa:', error);
+    alert('Erro ao carregar dados da empresa');
+  }
+};
 
   return (
     <>
@@ -714,10 +715,11 @@ export default function RacForm() {
               className="empresa-item"
               onClick={() => selecionarEmpresa(empresa)}
             >
-              <div className="empresa-nome">{empresa.razaoSocial}</div>
+              <div className="empresa-nome">{empresa.Nome}</div>
               <div className="empresa-detalhes">
-                {empresa.cnpj && <span>CNPJ: {empresa.cnpj}</span>}
+                {empresa.CNPJ && <span>CNPJ: {empresa.CNPJ}</span>}
                 {empresa.cidade && <span>Cidade: {empresa.cidade}</span>}
+                {empresa.cep && <span>CEP: {empresa.cep}</span>}
               </div>
             </div>
           ))

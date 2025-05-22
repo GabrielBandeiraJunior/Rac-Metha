@@ -41,6 +41,7 @@ const links = [
   { label: 'Cadastrar RAC', url: '/novarac' },
   { label: 'Importar Planilha', url: '/importarplanilha' },
   { label: 'Home', url: '/' },
+  { label: 'Importar Empresas', url: '/ImportEmpresas' },
 ]
 
 return (
