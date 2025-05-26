@@ -2,8 +2,9 @@ import React from 'react';
 import Register from './Register.js';
 import Login from './Login.js';
 import './Autenticacao.css';
-import Headers from './Components/Headers.js'
-// const API_URL = process.env.REACT_APP_API_URL;
+import Headers from './Components/Headers.js';
+// const API_URL = process.env.REACT_APP_API_URL; // Mova para depois dos imports ou remova
+
 export default function Autenticacao() {
     const links = [
         { label: 'Autenticacao', url: '/Autenticacao' },
@@ -12,11 +13,11 @@ export default function Autenticacao() {
         { label: 'Cadastrar RAC', url: '/novarac' },
         { label: 'Importar Planilha', url: '/importarplanilha' },
         { label: 'Home', url: '/' },
-      ]
+    ]
+    
     return (
         <>
-         <Headers links={links} />
-
+            <Headers links={links} />
             <div className="ContainersWrapper">
                 <div className="Container">
                     <h1>Registro</h1>
@@ -26,7 +27,6 @@ export default function Autenticacao() {
                     <h1>Login</h1>
                     <Login />
                 </div>
-                
             </div>
         </>
     );
