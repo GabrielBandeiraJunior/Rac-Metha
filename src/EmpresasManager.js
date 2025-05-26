@@ -91,7 +91,7 @@ const EmpresasManager = () => {
   // Filtrar empresas
   const filteredEmpresas = empresas.filter(empresa =>
     empresa.Nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    empresa.CNPJ.toLowerCase().includes(searchTerm.toLowerCase())
+    empresa.CNPJ.toLowerCase().includes(searchTerm.toLowerCase()) 
   );
 
   return (

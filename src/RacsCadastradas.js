@@ -508,7 +508,9 @@ export default function RacsCadastradas() {
             <div className={`form-editar-container ${editingItem ? 'show' : ''}`}>
                 {editingItem && (
                     <div className="form-editar">
+                        
                         <h2>Editar RAC</h2>
+                        <button type="submit" className="save-btn">Salvar</button>
                         <button 
                             className="close-btn" 
                             onClick={() => setEditingItem(null)}
@@ -526,7 +528,9 @@ export default function RacsCadastradas() {
                             &times;
                         </button>
                         
-                        <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }}>
+                        <form onSubmit={(e) => { e.preventDefault(); handleSaveEdit(); }}>                            
+                            
+                        
                             <label>Técnico:</label>
                             <input type="text" name="tecnico" value={formData.tecnico} onChange={handleInputChange} />
                             
@@ -792,6 +796,15 @@ export default function RacsCadastradas() {
                             </select>
                             
                             <button type="submit" className="save-btn">Salvar</button>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+
                         </form>
                     </div>
                 )}
