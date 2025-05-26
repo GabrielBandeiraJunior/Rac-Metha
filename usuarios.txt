@@ -1,0 +1,6 @@
+id	int	NO	PRI		auto_increment
+nome	varchar(255)	YES		Usuário Sem Nome	
+usuario	varchar(255)	NO	UNI		
+senha	varchar(255)	NO			
+perfil	enum('admin','tecnico')	YES		tecnico	
+created_at	timestamp	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
