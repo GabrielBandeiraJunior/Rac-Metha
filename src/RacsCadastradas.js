@@ -62,6 +62,7 @@ export default function RacsCadastradas() {
         { label: 'Cadastrar RAC', url: '/novarac' },
         { label: 'Importar Planilha', url: '/importarplanilha' },
         { label: 'Home', url: '/' },
+        { label: 'Importar Empresas', url: '/ImportEmpresas' },
       ]
     useEffect(() => {
         const buscarRacs = async () => {
@@ -145,34 +146,16 @@ export default function RacsCadastradas() {
 
     const handleEditClick = (item) => {
         setEditingItem(item);
-        
-        // Formata as datas para o input type="date"
-        const formattedItem = {
-          ...item,
-          dataInicio: formatDateForInput(item.dataInicio),
-          dataTermino: formatDateForInput(item.dataTermino)
-        };
-        
-        setFormData(formattedItem);
-      };
+        setFormData(item);
+    };
 
     const handleSaveEdit = async () => {
         try {
             // Cria uma cópia do formData
             const payload = { ...formData };
-            if (payload.dataInicio) {
-                payload.dataInicio = formatDateForInput(payload.dataInicio);
-              }
-              if (payload.dataTermino) {
-                payload.dataTermino = formatDateForInput(payload.dataTermino);
-              }
-          
-              // Restante do código permanece o mesmo
-              const booleanFields = [
-                'instalacaoDeEquipamentos',
     
             // Lista de todos os campos booleanos
-            
+            const booleanFields = [
                 'instalacaoDeEquipamentos',
                 'manutencaoDeEquipamentos',
                 'homologacaoDeInfra',
@@ -201,7 +184,6 @@ export default function RacsCadastradas() {
             booleanFields.forEach(field => {
                 payload[field] = !!payload[field];
             });
-
             
             // Remove campos vazios ou nulos
             for (const key in payload) {
@@ -323,18 +305,6 @@ export default function RacsCadastradas() {
         return `${dia}/${mes}/${ano}`;
     };
 
-    const formatDateForInput = (dateString) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return ""; // Se for data inválida
-        
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        
-        return `${year}-${month}-${day}`;
-      };
-      
     const obterEnderecoPorCEP = async () => {
         try {
           const response = await fetch(`http://localhost:3000/endereco/${cep}`);
@@ -458,37 +428,37 @@ export default function RacsCadastradas() {
                                     <p><strong>Término do Segundo Intervalo:</strong> {item.horaIntervaloTermino2}</p>
                                     
                                     <h2>Serviço Prestado</h2>
-                                    {item.instalacaoDeEquipamentos === true && <p><strong>Instalação de Equipamentos</strong></p>}
-                                    {item.manutencaoDeEquipamentos === true && <p><strong>Manutenção de Equipamentos</strong></p>}
-                                    {item.homologacaoDeInfra === true && <p><strong>Homologação De Infra</strong></p>}
-                                    {item.treinamentoOperacional === true && <p><strong>Treinamento Operacional</strong></p>}
-                                    {item.implantacaoDeSistemas === true && <p><strong>Implantação de Sistemas</strong></p>}
-                                    {item.manutencaoPreventivaContratual === true && <p><strong>Manutenção Preventiva Contratual</strong></p>}
+                                    {item.instalacaoDeEquipamentos && <p><strong>Instalação de Equipamentos</strong></p>}
+                                    {item.manutencaoDeEquipamentos && <p><strong>Manutenção de Equipamentos</strong></p>}
+                                    {item.homologacaoDeInfra && <p><strong>Homologação De Infra</strong></p>}
+                                    {item.treinamentoOperacional && <p><strong>Treinamento Operacional</strong></p>}
+                                    {item.implantacaoDeSistemas && <p><strong>Implantação de Sistemas</strong></p>}
+                                    {item.manutencaoPreventivaContratual && <p><strong>Manutenção Preventiva Contratual</strong></p>}                                   
 
                                     <h2>Equipamento</h2>
-                                    {item.repprintpoint2 === true && <p><strong>REP Print Point 2</strong></p>}
-                                    {item.repprintpoint3 === true && <p><strong>REP Print Point 3</strong></p>}
-                                    {item.repminiprint === true && <p><strong>REP Mini Print</strong></p>}
-                                    {item.repsmart === true && <p><strong>REP Smart</strong></p>}
-                                    {item.relogiomicropoint === true && <p><strong>Relógio Micro Point</strong></p>}
-                                    {item.relogiobiopoint === true && <p><strong>Relógio Bio Point</strong></p>}
-                                    {item.catracamicropoint === true && <p><strong>Catraca Micro Point</strong></p>}
-                                    {item.catracabiopoint === true && <p><strong>Catraca Bio Point</strong></p>}
-                                    {item.catracaceros === true && <p><strong>Catraca Ceros</strong></p>}
-                                    {item.catracaidblock === true && <p><strong>Catraca ID Block</strong></p>}
-                                    {item.catracaidnext === true && <p><strong>Catraca ID Next</strong></p>}
-                                    {item.idface === true && <p><strong>ID Face</strong></p>}
-                                    {item.idflex === true && <p><strong>ID Flex</strong></p>}
+                                    {item.repprintpoint2 && <p><strong>REP Print Point 2</strong></p>}
+                                    {item.repprintpoint3 && <p><strong>REP Print Point 3</strong></p>}
+                                    {item.repminiprint && <p><strong>REP Mini Print</strong></p>}
+                                    {item.repsmart && <p><strong>REP Smart</strong></p>}
+                                    {item.relogiomicropoint && <p><strong>Relógio Micro Point</strong></p>}
+                                    {item.relogiobiopoint && <p><strong>Relógio Bio Point</strong></p>}
+                                    {item.catracamicropoint && <p><strong>Catraca Micro Point</strong></p>}
+                                    {item.catracabiopoint && <p><strong>Catraca Bio Point</strong></p>}
+                                    {item.catracaceros && <p><strong>Catraca Ceros</strong></p>}
+                                    {item.catracaidblock && <p><strong>Catraca ID Block</strong></p>}
+                                    {item.catracaidnext && <p><strong>Catraca ID Next</strong></p>}
+                                    {item.idface && <p><strong>ID Face</strong></p>}
+                                    {item.idflex && <p><strong>ID Flex</strong></p>}
                                     
-                                    {item.impressora === true && <p><strong>Impressora</strong></p>}
+                                    {item.impressora && <p><strong>Impressora</strong></p>}
                                     {/* <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p> */}
-                                    {item.codigoImpressora === true && item.codigoImpressora !== "" && (
+                                    {item.codigoImpressora && item.codigoImpressora !== "" && (
                                     <p><strong>Codigo da Impressora:</strong> {item.codigoImpressora}</p>
                                     )}
-                                    {item.fonte === true && <p><strong>Fonte</strong></p>}
+                                    {item.fonte && <p><strong>Fonte</strong></p>}
                                     {/* <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p> */}
                                     
-                                    {item.codigoFonte === true && item.codigoFonte !== "" && (
+                                    {item.codigoFonte && item.codigoFonte !== "" && (
                                     <p><strong>Codigo da Fonte:</strong> {item.codigoFonte}</p>
                                     )}
 
