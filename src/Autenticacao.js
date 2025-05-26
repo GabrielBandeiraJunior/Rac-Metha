@@ -1,9 +1,8 @@
 import React from 'react';
-import Login from './backend2/login.js';
 import Register from './Register.js';
+import Login from './Login.js';
 import './Autenticacao.css';
 import Headers from './Components/Headers.js'
-
 export default function Autenticacao() {
     const links = [
         { label: 'Autenticacao', url: '/Autenticacao' },
@@ -17,7 +16,7 @@ export default function Autenticacao() {
         <>
          <Headers links={links} />
 
-            <div className="ContainersWrapper"> {/* Corrigido para className */}
+            <div className="ContainersWrapper">
                 <div className="Container">
                     <h1>Registro</h1>
                     <Register />

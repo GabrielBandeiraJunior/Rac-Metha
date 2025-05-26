@@ -1,0 +1,24 @@
+id	int	NO	PRI		auto_increment
+createdAt	timestamp	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED
+updatedAt	timestamp	YES		CURRENT_TIMESTAMP	DEFAULT_GENERATED on update CURRENT_TIMESTAMP
+Codigo	varchar(20)	YES			
+Nome	varchar(100)	NO			
+Fantasia	varchar(100)	YES			
+Fone	varchar(20)	YES			
+Contato	varchar(100)	YES			
+InscricaoEstadual	varchar(50)	YES			
+UF	char(2)	YES			
+Cidade	varchar(100)	YES			
+Bairro	varchar(100)	YES			
+Endereço	varchar(200)	YES			
+Cep	varchar(10)	YES			
+Vendedor	varchar(100)	YES			
+Gerente	varchar(100)	YES			
+Grupo	varchar(50)	YES			
+Tabela	varchar(50)	YES			
+Banco	varchar(50)	YES			
+FormaPag	varchar(50)	YES			
+Data Cad	text	YES			
+FONE 2	text	YES			
+EMAIL	text	YES			
+CNPJ	text	YES			

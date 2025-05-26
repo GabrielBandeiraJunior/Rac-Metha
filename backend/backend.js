@@ -6,16 +6,20 @@ const axios = require('axios')
 const moment = require('moment')
 const xlsx = require('xlsx')
 const fetch = require('node-fetch')
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const app = express()
 const PORT = 3000
 
 // Configuração do Banco de Dados
 const dbConfig = {
-  host: 'localhost',
+  host: 'shuttle.proxy.rlwy.net',
   user: 'root',
-  password: '000000',
-  database: 'racvirtual',
+  password: 'PbwWnqnMynwtpyjbKYdLYSByrKixKQjB',
+  database: 'railway',
+  port: 24606
+   
 }
 
 // Configuração do Multer para upload de arquivos
@@ -726,6 +730,61 @@ app.delete('/empresas/:id', async (req, res) => {
 });
 
 //===========================================================================
+
+
+
+//==============L O G I N =========================
+// No seu backend.js, adicione estas linhas após as outras importações:
+
+
+// Adicione esta configuração após os outros middlewares
+// app.use(cors());
+// app.use(express.json());
+
+// Adicione esta função após createTableIfNotExists
+const createUsersTable = async (connection) => {
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS usuarios (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      nome VARCHAR(255) NOT NULL,
+      usuario VARCHAR(255) UNIQUE NOT NULL,
+      senha VARCHAR(255) NOT NULL,
+      perfil ENUM('admin', 'tecnico') DEFAULT 'tecnico',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+};
+
+// Middleware de autenticação
+const authenticateToken = (req, res, next) => {
+  const token = req.headers['authorization']?.split(' ')[1];
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET || 'sua_chave_secreta', (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+// Rotas de autenticação - adicione antes do app.listen
+app.post("/api/auth/register", async (req, res) => {
+  // Copie todo o conteúdo da rota /register do login.js aqui
+});
+
+app.post("/api/auth/login", async (req, res) => {
+  // Copie todo o conteúdo da rota /login do login.js aqui
+});
+
+app.get("/api/auth/user-info", authenticateToken, async (req, res) => {
+  res.json(req.user);
+});
+
+
+//==========================
+//=================================
+
+
 // Iniciar servidor
 app.listen(PORT, async () => {
   const connection = await db.getConnection()

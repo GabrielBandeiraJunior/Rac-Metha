@@ -8,7 +8,8 @@ module.exports = {
       "fs": false,
       "stream": require.resolve("stream-browserify"),
       "path": require.resolve("path-browserify"),
-      "buffer": require.resolve("buffer/")
+      "buffer": require.resolve("buffer/"),
+      'node_modules': path.resolve(__dirname, 'node_modules'),
     }
   },
   // Outras configurações do Webpack, se necessário

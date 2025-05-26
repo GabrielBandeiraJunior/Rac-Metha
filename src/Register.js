@@ -19,7 +19,7 @@ function Register() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:3001/register", {
+      const response = await fetch("http://localhost:3000/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome, usuario, senha })
@@ -33,7 +33,7 @@ function Register() {
 
       console.log("Registro bem-sucedido:", data);
       setSuccess(data.message);
-      setTimeout(() => navigate('/perfil'), 2000); // Redireciona após 2 segundos
+      setTimeout(() => navigate('/perfil'), 2000);
 
     } catch (error) {
       console.error("Erro no registro:", error);
