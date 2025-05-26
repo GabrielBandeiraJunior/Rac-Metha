@@ -3,7 +3,7 @@ import Register from './Register.js';
 import Login from './Login.js';
 import './Autenticacao.css';
 import Headers from './Components/Headers.js'
-const API_URL = process.env.REACT_APP_API_URL;
+// const API_URL = process.env.REACT_APP_API_URL;
 export default function Autenticacao() {
     const links = [
         { label: 'Autenticacao', url: '/Autenticacao' },

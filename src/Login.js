@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './auth';
 import './Autenticacao.css';
-
+const API_URL = process.env.REACT_APP_API_URL;
 function Login() {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
