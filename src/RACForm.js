@@ -7,7 +7,7 @@ import './RACForm.css'
 import './my-button.css'
 import Assinatura from './Components/Assinatura.js'
 import { motion, AnimatePresence } from 'framer-motion'
-import {useauth} from './auth.js'
+import {useAuth} from './auth.js'
 
 
 
@@ -66,6 +66,7 @@ const INITIAL_STATE = (user) => ({
 
 
 export default function RacForm() {
+  const {user} = useAuth()
   const [formData, setFormData] = useState((INITIAL_STATE(user)),{
     date: new Date().toISOString().split('T')[0],
     tecnico: '',
