@@ -42,7 +42,7 @@
     "eject": "react-scripts eject",
     "clean": "rm -rf node_modules/ && rm -rf package-lock.json"
   },
-  
+
   "eslintConfig": {
     "extends": [
       "react-app",
