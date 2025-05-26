@@ -1,5 +1,5 @@
 import React from 'react';
-import Login from './Login.js';
+import Login from './backend2/login.js';
 import Register from './Register.js';
 import './Autenticacao.css';
 import Headers from './Components/Headers.js'
