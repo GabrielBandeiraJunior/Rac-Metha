@@ -1,4 +1,5 @@
 import React from 'react';
+const API_URL = process.env.REACT_APP_API_URL;
 import Register from './Register.js';
 import Login from './Login.js';
 import './Autenticacao.css';

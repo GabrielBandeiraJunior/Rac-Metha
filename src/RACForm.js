@@ -170,7 +170,7 @@ export default function RacForm() {
 
   const obterEnderecoPorCEP = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/endereco/${cep}`)
+      const response = await fetch(`http://process.env.REACT_APP_API_URL:3000/endereco/${cep}`)
       if (!response.ok) {
         throw new Error('Erro ao obter o endereço.')
       }
@@ -212,7 +212,7 @@ export default function RacForm() {
       }
   
       const response = await axios.post(
-        'http://localhost:3000/racvirtual/register',
+        'http://process.env.REACT_APP_API_URL:3000/racvirtual/register',
         payload,
         { 
           headers: { 'Content-Type': 'application/json' },
@@ -273,7 +273,7 @@ export default function RacForm() {
 
   const fetchSuggestions = async (term) => {
     try {
-      const response = await axios.get(`http://localhost:3000/empresas/buscar?termo=${term}`);
+      const response = await axios.get(`http://process.env.REACT_APP_API_URL:3000/empresas/buscar?termo=${term}`);
       setSuggestions(response.data);
       setShowSuggestions(true);
     } catch (error) {
@@ -298,7 +298,7 @@ export default function RacForm() {
   const handleSelectSuggestion = async (empresa) => {
     try {
       // Busca os detalhes completos da empresa
-      const response = await axios.get(`http://localhost:3000/empresas/${empresa.id}`);
+      const response = await axios.get(`http://process.env.REACT_APP_API_URL:3000/empresas/${empresa.id}`);
       const empresaCompleta = response.data;
       
       // Atualiza o formulário com os dados da empresa
@@ -327,7 +327,7 @@ export default function RacForm() {
     }
   
     try {
-      const response = await axios.get(`http://localhost:3000/empresas/buscar?termo=${searchTerm}`);
+      const response = await axios.get(`http://process.env.REACT_APP_API_URL:3000/empresas/buscar?termo=${searchTerm}`);
       setEmpresasEncontradas(response.data);
       setShowEmpresaPopup(true);
     } catch (error) {
@@ -338,7 +338,7 @@ export default function RacForm() {
   
   const selecionarEmpresa = async (empresa) => {
   try {
-    const response = await axios.get(`http://localhost:3000/empresas/${empresa.id}`);
+    const response = await axios.get(`http://process.env.REACT_APP_API_URL:3000/empresas/${empresa.id}`);
     const dadosEmpresa = response.data;
     
     setFormData(prevState => ({

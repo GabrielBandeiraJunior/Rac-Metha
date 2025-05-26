@@ -9,6 +9,7 @@ const fetch = require('node-fetch')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+
 const app = express()
 const PORT = 3000
 
@@ -27,7 +28,9 @@ const storage = multer.memoryStorage() // Armazena arquivos na memória
 const upload = multer({ storage })
 
 // Middleware
-app.use(cors())
+app.use(cors({
+  origin: 'https://rac-metha.vercel.app'
+}))
 app.use(express.json())
 
 // Função para criar a tabela se ela não existir
@@ -790,5 +793,5 @@ app.listen(PORT, async () => {
   const connection = await db.getConnection()
   await createTableIfNotExists(connection)
   connection.release()
-  console.log(`Servidor rodando em http://localhost:${PORT}`)
+  console.log(`Servidor rodando em http://process.env.REACT_APP_API_URL:${PORT}`)
 })

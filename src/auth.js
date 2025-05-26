@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (usuario, senha) => {
     try {
       console.log('Iniciando processo de login para:', usuario);
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('http://process.env.REACT_APP_API_URL/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, senha }),
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   // Função de registro
   const register = async (usuario, senha, nome) => {
     try {
-      const response = await fetch('http://localhost:3000/register', {
+      const response = await fetch('http://process.env.REACT_APP_API_URL:3000/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, senha, nome }),
