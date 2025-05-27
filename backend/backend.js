@@ -6,21 +6,16 @@ const axios = require('axios')
 const moment = require('moment')
 const xlsx = require('xlsx')
 const fetch = require('node-fetch')
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
 
 const app = express()
 const PORT = 3000
 
 // Configuração do Banco de Dados
 const dbConfig = {
-  host: 'shuttle.proxy.rlwy.net',
+  host: 'localhost',
   user: 'root',
-  password: 'PbwWnqnMynwtpyjbKYdLYSByrKixKQjB',
-  database: 'railway',
-  port: 24606
-   
+  password: '000000',
+  database: 'racvirtual',
 }
 
 // Configuração do Multer para upload de arquivos
@@ -28,9 +23,7 @@ const storage = multer.memoryStorage() // Armazena arquivos na memória
 const upload = multer({ storage })
 
 // Middleware
-app.use(cors({
-  origin: 'https://rac-metha.vercel.app'
-}))
+app.use(cors())
 app.use(express.json())
 
 // Função para criar a tabela se ela não existir
@@ -534,37 +527,7 @@ function formatDateTimeFromInput(dateValue, timeValue) {
 }
 
 // Função para processar todos os dados do formulário
-// function processFormData(data) {
-//   const processed = { ...data };
 
-//   // Se date vier como ISO 8601, converte para formato MySQL datetime
-//   if (processed.date) {
-//     // Detecta se tem 'T' e 'Z' no valor, ou se é ISO
-//     if (processed.date.includes('T')) {
-//       processed.date = isoToMySQLDateTime(processed.date);
-//     } else if (processed.date.includes('/')) {
-//       // Se estiver no formato dd/mm/yyyy, converte para yyyy-mm-dd
-//       const parts = processed.date.split('/');
-//       if (parts.length === 3) {
-//         const [day, month, year] = parts;
-//         processed.date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-//       }
-//     }
-//   }
-
-//   // Para hora_registro, converte para o formato correto MySQL TIME ou DATETIME se for combinado com a data
-//   if (processed.hora_registro) {
-//     // Se for hora simples, deixa no formato hh:mm:ss
-//     if (processed.hora_registro.includes('T')) {
-//       processed.hora_registro = isoToMySQLDateTime(processed.hora_registro);
-//     } else {
-//       // Pode usar sua função formatHora original
-//       processed.hora_registro = formatHora(processed.hora_registro);
-//     }
-//   }
-
-//   return processed;
-// }
 
 
 // Função para remover o prefixo base64 da assinatura
@@ -776,65 +739,10 @@ app.delete('/empresas/:id', async (req, res) => {
 });
 
 //===========================================================================
-
-
-
-//==============L O G I N =========================
-// No seu backend.js, adicione estas linhas após as outras importações:
-
-
-// Adicione esta configuração após os outros middlewares
-// app.use(cors());
-// app.use(express.json());
-
-// Adicione esta função após createTableIfNotExists
-const createUsersTable = async (connection) => {
-  await connection.query(`
-    CREATE TABLE IF NOT EXISTS usuarios (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      nome VARCHAR(255) NOT NULL,
-      usuario VARCHAR(255) UNIQUE NOT NULL,
-      senha VARCHAR(255) NOT NULL,
-      perfil ENUM('admin', 'tecnico') DEFAULT 'tecnico',
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-};
-
-// Middleware de autenticação
-const authenticateToken = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
-  if (!token) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.JWT_SECRET || 'sua_chave_secreta', (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-};
-
-// Rotas de autenticação - adicione antes do app.listen
-app.post("/api/auth/register", async (req, res) => {
-  // Copie todo o conteúdo da rota /register do login.js aqui
-});
-
-app.post("/api/auth/login", async (req, res) => {
-  // Copie todo o conteúdo da rota /login do login.js aqui
-});
-
-app.get("/api/auth/user-info", authenticateToken, async (req, res) => {
-  res.json(req.user);
-});
-
-
-//==========================
-//=================================
-
-
 // Iniciar servidor
 app.listen(PORT, async () => {
   const connection = await db.getConnection()
   await createTableIfNotExists(connection)
   connection.release()
-  console.log(`Servidor rodando em http://process.env.REACT_APP_API_URL:${PORT}`)
+  console.log(`Servidor rodando em http://localhost:${PORT}`)
 })
