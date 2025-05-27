@@ -12,10 +12,11 @@ const PORT = 3000
 
 // Configuração do Banco de Dados
 const dbConfig = {
-  host: 'localhost',
+  host: 'shuttle.proxy.rlwy.net',
   user: 'root',
-  password: '000000',
-  database: 'racvirtual',
+  password: 'PbwWnqnMynwtpyjbKYdLYSByrKixKQjB',
+  database: 'railway',
+  port: 24606,
 }
 
 // Configuração do Multer para upload de arquivos
