@@ -3,7 +3,7 @@
     "builder": "nixpacks",
     "config": {
       "buildCommand": "cd backend && npm install",
-      "startCommand": "cd backend && node server.js"
+      "startCommand": "cd backend && node backend.js"
     }
   }
 }
