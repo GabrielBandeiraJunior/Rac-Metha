@@ -63,7 +63,7 @@ const ImportEmpresas = () => {
 
   try {
     // Adicione a URL base correta aqui
-    const response = await axios.post('https://process.env.REACT_APP_API_URL:3000/empresas/upload', formData, {
+    const response = await axios.post('https://process.env.REACT_APP_API_URL/empresas/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

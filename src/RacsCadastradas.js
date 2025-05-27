@@ -69,7 +69,7 @@ export default function RacsCadastradas() {
             try {
                 setCarregando(true);
                 // Primeiro busca todas as RACs sem filtros
-                const response = await axios.get('https://process.env.REACT_APP_API_URL:3000/racvirtual/list');
+                const response = await axios.get('https://process.env.REACT_APP_API_URL/racvirtual/list');
                 setRacs(response.data);
                 setError(null);
             } catch (error) {
@@ -87,7 +87,7 @@ export default function RacsCadastradas() {
         try {
             setCarregando(true);
             // Aplica os filtros apenas quando o usuário clicar em filtrar
-            const response = await axios.get('https://process.env.REACT_APP_API_URL:3000/racvirtual/list', {
+            const response = await axios.get('https://process.env.REACT_APP_API_URL/racvirtual/list', {
                 params: {
                     razaoSocial: filtros.razaoSocial,
                     tecnico: filtros.tecnico,
@@ -116,7 +116,7 @@ export default function RacsCadastradas() {
         // Recarrega todas as RACs novamente
         try {
             setCarregando(true);
-            const response = await axios.get('https://process.env.REACT_APP_API_URL:3000/racvirtual/list');
+            const response = await axios.get('https://process.env.REACT_APP_API_URL/racvirtual/list');
             setRacs(response.data);
             setError(null);
         } catch (error) {
@@ -192,7 +192,7 @@ export default function RacsCadastradas() {
                 }
             }
             
-            await axios.put(`https://process.env.REACT_APP_API_URL:3000/racvirtual/edit/${editingItem.id}`, payload);
+            await axios.put(`https://process.env.REACT_APP_API_URL/racvirtual/edit/${editingItem.id}`, payload);
             // ... resto do código
         } catch (error) {
             // ... tratamento de erro
@@ -202,10 +202,10 @@ export default function RacsCadastradas() {
     const handleDelete = async (id) => {
         if (window.confirm('Tem certeza que deseja excluir esta RAC?')) {
             try {
-                await axios.delete(`https://process.env.REACT_APP_API_URL:3000/racvirtual/delete/${id}`);
+                await axios.delete(`https://process.env.REACT_APP_API_URL/racvirtual/delete/${id}`);
                 
                 // Atualiza a lista de RACs após a exclusão
-                const response = await axios.get('https://process.env.REACT_APP_API_URL:3000/racvirtual/list');
+                const response = await axios.get('https://process.env.REACT_APP_API_URL/racvirtual/list');
                 setRacs(response.data);
                 
                 // Mostra mensagem de sucesso
@@ -307,7 +307,7 @@ export default function RacsCadastradas() {
 
     const obterEnderecoPorCEP = async () => {
         try {
-          const response = await fetch(`https://process.env.REACT_APP_API_URL:3000/endereco/${cep}`);
+          const response = await fetch(`https://process.env.REACT_APP_API_URL/endereco/${cep}`);
           if (!response.ok) {
             throw new Error('Erro ao obter o endereço.');
           }

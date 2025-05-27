@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
   // Função de registro
   const register = async (usuario, senha, nome) => {
     try {
-      const response = await fetch('https://process.env.REACT_APP_API_URL:3000/register', {
+      const response = await fetch('https://process.env.REACT_APP_API_URL/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, senha, nome }),
