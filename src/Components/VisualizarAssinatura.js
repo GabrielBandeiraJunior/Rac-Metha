@@ -14,7 +14,7 @@ const VisualizarAssinatura = ({ racId }) => {
       setError('');
       
       try {
-        const response = await axios.get(`http://process.env.REACT_APP_API_URL:3000/racvirtual/assinatura/${racId}`);
+        const response = await axios.get(`https://process.env.REACT_APP_API_URL:3000/racvirtual/assinatura/${racId}`);
         setAssinatura(response.data.assinatura);
       } catch (err) {
         console.error('Erro ao carregar assinatura:', err);

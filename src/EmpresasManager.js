@@ -18,7 +18,7 @@ const EmpresasManager = () => {
   // Buscar todas as empresas
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get('http://process.env.REACT_APP_API_URL:3000/empresas');
+      const response = await axios.get('https://process.env.REACT_APP_API_URL:3000/empresas');
       setEmpresas(response.data);
     } catch (error) {
       console.error('Erro ao buscar empresas:', error);
@@ -40,9 +40,9 @@ const EmpresasManager = () => {
     e.preventDefault();
     try {
       if (editingEmpresa) {
-        await axios.put(`http://process.env.REACT_APP_API_URL:3000/empresas/${editingEmpresa.id}`, formData);
+        await axios.put(`https://process.env.REACT_APP_API_URL:3000/empresas/${editingEmpresa.id}`, formData);
       } else {
-        await axios.post('http://process.env.REACT_APP_API_URL:3000/empresas', formData);
+        await axios.post('https://process.env.REACT_APP_API_URL:3000/empresas', formData);
       }
       fetchEmpresas();
       resetForm();
@@ -68,7 +68,7 @@ const EmpresasManager = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Tem certeza que deseja deletar esta empresa?')) {
       try {
-        await axios.delete(`http://process.env.REACT_APP_API_URL:3000/empresas/${id}`);
+        await axios.delete(`https://process.env.REACT_APP_API_URL:3000/empresas/${id}`);
         fetchEmpresas();
       } catch (error) {
         console.error('Erro ao deletar empresa:', error);

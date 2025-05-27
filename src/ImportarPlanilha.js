@@ -29,7 +29,7 @@ export default function ImportarPlanilha() {
     setUploadStatus('Enviando arquivo...');
 
     try {
-      const response = await axios.post('http://process.env.REACT_APP_API_URL:3000/racvirtual/upload', formData, {
+      const response = await axios.post('https://process.env.REACT_APP_API_URL:3000/racvirtual/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

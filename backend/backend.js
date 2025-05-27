@@ -154,11 +154,54 @@ function processDateFields(formData) {
   return formData
 }
 
-function processFormData(formData) {
-  console.log('Processando dados do formulário...')
-  formData = processBooleanFields(formData)
-  formData = processDateFields(formData)
-  return formData
+function processFormData(data) {
+  const processed = { ...data };
+
+  // Processamento de campos booleanos
+  const booleanFields = [
+    'instalacaoDeEquipamentos', 'manutencaoDeEquipamentos', 'homologacaoDeInfra',
+    'treinamentoOperacional', 'implantacaoDeSistemas', 'manutencaoPreventivaContratual',
+    'repprintpoint2', 'repprintpoint3', 'repminiprint', 'repsmart',
+    'relogiomicropoint', 'relogiobiopoint', 'catracamicropoint', 'catracabiopoint',
+    'catracaceros', 'catracaidblock', 'catracaidnext', 'idface', 'idflex'
+  ];
+
+  booleanFields.forEach((field) => {
+    if (processed[field] !== undefined) {
+      processed[field] = processed[field] === 'true' || processed[field] === true;
+    }
+  });
+
+  // Processamento de datas
+  if (processed.date) {
+    if (processed.date.includes('T')) {
+      processed.date = isoToMySQLDateTime(processed.date);
+    } else if (processed.date.includes('/')) {
+      const [day, month, year] = processed.date.split('/');
+      processed.date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    }
+  }
+
+  // Processamento de horas
+  if (processed.hora_registro) {
+    if (processed.hora_registro.includes('T')) {
+      processed.hora_registro = isoToMySQLDateTime(processed.hora_registro);
+    } else {
+      processed.hora_registro = formatHora(processed.hora_registro);
+    }
+  }
+
+  return processed;
+}
+
+// Adicione estas funções auxiliares se não existirem:
+function isoToMySQLDateTime(isoString) {
+  return new Date(isoString).toISOString().slice(0, 19).replace('T', ' ');
+}
+
+function formatHora(timeString) {
+  // Implemente sua formatação de hora aqui
+  return timeString; // placeholder
 }
 
 // Função para processar as datas no formato correto
@@ -491,37 +534,37 @@ function formatDateTimeFromInput(dateValue, timeValue) {
 }
 
 // Função para processar todos os dados do formulário
-function processFormData(data) {
-  const processed = { ...data };
+// function processFormData(data) {
+//   const processed = { ...data };
 
-  // Se date vier como ISO 8601, converte para formato MySQL datetime
-  if (processed.date) {
-    // Detecta se tem 'T' e 'Z' no valor, ou se é ISO
-    if (processed.date.includes('T')) {
-      processed.date = isoToMySQLDateTime(processed.date);
-    } else if (processed.date.includes('/')) {
-      // Se estiver no formato dd/mm/yyyy, converte para yyyy-mm-dd
-      const parts = processed.date.split('/');
-      if (parts.length === 3) {
-        const [day, month, year] = parts;
-        processed.date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-      }
-    }
-  }
+//   // Se date vier como ISO 8601, converte para formato MySQL datetime
+//   if (processed.date) {
+//     // Detecta se tem 'T' e 'Z' no valor, ou se é ISO
+//     if (processed.date.includes('T')) {
+//       processed.date = isoToMySQLDateTime(processed.date);
+//     } else if (processed.date.includes('/')) {
+//       // Se estiver no formato dd/mm/yyyy, converte para yyyy-mm-dd
+//       const parts = processed.date.split('/');
+//       if (parts.length === 3) {
+//         const [day, month, year] = parts;
+//         processed.date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+//       }
+//     }
+//   }
 
-  // Para hora_registro, converte para o formato correto MySQL TIME ou DATETIME se for combinado com a data
-  if (processed.hora_registro) {
-    // Se for hora simples, deixa no formato hh:mm:ss
-    if (processed.hora_registro.includes('T')) {
-      processed.hora_registro = isoToMySQLDateTime(processed.hora_registro);
-    } else {
-      // Pode usar sua função formatHora original
-      processed.hora_registro = formatHora(processed.hora_registro);
-    }
-  }
+//   // Para hora_registro, converte para o formato correto MySQL TIME ou DATETIME se for combinado com a data
+//   if (processed.hora_registro) {
+//     // Se for hora simples, deixa no formato hh:mm:ss
+//     if (processed.hora_registro.includes('T')) {
+//       processed.hora_registro = isoToMySQLDateTime(processed.hora_registro);
+//     } else {
+//       // Pode usar sua função formatHora original
+//       processed.hora_registro = formatHora(processed.hora_registro);
+//     }
+//   }
 
-  return processed;
-}
+//   return processed;
+// }
 
 
 // Função para remover o prefixo base64 da assinatura
